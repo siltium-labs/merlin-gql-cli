@@ -4,9 +4,9 @@ merlin-gql
 
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![Version](https://img.shields.io/npm/v/merlin_cli.svg)](https://npmjs.org/package/merlin_cli)
-[![Downloads/week](https://img.shields.io/npm/dw/merlin_cli.svg)](https://npmjs.org/package/merlin_cli)
-[![License](https://img.shields.io/npm/l/merlin_cli.svg)](https://github.com/ezequielzacca/merlin_cli/blob/master/package.json)
+[![Version](https://img.shields.io/npm/v/merlin-gql.svg)](https://npmjs.org/package/merlin-gql)
+[![Downloads/week](https://img.shields.io/npm/dw/merlin-gql.svg)](https://npmjs.org/package/merlin-gql)
+[![License](https://img.shields.io/npm/l/merlin-gql.svg)](https://github.com/ezequielzacca/merlin-gql/blob/master/package.json)
 
 <!-- toc -->
 * [Usage](#usage)

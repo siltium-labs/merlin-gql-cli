@@ -47,7 +47,7 @@ ALIASES
   $ merlin-gql e
 
 EXAMPLE
-  $ merlin_cli generate model
+  $ merlin-gql generate model
 ```
 
 _See code: [src\commands\generate\entity.ts](https://github.com/ezequielzacca/merlin_cli/blob/v0.0.4/src\commands\generate\entity.ts)_

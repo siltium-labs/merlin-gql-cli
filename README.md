@@ -19,7 +19,7 @@ $ npm install -g merlin-gql
 $ merlin-gql COMMAND
 running command...
 $ merlin-gql (-v|--version|version)
-merlin-gql/0.0.3 win32-x64 node-v10.15.0
+merlin-gql/0.0.4 win32-x64 node-v10.15.0
 $ merlin-gql --help [COMMAND]
 USAGE
   $ merlin-gql COMMAND
@@ -50,7 +50,7 @@ EXAMPLE
   $ merlin_cli generate model
 ```
 
-_See code: [src\commands\generate\entity.ts](https://github.com/ezequielzacca/merlin_cli/blob/v0.0.3/src\commands\generate\entity.ts)_
+_See code: [src\commands\generate\entity.ts](https://github.com/ezequielzacca/merlin_cli/blob/v0.0.4/src\commands\generate\entity.ts)_
 
 ## `merlin-gql help [COMMAND]`
 

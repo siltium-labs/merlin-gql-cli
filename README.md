@@ -16,49 +16,49 @@ merlin-gql
 <!-- usage -->
 ```sh-session
 $ npm install -g merlin-gql
-$ merlin_cli COMMAND
+$ merlin-gql COMMAND
 running command...
-$ merlin_cli (-v|--version|version)
-merlin-gql/0.0.1 win32-x64 node-v10.15.0
-$ merlin_cli --help [COMMAND]
+$ merlin-gql (-v|--version|version)
+merlin-gql/0.0.2 win32-x64 node-v10.15.0
+$ merlin-gql --help [COMMAND]
 USAGE
-  $ merlin_cli COMMAND
+  $ merlin-gql COMMAND
 ...
 ```
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`merlin_cli generate:entity`](#merlin_cli-generateentity)
-* [`merlin_cli help [COMMAND]`](#merlin_cli-help-command)
+* [`merlin-gql generate:entity`](#merlin-gql-generateentity)
+* [`merlin-gql help [COMMAND]`](#merlin-gql-help-command)
 
-## `merlin_cli generate:entity`
+## `merlin-gql generate:entity`
 
 Allows code generation
 
 ```
 USAGE
-  $ merlin_cli generate:entity
+  $ merlin-gql generate:entity
 
 OPTIONS
   -n, --name=name
   -r, --resolver
 
 ALIASES
-  $ merlin_cli e
+  $ merlin-gql e
 
 EXAMPLE
   $ merlin_cli generate model
 ```
 
-_See code: [src\commands\generate\entity.ts](https://github.com/ezequielzacca/merlin_cli/blob/v0.0.1/src\commands\generate\entity.ts)_
+_See code: [src\commands\generate\entity.ts](https://github.com/ezequielzacca/merlin_cli/blob/v0.0.2/src\commands\generate\entity.ts)_
 
-## `merlin_cli help [COMMAND]`
+## `merlin-gql help [COMMAND]`
 
-display help for merlin_cli
+display help for merlin-gql
 
 ```
 USAGE
-  $ merlin_cli help [COMMAND]
+  $ merlin-gql help [COMMAND]
 
 ARGUMENTS
   COMMAND  command to show help for

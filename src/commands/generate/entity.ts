@@ -3,6 +3,7 @@ import * as inquirer from "inquirer";
 import cli from "cli-ux";
 
 export default class EntityGenerator extends Command {
+  static aliases = ["e"]
   static description = "Allows code generation";
 
   static examples = [`$ merlin_cli generate model`];

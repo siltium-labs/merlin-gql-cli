@@ -54,7 +54,7 @@
       "@oclif/plugin-help"
     ]
   },
-  "repository": "ezequielzacca/merlin_cli",
+  "repository": "silentium-labs/merlin-gql-cli",
   "scripts": {
     "postpack": "rimraf oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",

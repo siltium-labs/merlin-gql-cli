@@ -19,7 +19,7 @@ $ npm install -g merlin-gql
 $ merlin-gql COMMAND
 running command...
 $ merlin-gql (-v|--version|version)
-merlin-gql/0.0.9 win32-x64 node-v10.15.0
+merlin-gql/0.0.10 win32-x64 node-v10.15.0
 $ merlin-gql --help [COMMAND]
 USAGE
   $ merlin-gql COMMAND
@@ -30,6 +30,7 @@ USAGE
 <!-- commands -->
 * [`merlin-gql generate:entity`](#merlin-gql-generateentity)
 * [`merlin-gql help [COMMAND]`](#merlin-gql-help-command)
+* [`merlin-gql list:entities`](#merlin-gql-listentities)
 
 ## `merlin-gql generate:entity`
 
@@ -47,10 +48,10 @@ ALIASES
   $ merlin-gql e
 
 EXAMPLE
-  $ merlin-gql generate model
+  $ merlin-gql generate:model
 ```
 
-_See code: [src\commands\generate\entity.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.0.9/src\commands\generate\entity.ts)_
+_See code: [src\commands\generate\entity.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.0.10/src\commands\generate\entity.ts)_
 
 ## `merlin-gql help [COMMAND]`
 
@@ -68,6 +69,23 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.1.0/src\commands\help.ts)_
+
+## `merlin-gql list:entities`
+
+Lists all typeorm existing entities
+
+```
+USAGE
+  $ merlin-gql list:entities
+
+ALIASES
+  $ merlin-gql l
+
+EXAMPLE
+  $ merlin-gql list:entities
+```
+
+_See code: [src\commands\list\entities.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.0.10/src\commands\list\entities.ts)_
 <!-- commandsstop -->
 * [`merlin-gql generate:entity`](#merlin_cli-generateentity)
 

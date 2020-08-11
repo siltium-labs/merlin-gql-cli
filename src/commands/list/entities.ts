@@ -13,25 +13,9 @@ export default class EntitiesList extends Command {
   static args = [];
 
   async run() {
-    const connectionOptionsReader = new ConnectionOptionsReader({
-      root: process.cwd(),
-      configName: "ormconfig",
-    });
-
-    const connectionOptions = {
-      ...(await connectionOptionsReader.get("default")),
-      synchronize: false,
-      migrationsRun: false,
-      dropSchema: false,
-      logging: false,
-    };
-
-    const connection = await createConnection(connectionOptions);
-
-    const entities = connection.entityMetadatas.map((m) => ({
-      name: m.name,
-      relations: `[${m.relations.map((r) => (r.type as any).name).join(",")}]`,
-    }));
+    cli.action.start("Reading metadata...");
+    const entities = await gatherModelsInfo();
+    cli.action.stop();
 
     cli.table(entities, {
       name: { minWidth: 10 },
@@ -40,8 +24,26 @@ export default class EntitiesList extends Command {
   }
 }
 
-const Await3Seconds = async () => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => resolve(), 3000);
+const gatherModelsInfo = async () => {
+  const connectionOptionsReader = new ConnectionOptionsReader({
+    root: process.cwd(),
+    configName: "ormconfig",
   });
+
+  const connectionOptions = {
+    ...(await connectionOptionsReader.get("default")),
+    synchronize: false,
+    migrationsRun: false,
+    dropSchema: false,
+    logging: false,
+  };
+
+  const connection = await createConnection(connectionOptions);
+
+  const entities = connection.entityMetadatas.map((m) => ({
+    name: m.name,
+    relations: `[${m.relations.map((r) => (r.type as any).name).join(", ")}]`,
+  }));
+  return entities;
 };
+

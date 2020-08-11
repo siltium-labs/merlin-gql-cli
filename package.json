@@ -12,7 +12,9 @@
     "@oclif/plugin-help": "^3.1.0",
     "cli-ux": "^5.4.9",
     "inquirer": "^7.3.3",
-    "tslib": "^1.13.0"
+    "mysql": "^2.18.1",
+    "tslib": "^1.13.0",
+    "typeorm": "^0.2.25"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",

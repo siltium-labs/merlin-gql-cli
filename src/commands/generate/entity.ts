@@ -6,7 +6,7 @@ export default class EntityGenerator extends Command {
   static aliases = ["e"]
   static description = "Allows code generation";
 
-  static examples = [`$ merlin-gql generate model`];
+  static examples = [`$ merlin-gql generate:model`];
 
   static flags = {
     name: flags.string({char:"n"}),

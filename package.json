@@ -11,10 +11,13 @@
     "@oclif/config": "^1.16.0",
     "@oclif/plugin-help": "^3.1.0",
     "cli-ux": "^5.4.9",
+    "graphql": "^15.3.0",
     "inquirer": "^7.3.3",
     "mysql": "^2.18.1",
     "tslib": "^1.13.0",
-    "typeorm": "^0.2.25"
+    "type-graphql": "^1.0.0",
+    "typeorm": "^0.2.25",
+    "uuid": "^8.3.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
@@ -23,6 +26,7 @@
     "@types/inquirer": "^7.3.0",
     "@types/mocha": "^5.2.7",
     "@types/node": "^10.17.28",
+    "@types/uuid": "^8.3.0",
     "chai": "^4.2.0",
     "eslint": "^5.16.0",
     "eslint-config-oclif": "^3.1.0",
@@ -48,7 +52,6 @@
     "oclif"
   ],
   "license": "MIT",
-  "main": "lib/index.js",
   "oclif": {
     "commands": "./lib/commands",
     "bin": "merlin-gql",
@@ -64,5 +67,6 @@
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md"
   },
-  "types": "lib/index.d.ts"
+  "types": "lib/index.d.ts",
+  "main": "lib/index.js"
 }

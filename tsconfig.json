@@ -8,7 +8,7 @@
     "strict": true,
     "target": "es2017"
   },
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src/**/*"],
+  "declaration": true,
+  "outDir": "dist"
 }

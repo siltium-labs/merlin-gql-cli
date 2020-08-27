@@ -7,7 +7,6 @@ import {
 import { Command, flags } from "@oclif/command";
 import * as inquirer from "inquirer";
 import cli from "cli-ux";
-import * as handleblars from "handlebars";
 import { ordinalize } from "../../utils/ordinalize";
 
 export default class EntityGenerator extends Command {

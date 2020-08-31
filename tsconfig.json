@@ -8,8 +8,9 @@
     "rootDir": "src",
     "strict": true,
     "target": "es2018",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "types": ["reflect-metadata"]
   },
-  "include": ["src/**/*"],
-  
+  "include": ["src/**/*"]
 }

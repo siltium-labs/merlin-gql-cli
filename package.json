@@ -16,8 +16,8 @@
     "graphql": "^15.3.0",
     "inquirer": "^7.3.3",
     "mysql": "^2.18.1",
+    "reflect-metadata": "^0.1.13",
     "tslib": "^1.13.0",
-    "type-graphql": "^1.0.0",
     "typeorm": "^0.2.25",
     "uuid": "^8.3.0"
   },
@@ -39,6 +39,9 @@
     "rimraf": "^3.0.2",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
+  },
+  "peerDependencies": {
+    "type-graphql": "^1.0.0"
   },
   "engines": {
     "node": ">=8.0.0"

@@ -73,7 +73,7 @@ export function createBaseResolver<T extends ClassType>(
 
   @ObjectType(`${suffix}Result`)
   class PaginatedResult extends Paginated(modelType)<T> {
-    /*list(
+    list(
       @Arg("criteria", (type) => CriteriaQuery, { nullable: true })
       criteriaQuery: CriteriaQuery,
       @Info() info: GraphQLInfo,
@@ -85,7 +85,7 @@ export function createBaseResolver<T extends ClassType>(
         criteriaQuery as IQueryCriteria
       );
       return result;
-    }*/
+    }
   }
 
   @Resolver({ isAbstract: true })
@@ -94,7 +94,7 @@ export function createBaseResolver<T extends ClassType>(
     BaseFilterFields,
     BaseSortFields
   > extends AbstractBaseResolver<T, BaseFilterFields, BaseSortFields> {
-    /*@Query((returns) => PaginatedResult, {
+    @Query((returns) => PaginatedResult, {
       name: `list${suffix}`,
       nullable: true,
     })
@@ -110,7 +110,7 @@ export function createBaseResolver<T extends ClassType>(
         criteriaQuery as IQueryCriteria
       );
       return result;
-    }*/
+    }
 
     @Query((returns) => modelType, {
       name: `${suffix}ById`,

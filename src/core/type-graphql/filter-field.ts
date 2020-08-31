@@ -10,7 +10,7 @@ export class FilteredString extends FilterField(String) {}
 
 export default function FilterField<TField>(
   TFieldClass: ClassType<TField> | GraphQLScalarType
-) {
+):any {
   // `isAbstract` decorator option is mandatory to prevent registering in schema
   @InputType({ isAbstract: true })
   abstract class FilterFieldClass {

@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
+    "experimentalDecorators": true,
     "declaration": true,
     "importHelpers": true,
     "module": "commonjs",
     "outDir": "lib",
     "rootDir": "src",
     "strict": true,
-    "target": "es2017"
+    "target": "es2018",
+    "esModuleInterop": true
   },
   "include": ["src/**/*"],
-  "declaration": true,
-  "outDir": "dist"
+  
 }

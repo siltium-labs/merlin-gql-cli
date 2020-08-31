@@ -10,6 +10,8 @@
     "@oclif/command": "^1.7.0",
     "@oclif/config": "^1.16.0",
     "@oclif/plugin-help": "^3.1.0",
+    "apollo-server": "^2.16.1",
+    "class-validator": "^0.12.2",
     "cli-ux": "^5.4.9",
     "graphql": "^15.3.0",
     "inquirer": "^7.3.3",

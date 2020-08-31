@@ -13,10 +13,21 @@ export class PageInfo {
   total: number = 0;
 }
 
-export default function Paginated<TModel>(TClass: ClassType<TModel>) {
+export abstract class AbstractPaginatedResponse<TModel> {
+  result: TModel[] = [];
+  pageInfo: PageInfo = {
+    total: 0,
+  };
+}
+
+export default function Paginated<TModel>(
+  TClass: ClassType<TModel>
+): typeof AbstractPaginatedResponse {
   // `isAbstract` decorator option is mandatory to prevent registering in schema
   @ObjectType({ isAbstract: true })
-  abstract class PaginatedResponse {
+  abstract class PaginatedResponse<TModel> extends AbstractPaginatedResponse<
+    TModel
+  > {
     // here we use the runtime argument
     @Field((type) => [TClass])
     // and here the generic type
@@ -38,23 +49,32 @@ export default function Paginated<TModel>(TClass: ClassType<TModel>) {
 //   @Field({ nullable: true })
 //   max?: number;
 // }
+export abstract class AbstractPaginatorCriteria<TFilter, TSort> {
+  filter?: TFilter; //SearchFilterFields;
+  sort?: TSort;
+  skip?: number;
+  max?: number;
+}
 
 export function createPaginationCriteria<TFilter, TSort>(
   TFilterClass: ClassType<TFilter>,
   TSortClass: ClassType<TSort>
-) {
+): typeof AbstractPaginatorCriteria {
   @InputType({ isAbstract: true })
-  abstract class PaginatorCriteria {
+  abstract class PaginatorCriteria<
+    TFilter,
+    TSort
+  > extends AbstractPaginatorCriteria<TFilter, TSort> {
     @Field((type) => TFilterClass, { nullable: true })
     filter?: TFilter; //SearchFilterFields;
 
     @Field((type) => TSortClass, { nullable: true })
     sort?: TSort;
 
-    @Field({ nullable: true })
+    @Field((type) => Number, { nullable: true })
     skip?: number;
 
-    @Field({ nullable: true })
+    @Field((type) => Number, { nullable: true })
     max?: number;
   }
 

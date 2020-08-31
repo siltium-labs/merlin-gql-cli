@@ -13,14 +13,48 @@ import {
   Ctx,
 } from "type-graphql";
 import { GraphQLInfo } from "../gql/utils";
-import { EntityToGraphResolver } from "../entity-resolver";
+import { EntityToGraphResolver, IListQueryResult } from "../entity-resolver";
 import { BaseModel } from "../models/base.model";
 import { getManager, EntityManager, getRepository } from "typeorm";
 
 import { IQueryCriteria } from "../query-resolver";
-import Paginated, { createPaginationCriteria } from "./paginated-response";
+import Paginated, {
+  createPaginationCriteria,
+  AbstractPaginatorCriteria,
+} from "./paginated-response";
 import { BaseFilterFields } from "./base-filter-fields.model";
-import { IGqlContext } from "../../gql-context";
+import { IGqlContext } from '../context';
+
+
+export abstract class AbstractBaseResolver<
+  T,
+  BaseFilterFields,
+  BaseSortFields
+> {
+  list(
+    criteriaQuery: AbstractPaginatorCriteria<BaseFilterFields, BaseSortFields>,
+    info: GraphQLInfo,
+    context: IGqlContext
+  ): Promise<IListQueryResult<T>> {
+    throw "Not implemented";
+  }
+
+  async getById(id: number, info: GraphQLInfo): Promise<T | null> {
+    throw "Not implemented";
+  }
+
+  async create(entity: Partial<T>): Promise<BaseModel> {
+    throw "Not implemented";
+  }
+
+  async update(id: number, entity: Partial<T>): Promise<BaseModel> {
+    throw "Not implemented";
+  }
+
+  async delete(id: number): Promise<boolean> {
+    throw "Not implemented";
+  }
+}
 
 export function createBaseResolver<T extends ClassType>(
   suffix: string,
@@ -28,24 +62,45 @@ export function createBaseResolver<T extends ClassType>(
   inputType: typeof BaseInput,
   filter: typeof BaseFilterFields,
   sorter: typeof BaseSortFields
-) {
+): typeof AbstractBaseResolver {
   @InputType(`${suffix}Criteria`)
-  class CriteriaQuery extends createPaginationCriteria(filter, sorter) {}
+  class CriteriaQuery extends createPaginationCriteria(filter, sorter)<
+    BaseFilterFields,
+    BaseSortFields
+  > {}
 
-  type CriteriaQueryType = InstanceType<typeof CriteriaQuery>;
+  //type CriteriaQueryType = InstanceType<typeof CriteriaQuery>;
 
   @ObjectType(`${suffix}Result`)
-  class PaginatedResult extends Paginated(modelType) {}
+  class PaginatedResult extends Paginated(modelType)<T> {
+    list(
+      @Arg("criteria", (type) => CriteriaQuery, { nullable: true })
+      criteriaQuery: CriteriaQuery,
+      @Info() info: GraphQLInfo,
+      @Ctx() context: IGqlContext
+    ) {
+      let result = EntityToGraphResolver.list<T>(
+        modelType,
+        info,
+        criteriaQuery as IQueryCriteria
+      );
+      return result;
+    }
+  }
 
   @Resolver({ isAbstract: true })
-  abstract class BaseResolver {
+  abstract class BaseResolver<
+    T,
+    BaseFilterFields,
+    BaseSortFields
+  > extends AbstractBaseResolver<T, BaseFilterFields, BaseSortFields> {
     @Query((returns) => PaginatedResult, {
       name: `list${suffix}`,
       nullable: true,
     })
     list(
       @Arg("criteria", (type) => CriteriaQuery, { nullable: true })
-      criteriaQuery: CriteriaQueryType,
+      criteriaQuery: CriteriaQuery,
       @Info() info: GraphQLInfo,
       @Ctx() context: IGqlContext
     ) {
@@ -64,7 +119,7 @@ export function createBaseResolver<T extends ClassType>(
     async getById(
       @Arg("id", (type) => ID) id: number,
       @Info() info: GraphQLInfo
-    ) {
+    ): Promise<T | null> {
       return EntityToGraphResolver.find<T>(id, modelType, info);
     }
 

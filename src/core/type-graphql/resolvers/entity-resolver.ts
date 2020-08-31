@@ -1,4 +1,4 @@
-import { BaseModel } from "./models/base.model";
+import { BaseModel } from "../../models/base.model";
 import {
   IQueryCriteria,
   isPageInfoFieldNode,
@@ -13,7 +13,7 @@ import {
   GraphQLPartialResolveInfo,
   getQueryData,
   getQueryDataFromFilters,
-} from "../core/gql/utils";
+} from "../../gql/utils";
 import { GraphQLResolveInfo, FieldNode } from "graphql";
 
 import { EntityManager, getManager, SelectQueryBuilder } from "typeorm";

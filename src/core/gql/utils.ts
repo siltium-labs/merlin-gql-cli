@@ -9,7 +9,7 @@ import {
   isQueryAnd,
   IAndFilterCriteria,
   IPropertyFilterCriteria,
-} from "./../query-resolver";
+} from "../type-graphql/resolvers/query-resolver";
 import { FieldNode, GraphQLResolveInfo, SelectionNode } from "graphql";
 
 /**

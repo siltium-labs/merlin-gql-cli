@@ -1,5 +1,6 @@
-import { BaseSortFields } from "./base-sort-fields.model";
-import { BaseInput } from "./base-input.model";
+import { BaseInputFields } from "./../models/base-input.model";
+import { ModelDecoratorMetadataKeys } from "./../decorators/keys";
+import { BaseSortFields } from "../models/base-sort-fields.model";
 import {
   ClassType,
   Resolver,
@@ -12,19 +13,18 @@ import {
   InputType,
   Ctx,
 } from "type-graphql";
-import { GraphQLInfo } from "../gql/utils";
-import { EntityToGraphResolver, IListQueryResult } from "../entity-resolver";
-import { BaseModel } from "../models/base.model";
+import { GraphQLInfo } from "../../gql/utils";
+import { EntityToGraphResolver, IListQueryResult } from "./entity-resolver";
+import { BaseModel } from "../../models/base.model";
 import { getManager, EntityManager, getRepository } from "typeorm";
 
-import { IQueryCriteria } from "../query-resolver";
+import { IQueryCriteria } from "./query-resolver";
 import Paginated, {
   createPaginationCriteria,
   AbstractPaginatorCriteria,
 } from "./paginated-response";
-import { BaseFilterFields } from "./base-filter-fields.model";
-import { IGqlContext } from '../context';
-
+import { BaseFilterFields } from "../models/base-filter-fields.model";
+import { IGqlContext } from "../../context";
 
 export abstract class AbstractBaseResolver<
   T,
@@ -58,13 +58,22 @@ export abstract class AbstractBaseResolver<
 
 export function createBaseResolver<T extends ClassType>(
   suffix: string,
-  modelType: typeof BaseModel,
-  inputType: typeof BaseInput,
-  filter: typeof BaseFilterFields,
-  sorter: typeof BaseSortFields
+  modelType: typeof BaseModel
 ): typeof AbstractBaseResolver {
+  const filterClass: typeof BaseFilterFields = Reflect.getMetadata(
+    ModelDecoratorMetadataKeys.Filter,
+    modelType
+  );
+  const inputClass: typeof BaseInputFields = Reflect.getMetadata(
+    ModelDecoratorMetadataKeys.Input,
+    modelType
+  );
+  const sortClass: typeof BaseSortFields = Reflect.getMetadata(
+    ModelDecoratorMetadataKeys.Sort,
+    modelType
+  );
   @InputType(`${suffix}Criteria`)
-  class CriteriaQuery extends createPaginationCriteria(filter, sorter)<
+  class CriteriaQuery extends createPaginationCriteria(filterClass, sortClass)<
     BaseFilterFields,
     BaseSortFields
   > {}
@@ -127,7 +136,7 @@ export function createBaseResolver<T extends ClassType>(
       name: `create${suffix}`,
     })
     async create(
-      @Arg("data", (type) => inputType) entity: Partial<T>
+      @Arg("data", (type) => inputClass) entity: Partial<T>
     ): Promise<BaseModel> {
       const object = Object.assign(new modelType(), entity);
       const inserted = await getRepository(modelType).save(object);
@@ -140,7 +149,7 @@ export function createBaseResolver<T extends ClassType>(
     })
     async update(
       @Arg("id", (type) => ID) id: number,
-      @Arg("data", (type) => inputType) entity: Partial<T>
+      @Arg("data", (type) => inputClass) entity: Partial<T>
     ): Promise<BaseModel> {
       await getManager()
         .createQueryBuilder()

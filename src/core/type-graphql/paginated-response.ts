@@ -71,10 +71,10 @@ export function createPaginationCriteria<TFilter, TSort>(
     @Field((type) => TSortClass, { nullable: true })
     sort?: TSort;
 
-    @Field((type) => Number, { nullable: true })
+    @Field((type) => Int, { nullable: true })
     skip?: number;
 
-    @Field((type) => Number, { nullable: true })
+    @Field((type) => Int, { nullable: true })
     max?: number;
   }
 

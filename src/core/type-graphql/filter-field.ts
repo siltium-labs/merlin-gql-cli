@@ -8,7 +8,7 @@ export class FilteredID extends FilterField(ID) {}
 @InputType()
 export class FilteredString extends FilterField(String) {}
 
-export default function FilterField<TField>(
+export function FilterField<TField>(
   TFieldClass: ClassType<TField> | GraphQLScalarType
 ):any {
   // `isAbstract` decorator option is mandatory to prevent registering in schema

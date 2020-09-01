@@ -12,6 +12,10 @@ import {
   ObjectType,
   InputType,
   Ctx,
+  Subscription,
+  Root,
+  PubSub,
+  PubSubEngine,
 } from "type-graphql";
 import { GraphQLInfo } from "../../gql/utils";
 import { EntityToGraphResolver, IListQueryResult } from "./entity-resolver";
@@ -33,27 +37,35 @@ export abstract class AbstractBaseResolver<
   BaseFilterFields,
   BaseSortFields
 > {
-  /*list(
+  list(
     criteriaQuery: AbstractPaginatorCriteria<BaseFilterFields, BaseSortFields>,
     info: GraphQLInfo,
     context: IGqlContext
   ): Promise<IListQueryResult<T>> {
     throw "Not implemented";
-  }*/
+  }
 
   async getById(id: number, info: GraphQLInfo): Promise<T | null> {
     throw "Not implemented";
   }
 
-  async create(entity: Partial<T>): Promise<BaseModel> {
+  async create(entity: Partial<T>, pubSub: PubSubEngine): Promise<BaseModel> {
     throw "Not implemented";
   }
 
-  async update(id: number, entity: Partial<T>): Promise<BaseModel> {
+  async update(
+    id: number,
+    entity: Partial<T>,
+    pubSub: PubSubEngine
+  ): Promise<BaseModel> {
     throw "Not implemented";
   }
 
-  async delete(id: number): Promise<boolean> {
+  async delete(id: number, pubSub: PubSubEngine): Promise<boolean> {
+    throw "Not implemented";
+  }
+
+  async notifyCreate(payload: T): Promise<T> {
     throw "Not implemented";
   }
 }
@@ -141,11 +153,13 @@ export function createBaseResolver<T extends ClassType>(
       name: `${baseModelSingularName}Create`,
     })
     async create(
-      @Arg("data", (type) => inputClass) entity: Partial<T>
+      @Arg("data", (type) => inputClass) entity: Partial<T>,
+      @PubSub() pubSub: PubSubEngine
     ): Promise<BaseModel> {
       const object = Object.assign(new baseModelType(), entity);
       const inserted = await getRepository(baseModelType).save(object);
       //const inserted = await getManager().save(entity);
+      await pubSub.publish(`${baseModelSingularName}Create`, inserted);
       return inserted;
     }
 
@@ -154,7 +168,8 @@ export function createBaseResolver<T extends ClassType>(
     })
     async update(
       @Arg("id", (type) => ID) id: number,
-      @Arg("data", (type) => inputClass) entity: Partial<T>
+      @Arg("data", (type) => inputClass) entity: Partial<T>,
+      @PubSub() pubSub: PubSubEngine
     ): Promise<BaseModel> {
       const idDatabaseName = baseModelType.getIdDatabaseName();
       await getManager()
@@ -163,20 +178,33 @@ export function createBaseResolver<T extends ClassType>(
         .set(entity)
         .where(`${idDatabaseName} = :id`, { id })
         .execute();
-      return <BaseModel>(
+      const updated = <BaseModel>(
         await getManager()
           .getRepository(baseModelType)
           .createQueryBuilder("e")
           .where(`e.${idDatabaseName} = :id`, { id })
           .getOne()
       );
+      await pubSub.publish(`${baseModelSingularName}Update`, updated);
+      return updated;
     }
 
     @Mutation((returns) => Boolean, {
       name: `${baseModelSingularName}Delete`,
     })
-    async delete(@Arg("id", (type) => ID) id: number): Promise<boolean> {
+    async delete(
+      @Arg("id", (type) => ID) id: number,
+      @PubSub() pubSub: PubSubEngine
+    ): Promise<boolean> {
       const idDatabaseName = baseModelType.getIdDatabaseName();
+      //lets save the object in memory to notify the pubsub once it gets deleted
+      const toDelete = <BaseModel>(
+        await getManager()
+          .getRepository(baseModelType)
+          .createQueryBuilder("e")
+          .where(`e.${idDatabaseName} = :id`, { id })
+          .getOne()
+      );
       //Try soft delete, if not possible then bye bye record
       try {
         await getManager()
@@ -197,7 +225,51 @@ export function createBaseResolver<T extends ClassType>(
         }
       }
 
+      await pubSub.publish(`${baseModelSingularName}Delete`, toDelete);
+
       return true;
+    }
+
+    @Subscription((returns) => baseModelType, {
+      topics: `${baseModelSingularName}Create`,
+      name: `${baseModelSingularName}Create`,
+    })
+    async notifyCreate(@Root() payload: T): Promise<T> {
+      const idProp = baseModelType.getIdPropertyName();
+      const idValue = (payload as { [key: string]: any })[idProp];
+      return <T>(
+        await getManager()
+          .getRepository(baseModelType)
+          .createQueryBuilder("e")
+          .where(`e.${idProp} = :id`, { id: idValue })
+          .getOne()
+      );
+    }
+
+    @Subscription((returns) => baseModelType, {
+      topics: `${baseModelSingularName}Update`,
+      name: `${baseModelSingularName}Update`,
+    })
+    async notifyUpdate(@Root() payload: T): Promise<T> {
+      const idProp = baseModelType.getIdPropertyName();
+      const idValue = (payload as { [key: string]: any })[idProp];
+      return <T>(
+        await getManager()
+          .getRepository(baseModelType)
+          .createQueryBuilder("e")
+          .where(`e.${idProp} = :id`, { id: idValue })
+          .getOne()
+      );
+    }
+
+    @Subscription((returns) => baseModelType, {
+      topics: `${baseModelSingularName}Delete`,
+      name: `${baseModelSingularName}Delete`,
+    })
+    async notifyDelete(@Root() payload: T): Promise<T> {
+      //const idProp = baseModelType.getIdPropertyName();
+      //const idValue = (payload as { [key: string]: any })[idProp];
+      return payload;
     }
   }
 

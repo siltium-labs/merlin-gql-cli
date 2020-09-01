@@ -1,7 +1,7 @@
 import { FieldNode } from "graphql";
 import { Brackets, WhereExpression, SelectQueryBuilder } from "typeorm";
 import * as uuid from "uuid";
-import { BaseModel } from "../../models/base.model";
+import { BaseModel } from "../../database/base.model";
 import { registerEnumType } from "type-graphql";
 
 export const isPageInfoFieldNode = (node: FieldNode) => {

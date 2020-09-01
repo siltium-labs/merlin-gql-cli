@@ -1,4 +1,4 @@
-import { IRelationDefinition, BaseModel } from "./../models/base.model";
+import { IRelationDefinition, BaseModel } from "./../database/base.model";
 import {
   IQueryData,
   ISubQueryData,

@@ -2,11 +2,6 @@ import { GraphQLScalarType } from "graphql";
 import { ClassType, InputType, Field, ID } from "type-graphql";
 import { FilterTypesEnum } from "./query-resolver";
 
-@InputType()
-export class FilteredID extends FilterField(ID) {}
-
-@InputType()
-export class FilteredString extends FilterField(String) {}
 
 export default function FilterField<TField>(
   TFieldClass: ClassType<TField> | GraphQLScalarType

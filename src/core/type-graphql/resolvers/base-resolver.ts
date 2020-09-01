@@ -15,7 +15,7 @@ import {
 } from "type-graphql";
 import { GraphQLInfo } from "../../gql/utils";
 import { EntityToGraphResolver, IListQueryResult } from "./entity-resolver";
-import { BaseModel } from "../../models/base.model";
+import { BaseModel } from "../../database/base.model";
 import { getManager, EntityManager, getRepository } from "typeorm";
 
 import { IQueryCriteria } from "./query-resolver";

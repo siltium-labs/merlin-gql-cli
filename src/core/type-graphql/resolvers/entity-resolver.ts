@@ -1,4 +1,4 @@
-import { BaseModel } from "../../models/base.model";
+import { BaseModel } from "../../database/base.model";
 import {
   IQueryCriteria,
   isPageInfoFieldNode,

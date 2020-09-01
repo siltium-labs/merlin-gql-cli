@@ -1,5 +1,6 @@
 export * from "./gql/utils";
-export * from "./models/base.model";
+export * from "./database/base.model";
+export * from "./database/simple-base.model";
 export * from "./security/security.decorators";
 export * from "./type-graphql/models/base-filter-fields.model";
 export * from "./type-graphql/models/base-input.model";
@@ -11,4 +12,8 @@ export * from "./context";
 export * from "./type-graphql/resolvers/entity-resolver";
 export * from "./type-graphql/resolvers/populate";
 export * from "./type-graphql/resolvers/query-resolver";
+export * from "./type-graphql/decorators/filters-decorator";
+export * from "./type-graphql/decorators/sorts-decorator";
+export * from "./type-graphql/decorators/inputs-decorator";
+
 

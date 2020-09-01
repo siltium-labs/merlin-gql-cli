@@ -1,5 +1,5 @@
 export enum ModelDecoratorMetadataKeys {
-  Input = "KEY_INPUT",
-  Filter = "KEY_FILTER",
-  Sort = "KEY_SORT",
+  Input = "MERLIN_KEY_INPUT",
+  Filter = "MERLIN_KEY_FILTER",
+  Sort = "MERLIN_KEY_SORT",
 }

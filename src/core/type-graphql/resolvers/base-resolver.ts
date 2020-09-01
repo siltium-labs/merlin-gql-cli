@@ -26,6 +26,8 @@ import Paginated, {
 import { BaseFilterFields } from "../models/base-filter-fields.model";
 import { IGqlContext } from "../../context";
 
+import { singular, plural } from "pluralize";
+
 export abstract class AbstractBaseResolver<
   T,
   BaseFilterFields,
@@ -58,30 +60,33 @@ export abstract class AbstractBaseResolver<
 
 export function createBaseResolver<T extends ClassType>(
   suffix: string,
-  modelType: typeof BaseModel
+  baseModelType: typeof BaseModel
 ): typeof AbstractBaseResolver {
   const filterClass: typeof BaseFilterFields = Reflect.getMetadata(
     ModelDecoratorMetadataKeys.Filter,
-    modelType
+    baseModelType
   );
   const inputClass: typeof BaseInputFields = Reflect.getMetadata(
     ModelDecoratorMetadataKeys.Input,
-    modelType
+    baseModelType
   );
   const sortClass: typeof BaseSortFields = Reflect.getMetadata(
     ModelDecoratorMetadataKeys.Sort,
-    modelType
+    baseModelType
   );
-  @InputType(`${suffix}Criteria`)
+
+  const baseModelSingularName = singular(
+    baseModelType.name[0].toLowerCase() + baseModelType.name.slice(1)
+  );
+
+  @InputType(`${baseModelSingularName}Criteria`)
   class CriteriaQuery extends createPaginationCriteria(filterClass, sortClass)<
     BaseFilterFields,
     BaseSortFields
   > {}
 
-  //type CriteriaQueryType = InstanceType<typeof CriteriaQuery>;
-
-  @ObjectType(`${suffix}Result`)
-  class PaginatedResult extends Paginated(modelType)<T> {
+  @ObjectType(`${baseModelSingularName}Result`)
+  class PaginatedResult extends Paginated(baseModelType)<T> {
     list(
       @Arg("criteria", (type) => CriteriaQuery, { nullable: true })
       criteriaQuery: CriteriaQuery,
@@ -89,7 +94,7 @@ export function createBaseResolver<T extends ClassType>(
       @Ctx() context: IGqlContext
     ) {
       let result = EntityToGraphResolver.list<T>(
-        modelType,
+        baseModelType,
         info,
         criteriaQuery as IQueryCriteria
       );
@@ -104,7 +109,7 @@ export function createBaseResolver<T extends ClassType>(
     BaseSortFields
   > extends AbstractBaseResolver<T, BaseFilterFields, BaseSortFields> {
     @Query((returns) => PaginatedResult, {
-      name: `list${suffix}`,
+      name: `${baseModelSingularName}List`,
       nullable: true,
     })
     list(
@@ -114,68 +119,83 @@ export function createBaseResolver<T extends ClassType>(
       @Ctx() context: IGqlContext
     ) {
       let result = EntityToGraphResolver.list<T>(
-        modelType,
+        baseModelType,
         info,
         criteriaQuery as IQueryCriteria
       );
       return result;
     }
 
-    @Query((returns) => modelType, {
-      name: `${suffix}ById`,
+    @Query((returns) => baseModelType, {
+      name: `${baseModelSingularName}ById`,
       nullable: true,
     })
     async getById(
       @Arg("id", (type) => ID) id: number,
       @Info() info: GraphQLInfo
     ): Promise<T | null> {
-      return EntityToGraphResolver.find<T>(id, modelType, info);
+      return EntityToGraphResolver.find<T>(id, baseModelType, info);
     }
 
-    @Mutation((returns) => modelType, {
-      name: `create${suffix}`,
+    @Mutation((returns) => baseModelType, {
+      name: `${baseModelSingularName}Create`,
     })
     async create(
       @Arg("data", (type) => inputClass) entity: Partial<T>
     ): Promise<BaseModel> {
-      const object = Object.assign(new modelType(), entity);
-      const inserted = await getRepository(modelType).save(object);
+      const object = Object.assign(new baseModelType(), entity);
+      const inserted = await getRepository(baseModelType).save(object);
       //const inserted = await getManager().save(entity);
       return inserted;
     }
 
-    @Mutation((returns) => modelType, {
-      name: `update${suffix}`,
+    @Mutation((returns) => baseModelType, {
+      name: `${baseModelSingularName}Update`,
     })
     async update(
       @Arg("id", (type) => ID) id: number,
       @Arg("data", (type) => inputClass) entity: Partial<T>
     ): Promise<BaseModel> {
+      const idDatabaseName = baseModelType.getIdDatabaseName();
       await getManager()
         .createQueryBuilder()
-        .update(modelType)
+        .update(baseModelType)
         .set(entity)
-        .where("id = :id", { id })
+        .where(`${idDatabaseName} = :id`, { id })
         .execute();
       return <BaseModel>(
         await getManager()
-          .getRepository(modelType)
+          .getRepository(baseModelType)
           .createQueryBuilder("e")
-          .where("e.id = :id", { id })
+          .where(`e.${idDatabaseName} = :id`, { id })
           .getOne()
       );
     }
 
     @Mutation((returns) => Boolean, {
-      name: `delete${suffix}`,
+      name: `${baseModelSingularName}Delete`,
     })
     async delete(@Arg("id", (type) => ID) id: number): Promise<boolean> {
-      await getManager()
-        .createQueryBuilder()
-        .update(modelType)
-        .set({ deleted: true })
-        .where("id = :id", { id })
-        .execute();
+      const idDatabaseName = baseModelType.getIdDatabaseName();
+      //Try soft delete, if not possible then bye bye record
+      try {
+        await getManager()
+          .createQueryBuilder()
+          .softDelete()
+          .from(baseModelType)
+          .where(`${idDatabaseName} = :id`, { id })
+          .execute();
+      } catch (ex) {
+        if (ex.name === "MissingDeleteDateColumnError") {
+          // Database Delete
+          await getManager()
+            .createQueryBuilder()
+            .delete()
+            .from(baseModelType)
+            .where(`${idDatabaseName} = :id`, { id })
+            .execute();
+        }
+      }
 
       return true;
     }

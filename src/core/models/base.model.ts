@@ -45,41 +45,13 @@ export class BaseModel {
     return <BaseModel>inserted;
   }
 
-  public static async update(
-    id: number,
-    entity: Partial<BaseModel>,
-    em?: EntityManager
-  ): Promise<BaseModel> {
-    await (em ?? getManager())
-      .createQueryBuilder()
-      .update(this)
-      .set(entity)
-      .where("id = :id", { id })
-      .execute();
-    return <BaseModel>(
-      await (em ?? getManager())
-        .getRepository(this)
-        .createQueryBuilder("e")
-        .where("e.id = :id", { id })
-        .getOne()
-    );
-  }
+  
 
-  public static async delete(id: number, em?: EntityManager): Promise<void> {
-    await (em ?? getManager())
-      .createQueryBuilder()
-      .update(this)
-      .set({ deleted: true })
-      .where("id = :id", { id })
-      .execute();
+  public static getIdPropertyName(): string {
+    return getConnection().getMetadata(this).primaryColumns[0].propertyName;
   }
-
-  public static async getById(id: number, em?: EntityManager) {
-    return await (em ?? getManager())
-      .getRepository(this)
-      .createQueryBuilder("e")
-      .where("e.id = :id", { id })
-      .getOne();
+  public static getIdDatabaseName(): string {
+    return getConnection().getMetadata(this).primaryColumns[0].databaseName;
   }
 }
 

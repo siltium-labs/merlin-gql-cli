@@ -1,6 +1,6 @@
-import { BaseInputFields } from "./../models/base-input.model";
+import { BaseInputFields } from "../models/base-input-fields";
 import { ModelDecoratorMetadataKeys } from "./../decorators/keys";
-import { BaseSortFields } from "../models/base-sort-fields.model";
+import { BaseSortFields } from "../models/base-sort-fields";
 import {
   ClassType,
   Resolver,
@@ -27,7 +27,7 @@ import Paginated, {
   createPaginationCriteria,
   AbstractPaginatorCriteria,
 } from "./paginated-response";
-import { BaseFilterFields } from "../models/base-filter-fields.model";
+import { BaseFilterFields } from "../models/base-filter-fields";
 import { IGqlContext } from "../../context";
 
 import { singular, plural } from "pluralize";
@@ -88,7 +88,6 @@ export abstract class AbstractBaseResolver<
 }
 
 export function createBaseResolver<T extends ClassType>(
-  suffix: string,
   baseModelType: typeof BaseModel
 ): typeof AbstractBaseResolver {
   const filterClass: typeof BaseFilterFields = Reflect.getMetadata(

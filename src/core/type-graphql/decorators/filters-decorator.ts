@@ -1,5 +1,5 @@
 import { ModelDecoratorMetadataKeys } from './keys';
-import { BaseFilterFields } from './../models/base-filter-fields.model';
+import { BaseFilterFields } from '../models/base-filter-fields';
 
 
 export const Filters = (filtersType: typeof BaseFilterFields)=> {

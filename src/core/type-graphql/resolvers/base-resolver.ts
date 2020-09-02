@@ -49,23 +49,40 @@ export abstract class AbstractBaseResolver<
     throw "Not implemented";
   }
 
-  async create(entity: Partial<T>, pubSub: PubSubEngine): Promise<BaseModel> {
+  async create(
+    entity: Partial<T>,
+    pubSub: PubSubEngine,
+    info: GraphQLInfo
+  ): Promise<T> {
     throw "Not implemented";
   }
 
   async update(
     id: number,
     entity: Partial<T>,
-    pubSub: PubSubEngine
-  ): Promise<BaseModel> {
+    pubSub: PubSubEngine,
+    info: GraphQLInfo
+  ): Promise<T> {
     throw "Not implemented";
   }
 
-  async delete(id: number, pubSub: PubSubEngine): Promise<boolean> {
+  async delete(
+    id: number,
+    pubSub: PubSubEngine,
+    info: GraphQLInfo
+  ): Promise<T> {
     throw "Not implemented";
   }
 
-  async notifyCreate(payload: T): Promise<T> {
+  async notifyCreate(payload: T, info: GraphQLInfo): Promise<T> {
+    throw "Not implemented";
+  }
+
+  async notifyUpdate(payload: T, info: GraphQLInfo): Promise<T> {
+    throw "Not implemented";
+  }
+
+  async notifyDelete(payload: T, info: GraphQLInfo): Promise<T> {
     throw "Not implemented";
   }
 }
@@ -154,13 +171,20 @@ export function createBaseResolver<T extends ClassType>(
     })
     async create(
       @Arg("data", (type) => inputClass) entity: Partial<T>,
-      @PubSub() pubSub: PubSubEngine
-    ): Promise<BaseModel> {
+      @PubSub() pubSub: PubSubEngine,
+      @Info() info: GraphQLInfo
+    ): Promise<T> {
       const object = Object.assign(new baseModelType(), entity);
       const inserted = await getRepository(baseModelType).save(object);
       //const inserted = await getManager().save(entity);
       await pubSub.publish(`${baseModelSingularName}Create`, inserted);
-      return inserted;
+      const idProperty = baseModelType.getIdPropertyName();
+      const idValue = (inserted as { [key: string]: any })[idProperty];
+      return EntityToGraphResolver.find<T>(
+        idValue,
+        baseModelType,
+        info
+      ) as Promise<T>;
     }
 
     @Mutation((returns) => baseModelType, {
@@ -169,8 +193,9 @@ export function createBaseResolver<T extends ClassType>(
     async update(
       @Arg("id", (type) => ID) id: number,
       @Arg("data", (type) => inputClass) entity: Partial<T>,
-      @PubSub() pubSub: PubSubEngine
-    ): Promise<BaseModel> {
+      @PubSub() pubSub: PubSubEngine,
+      @Info() info: GraphQLInfo
+    ): Promise<T> {
       const idDatabaseName = baseModelType.getIdDatabaseName();
       await getManager()
         .createQueryBuilder()
@@ -186,25 +211,40 @@ export function createBaseResolver<T extends ClassType>(
           .getOne()
       );
       await pubSub.publish(`${baseModelSingularName}Update`, updated);
-      return updated;
+      const idProperty = baseModelType.getIdPropertyName();
+      const idValue = (updated as { [key: string]: any })[idProperty];
+      return EntityToGraphResolver.find<T>(
+        idValue,
+        baseModelType,
+        info
+      ) as Promise<T>;
     }
 
-    @Mutation((returns) => Boolean, {
+    @Mutation((returns) => baseModelType, {
       name: `${baseModelSingularName}Delete`,
     })
     async delete(
       @Arg("id", (type) => ID) id: number,
-      @PubSub() pubSub: PubSubEngine
-    ): Promise<boolean> {
+      @PubSub() pubSub: PubSubEngine,
+      @Info() info: GraphQLInfo
+    ): Promise<T> {
       const idDatabaseName = baseModelType.getIdDatabaseName();
       //lets save the object in memory to notify the pubsub once it gets deleted
-      const toDelete = <BaseModel>(
+      const toDelete = <T>(
         await getManager()
           .getRepository(baseModelType)
           .createQueryBuilder("e")
           .where(`e.${idDatabaseName} = :id`, { id })
           .getOne()
       );
+      if (!toDelete) {
+        throw "No entity for such id";
+      }
+      const toReturn = EntityToGraphResolver.find<T>(
+        id,
+        baseModelType,
+        info
+      ) as Promise<T>;
       //Try soft delete, if not possible then bye bye record
       try {
         await getManager()
@@ -224,42 +264,42 @@ export function createBaseResolver<T extends ClassType>(
             .execute();
         }
       }
-
       await pubSub.publish(`${baseModelSingularName}Delete`, toDelete);
-
-      return true;
+      return toReturn;
     }
 
     @Subscription((returns) => baseModelType, {
       topics: `${baseModelSingularName}Create`,
       name: `${baseModelSingularName}Create`,
     })
-    async notifyCreate(@Root() payload: T): Promise<T> {
-      const idProp = baseModelType.getIdPropertyName();
-      const idValue = (payload as { [key: string]: any })[idProp];
-      return <T>(
-        await getManager()
-          .getRepository(baseModelType)
-          .createQueryBuilder("e")
-          .where(`e.${idProp} = :id`, { id: idValue })
-          .getOne()
-      );
+    async notifyCreate(
+      @Root() payload: T,
+      @Info() info: GraphQLInfo
+    ): Promise<T> {
+      const idProperty = baseModelType.getIdPropertyName();
+      const idValue = (payload as { [key: string]: any })[idProperty];
+      return EntityToGraphResolver.find(
+        idValue,
+        baseModelType,
+        info
+      ) as Promise<T>;
     }
 
     @Subscription((returns) => baseModelType, {
       topics: `${baseModelSingularName}Update`,
       name: `${baseModelSingularName}Update`,
     })
-    async notifyUpdate(@Root() payload: T): Promise<T> {
-      const idProp = baseModelType.getIdPropertyName();
-      const idValue = (payload as { [key: string]: any })[idProp];
-      return <T>(
-        await getManager()
-          .getRepository(baseModelType)
-          .createQueryBuilder("e")
-          .where(`e.${idProp} = :id`, { id: idValue })
-          .getOne()
-      );
+    async notifyUpdate(
+      @Root() payload: T,
+      @Info() info: GraphQLInfo
+    ): Promise<T> {
+      const idProperty = baseModelType.getIdPropertyName();
+      const idValue = (payload as { [key: string]: any })[idProperty];
+      return EntityToGraphResolver.find(
+        idValue,
+        baseModelType,
+        info
+      ) as Promise<T>;
     }
 
     @Subscription((returns) => baseModelType, {

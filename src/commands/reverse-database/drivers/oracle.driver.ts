@@ -24,7 +24,7 @@ export default class OracleDriver extends AbstractDriver {
 
   private Oracle: typeof Oracle;
 
-  private Connection: Oracle.Connection;
+  private Connection!: Oracle.Connection;
 
   public constructor() {
     super();

@@ -24,7 +24,7 @@ export default class MssqlDriver extends AbstractDriver {
 
   private MSSQL: typeof MSSQL;
 
-  private Connection: MSSQL.ConnectionPool;
+  private Connection!: MSSQL.ConnectionPool;
 
   public constructor() {
     super();

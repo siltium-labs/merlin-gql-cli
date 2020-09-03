@@ -24,7 +24,7 @@ export default class PostgresDriver extends AbstractDriver {
 
   private PG: typeof PG;
 
-  private Connection: PG.Client;
+  private Connection!: PG.Client;
 
   public constructor() {
     super();

@@ -20,8 +20,7 @@ type options = {
   generationOptions: IGenerationOptions;
 };
 
-async function CliLogic() {
-  console.log(TomgUtils.packageVersion());
+async function CliLogic() {  
   let options = makeDefaultConfigs();
   const TOMLConfig = readTOMLConfig(options);
   options = TOMLConfig.options;

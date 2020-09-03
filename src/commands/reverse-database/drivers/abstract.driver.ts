@@ -208,7 +208,7 @@ export default abstract class AbstractDriver {
     return dbModel;
   }
 
-  public abstract async ConnectToServer(connectionOptons: IConnectionOptions);
+  public abstract async ConnectToServer(connectionOptons: IConnectionOptions): Promise<void>;
 
   public async GetAllTables(
     schema: string,
@@ -426,13 +426,13 @@ export default abstract class AbstractDriver {
     });
   }
 
-  public abstract async DisconnectFromServer();
+  public abstract async DisconnectFromServer(): Promise<void>;
 
-  public abstract async CreateDB(dbName: string);
+  public abstract async CreateDB(dbName: string): Promise<void>;
 
-  public abstract async DropDB(dbName: string);
+  public abstract async DropDB(dbName: string): Promise<void>;
 
-  public abstract async UseDB(dbName: string);
+  public abstract async UseDB(dbName: string): Promise<void | boolean>;
 
   public abstract async CheckIfDBExists(dbName: string): Promise<boolean>;
 

@@ -26,7 +26,7 @@ export default class MysqlDriver extends AbstractDriver {
 
   private MYSQL: typeof MYSQL;
 
-  private Connection: MYSQL.Connection;
+  private Connection!: MYSQL.Connection;
 
   public constructor() {
     super();

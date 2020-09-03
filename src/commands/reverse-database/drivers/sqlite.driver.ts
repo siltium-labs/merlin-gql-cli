@@ -26,7 +26,7 @@ export default class SqliteDriver extends AbstractDriver {
 
   private sqlite: sqliteLib.sqlite3;
 
-  private db: sqliteLib.Database;
+  private db!: sqliteLib.Database;
 
   private tablesWithGeneratedPrimaryKey: string[] = new Array<string>();
 

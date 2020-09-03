@@ -18,7 +18,10 @@ import { BaseInputFields } from "../models/base-input-fields";
 import { ModelDecoratorMetadataKeys } from "../model-decorators/model-decorator.keys";
 import { EntityToGraphResolver } from "./entity-resolver";
 import { IGqlContext } from "../../context";
-import { mustBeAuthenticated } from "../../security/security.decorators";
+import {
+  mustBeAuthenticated,
+  mustHaveRole,
+} from "../../security/security.decorators";
 import { AbstractSecureResolver } from "../models/abstract-secure-resolver";
 
 export abstract class AbstractCreateResolver<T> extends AbstractSecureResolver {
@@ -63,10 +66,7 @@ export function CreateResolver<T extends ClassType>(
       @Info() info: GraphQLInfo,
       @Ctx() context: IGqlContext
     ): Promise<T> {
-      const hasSecureDecorator: boolean = (this as any).constructor.hasSecureDecorator();
-      if (hasSecureDecorator) {
-        mustBeAuthenticated(context);
-      }
+      this.checkSecurity(context);
       const object = Object.assign(new baseModelType(), entity);
       const inserted = await getRepository(baseModelType).save(object);
       //const inserted = await getManager().save(entity);
@@ -89,10 +89,7 @@ export function CreateResolver<T extends ClassType>(
       @Info() info: GraphQLInfo,
       @Ctx() context: IGqlContext
     ): Promise<T> {
-      const hasSecureDecorator: boolean = (this as any).constructor.hasSecureDecorator();
-      if (hasSecureDecorator) {
-        mustBeAuthenticated(context);
-      }
+      this.checkSecurity(context);
       const idProperty = baseModelType.getIdPropertyName();
       const idValue = (payload as { [key: string]: any })[idProperty];
       return EntityToGraphResolver.find(

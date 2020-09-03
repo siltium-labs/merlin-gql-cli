@@ -3,7 +3,10 @@ import { Arg, ClassType, ID, Info, Query, Resolver, Ctx } from "type-graphql";
 import { BaseModel } from "../../database/base.model";
 import { GraphQLInfo } from "../../gql/utils";
 import { EntityToGraphResolver } from "./entity-resolver";
-import { mustBeAuthenticated } from "../../security/security.decorators";
+import {
+  mustBeAuthenticated,
+  mustHaveRole,
+} from "../../security/security.decorators";
 import { IGqlContext } from "../../context";
 import { AbstractSecureResolver } from "../models/abstract-secure-resolver";
 
@@ -35,10 +38,7 @@ export function FindResolver<T extends ClassType>(
       @Info() info: GraphQLInfo,
       @Ctx() context: IGqlContext
     ): Promise<T | null> {
-      const hasSecureDecorator: boolean = (this as any).constructor.hasSecureDecorator();
-      if (hasSecureDecorator) {
-        mustBeAuthenticated(context);
-      }
+      this.checkSecurity(context);
       return EntityToGraphResolver.find<T>(id, baseModelType, info);
     }
   }

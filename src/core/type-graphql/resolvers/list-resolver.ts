@@ -1,4 +1,7 @@
-import { mustBeAuthenticated } from "./../../security/security.decorators";
+import {
+  mustBeAuthenticated,
+  mustHaveRole,
+} from "./../../security/security.decorators";
 import { ResolverDecoratorMetadataKeys } from "./../resolver-decorators/resolver-decorator.keys";
 import { singular } from "pluralize";
 import {
@@ -23,7 +26,7 @@ import Paginated, {
   createPaginationCriteria,
 } from "./paginated-response";
 import { IQueryCriteria } from "./query-resolver";
-import { AbstractSecureResolver } from '../models/abstract-secure-resolver';
+import { AbstractSecureResolver } from "../models/abstract-secure-resolver";
 
 export abstract class AbstractListResolver<
   T,
@@ -69,8 +72,6 @@ export function ListResolver<T extends ClassType>(
     BaseFilterFields,
     BaseSortFields
   > extends AbstractListResolver<T, BaseFilterFields, BaseSortFields> {
-    
-
     @Query((returns) => PaginatedResult, {
       name: `${baseModelSingularName}List`,
       nullable: true,
@@ -81,11 +82,7 @@ export function ListResolver<T extends ClassType>(
       @Info() info: GraphQLInfo,
       @Ctx() context: IGqlContext
     ) {
-      const hasSecureDecorator: boolean = (this as any).constructor.hasSecureDecorator();
-      if (hasSecureDecorator) {
-        mustBeAuthenticated(context);
-      }
-
+      this.checkSecurity(context);
       let result = EntityToGraphResolver.list<T>(
         baseModelType,
         info,

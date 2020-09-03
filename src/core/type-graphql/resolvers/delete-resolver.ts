@@ -17,7 +17,10 @@ import { BaseModel } from "../../database/base.model";
 import { GraphQLInfo } from "../../gql/utils";
 import { EntityToGraphResolver } from "./entity-resolver";
 import { IGqlContext } from "../../context";
-import { mustBeAuthenticated } from "../../security/security.decorators";
+import {
+  mustBeAuthenticated,
+  mustHaveRole,
+} from "../../security/security.decorators";
 import { AbstractSecureResolver } from "../models/abstract-secure-resolver";
 
 export abstract class AbstractDeleteResolver<T> extends AbstractSecureResolver {
@@ -61,10 +64,7 @@ export function DeleteResolver<T extends ClassType>(
       @Info() info: GraphQLInfo,
       @Ctx() context: IGqlContext
     ): Promise<T> {
-      const hasSecureDecorator: boolean = (this as any).constructor.hasSecureDecorator();
-      if (hasSecureDecorator) {
-        mustBeAuthenticated(context);
-      }
+      this.checkSecurity(context);
       const idDatabaseName = baseModelType.getIdDatabaseName();
       //lets save the object in memory to notify the pubsub once it gets deleted
       const toDelete = <T>(
@@ -114,10 +114,7 @@ export function DeleteResolver<T extends ClassType>(
       @Info() info: GraphQLInfo,
       @Ctx() context: IGqlContext
     ): Promise<T> {
-      const hasSecureDecorator: boolean = (this as any).constructor.hasSecureDecorator();
-      if (hasSecureDecorator) {
-        mustBeAuthenticated(context);
-      }
+      this.checkSecurity(context);
       //const idProp = baseModelType.getIdPropertyName();
       //const idValue = (payload as { [key: string]: any })[idProp];
       return payload;

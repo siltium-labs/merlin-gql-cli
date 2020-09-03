@@ -4,7 +4,11 @@ export * from "./database/simple-base.model";
 export * from "./security/security.decorators";
 export * from "./type-graphql/models/base-filter-fields";
 export * from "./type-graphql/models/base-input-fields";
-export * from "./type-graphql/resolvers/base-resolver";
+export * from "./type-graphql/resolvers/create-resolver";
+export * from "./type-graphql/resolvers/update-resolver";
+export * from "./type-graphql/resolvers/delete-resolver";
+export * from "./type-graphql/resolvers/list-resolver";
+export * from "./type-graphql/resolvers/find-resolver";
 export * from "./type-graphql/models/base-sort-fields";
 export * from "./type-graphql/resolvers/filter-field";
 export * from "./type-graphql/resolvers/paginated-response";
@@ -12,8 +16,7 @@ export * from "./context";
 export * from "./type-graphql/resolvers/entity-resolver";
 export * from "./type-graphql/resolvers/populate";
 export * from "./type-graphql/resolvers/query-resolver";
-export * from "./type-graphql/decorators/filters-decorator";
-export * from "./type-graphql/decorators/sorts-decorator";
-export * from "./type-graphql/decorators/inputs-decorator";
-
-
+export * from "./type-graphql/model-decorators/filters-decorator";
+export * from "./type-graphql/model-decorators/sorts-decorator";
+export * from "./type-graphql/model-decorators/inputs-decorator";
+export * from "./type-graphql/resolver-decorators/secure-decorator"

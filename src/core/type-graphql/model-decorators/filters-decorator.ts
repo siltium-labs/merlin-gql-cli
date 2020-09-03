@@ -1,4 +1,4 @@
-import { ModelDecoratorMetadataKeys } from './keys';
+import { ModelDecoratorMetadataKeys } from './model-decorator.keys';
 import { BaseFilterFields } from '../models/base-filter-fields';
 
 
@@ -7,3 +7,4 @@ export const Filters = (filtersType: typeof BaseFilterFields)=> {
         Reflect.defineMetadata(ModelDecoratorMetadataKeys.Filter, filtersType, target);
     };
 }
+

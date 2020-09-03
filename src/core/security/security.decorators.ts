@@ -17,14 +17,6 @@ export const mustHaveRole = (context: IGqlContext, ...roles: string[]) => {
   }
 };
 
-export function Secure() {
-  return createMethodDecorator(
-    async ({ context }: { context: GqlContext }, next) => {
-      mustBeAuthenticated(context);
-      return next();
-    }
-  );
-}
 
 export function MustHaveRoles(...roles: string[]) {
   return createMethodDecorator(

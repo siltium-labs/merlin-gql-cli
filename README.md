@@ -19,7 +19,7 @@ $ npm install -g merlin-gql
 $ merlin-gql COMMAND
 running command...
 $ merlin-gql (-v|--version|version)
-merlin-gql/0.2.0 win32-x64 node-v10.15.0
+merlin-gql/0.2.1 win32-x64 node-v10.15.0
 $ merlin-gql --help [COMMAND]
 USAGE
   $ merlin-gql COMMAND
@@ -51,7 +51,7 @@ EXAMPLE
   $ merlin-gql generate:entity
 ```
 
-_See code: [src\commands\generate\entity.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.0/src\commands\generate\entity.ts)_
+_See code: [src\commands\generate\entity.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.1/src\commands\generate\entity.ts)_
 
 ## `merlin-gql help [COMMAND]`
 
@@ -85,7 +85,7 @@ EXAMPLE
   $ merlin-gql list:entities
 ```
 
-_See code: [src\commands\list\entities.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.0/src\commands\list\entities.ts)_
+_See code: [src\commands\list\entities.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.1/src\commands\list\entities.ts)_
 <!-- commandsstop -->
 * [`merlin-gql generate:entity`](#merlin_cli-generateentity)
 

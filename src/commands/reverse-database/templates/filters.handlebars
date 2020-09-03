@@ -1,0 +1,32 @@
+{{#*inline "Column"}}
+{{^generated}}@Field({{#if options.nullable}}{ nullable: true }{{/if}})
+{{toPropertyName tscName}}{{#if options.nullable}}?{{/if}}:{{tscType}}
+{{#if options.nullable}};
+{{else if (eq tscType "string")}} = "";
+{{else if (eq tscType "number")}} = 0;
+{{else if (eq tscType "Date")}} = new Date();
+{{else if (eq tscType "boolean")}} = false;
+{{/if}}
+{{/generated}}
+{{/inline}}
+
+
+{{#*inline "Filters"}}
+@InputType()
+export {{defaultExport}} class {{toFiltersName tscName}} extends BaseFilterFields {
+
+@Field((type) => [{{toFiltersName tscName}}], { nullable: true })
+or?: {{toFiltersName tscName}}[];
+
+@Field((type) => [{{toFiltersName tscName}}], { nullable: true })
+and?: {{toFiltersName tscName}}[];
+
+{{#columns}}{{> Column}}{{/columns~}}
+
+}
+{{/inline}}
+
+import {InputType,Field} from "type-graphql";
+import { BaseFilterFields } from "merlin-gql";
+
+{{> Filters}}

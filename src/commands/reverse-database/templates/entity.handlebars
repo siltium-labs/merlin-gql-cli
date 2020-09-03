@@ -1,0 +1,72 @@
+{{#*inline "Index"}}
+@Index("{{name}}",[{{#columns}}"{{toPropertyName .}}",{{/columns~}}],{ {{json options}} })
+{{/inline}}
+{{#*inline "Import"}}
+import {{localImport (toEntityName .)}} from "../{{toEntityDirectoryName .}}/{{toEntityFileName .}}"
+{{/inline}}
+{{#*inline "Column"}}
+{{#generated}}@Field(type => ID){{/generated}}
+{{^generated}}@Field(){{/generated}}
+{{#generated}}@PrimaryGeneratedColumn({ type:"{{type}}", {{/generated}}{{^generated}}@Column("{{type}}",{
+{{#primary}}primary:{{primary}},{{/primary}}{{/generated}}{{json options}}{{#default}},default: {{.}},{{/default}} })
+{{#if (eq (toPropertyName tscName) "deletedAt") }}@DeleteDateColumn(){{/if}}
+{{printPropertyVisibility}}{{toPropertyName tscName}}{{strictMode}}:{{tscType}}{{#if options.nullable}}| null{{/if}}
+{{#if options.nullable}} = null;
+{{else if (eq tscType "string")}} = "";
+{{else if (eq tscType "number")}} = 0;
+{{else if (eq tscType "Date")}} = new Date();
+{{else if (eq tscType "boolean")}} = false;
+{{/if}}
+
+
+{{/inline}}
+{{#*inline "JoinColumnOptions"}}
+{ name: "{{name}}", referencedColumnName: "{{toPropertyName referencedColumnName}}" },
+{{/inline}}
+{{#*inline "Relation"}}
+@{{relationType}}(()=>{{toEntityName relatedTable}},{{toPropertyName relatedTable}}=>{{toPropertyName relatedTable}}.{{toPropertyName relatedField}}{{#if relationOptions}},{
+{{json relationOptions}} }{{/if}})
+{{#if joinColumnOptions}}@JoinColumn([{{#joinColumnOptions}}{{> JoinColumnOptions}}{{/joinColumnOptions}}]){{/if}}
+{{#joinTableOptions}}@JoinTable({ name:"{{name}}",
+joinColumns:[{{#joinColumns}}{{> JoinColumnOptions}}{{/joinColumns}}],inverseJoinColumns:[{{#inverseJoinColumns}}{{> JoinColumnOptions}}{{/inverseJoinColumns}}],{{#database}}database:"{{.}}",{{/database}}{{#schema}}schema:"{{.}}"{{/schema}}
+}){{/joinTableOptions}}
+{{printPropertyVisibility}}{{toPropertyName fieldName}}?:{{toRelation (toEntityName relatedTable) relationType}};
+
+{{/inline}}
+{{#*inline "RelationId"}}
+@RelationId(({{toPropertyName entityName}}:{{toEntityName entityName}})=>{{toPropertyName entityName}}.{{toPropertyName relationField}})
+{{printPropertyVisibility}}{{toPropertyName fieldName}}?:{{fieldType}};
+
+{{/inline}}
+{{#*inline "Constructor"}}
+{{printPropertyVisibility}}constructor(init?: Partial<{{toEntityName entityName}}>) {
+    Object.assign(this, init);
+    }
+    {{/inline}}
+    {{#*inline "Entity"}}
+    {{#indices}}{{> Index}}{{/indices~}}
+    @Inputs({{toInputsName tscName}})
+    @Filters({{toFiltersName tscName}})
+    @Sorts({{toSortsName tscName}})
+    @Entity("{{sqlName}}"{{#schema}} ,{schema:"{{.}}"{{#if ../database}}, database:"{{../database}}"{{/if}} }
+    {{/schema}})
+    @ObjectType()
+    export {{defaultExport}} class {{toEntityName tscName}} extends BaseModel {
+
+    {{#columns}}{{> Column}}{{/columns~}}
+    {{#relations}}{{> Relation}}{{/relations~}}
+    {{#relationIds}}{{> RelationId entityName=../tscName}}{{/relationIds~}}
+    {{#if generateConstructor}}{{>Constructor entityName=tscName}}{{/if~}}
+    }
+    {{/inline}}
+    import
+    {BaseEntity,Column,Entity,Index,JoinColumn,JoinTable,ManyToMany,ManyToOne,OneToMany,OneToOne,PrimaryColumn,PrimaryGeneratedColumn,RelationId,DeleteDateColumn}
+    from "typeorm";
+    import {Field,ID,ObjectType} from "type-graphql";
+    import { Inputs, Sorts, Filters, BaseModel} from "merlin-gql";
+    import {{localImport (toInputsName tscName)}} from "./{{toFileName tscName}}-inputs.model";
+    import {{localImport (toFiltersName tscName)}} from "./{{toFileName tscName}}-filters.model";
+    import {{localImport (toSortsName tscName)}} from "./{{toFileName tscName}}-sorts.model";
+    {{#fileImports}}{{> Import}}{{/fileImports}}
+
+    {{> Entity}}

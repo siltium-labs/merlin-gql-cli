@@ -115,7 +115,7 @@
     "prepack": "rimraf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md",
-    "reverse-db": "ts-node ./src/commands/reverse-database/index.ts"
+    "db-reverse": "ts-node ./src/db-reverse/index.ts"
   },
   "types": "lib/index.d.ts",
   "main": "lib/index.js"

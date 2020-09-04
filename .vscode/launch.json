@@ -7,7 +7,7 @@
         "name": "Launch Program",
         "program": "${workspaceFolder}/bin/run",
         "args": [
-          "list:entities"
+          "db-reverse"
         ]
       }
     ]

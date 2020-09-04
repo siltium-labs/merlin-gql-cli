@@ -13,9 +13,9 @@ import inquirer = require("inquirer");
 import path = require("path");
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
-CliLogic();
+//CliLogic();
 
-type options = {
+export type DBReverseoptions = {
   connectionOptions: IConnectionOptions;
   generationOptions: IGenerationOptions;
 };
@@ -45,7 +45,9 @@ async function CliLogic() {
     `[${new Date().toLocaleTimeString()}] Merlin GQL model classes created.`
   );
 }
-function validateConfig(options: options): options {
+
+
+export function validateConfig(options: DBReverseoptions): DBReverseoptions {
   if (options.generationOptions.lazy && options.generationOptions.relationIds) {
     TomgUtils.LogError(
       "Merlin GQL doesn't support RelationId fields for lazy relations.",
@@ -55,7 +57,8 @@ function validateConfig(options: options): options {
   }
   return options;
 }
-function makeDefaultConfigs() {
+
+export function makeDefaultConfigs() {
   const generationOptions = getDefaultGenerationOptions();
   const connectionOptions = getDefaultConnectionOptions();
   return {
@@ -63,9 +66,9 @@ function makeDefaultConfigs() {
     connectionOptions,
   };
 }
-function readTOMLConfig(
-  options: options
-): { options: options; fullConfigFile: boolean } {
+export function readTOMLConfig(
+  options: DBReverseoptions
+): { options: DBReverseoptions; fullConfigFile: boolean } {
   if (!fs.existsSync(path.resolve(process.cwd(), ".tomg-config"))) {
     return { options, fullConfigFile: false };
   }
@@ -118,7 +121,7 @@ function readTOMLConfig(
     fullConfigFile,
   };
 }
-function checkYargsParameters(options: options): options {
+function checkYargsParameters(options: DBReverseoptions): DBReverseoptions {
   const { argv } = Yargs.usage(
     "Usage: merlin-gql-db-scaffold -h <host> -d <database> -p [port] -u <user> -x [password] -e [engine]\nYou can also run program without specifying any parameters."
   ).options({
@@ -304,7 +307,7 @@ function checkYargsParameters(options: options): options {
   return options;
 }
 
-async function useInquirer(options: options): Promise<options> {
+export async function useInquirer(options: DBReverseoptions): Promise<DBReverseoptions> {
   const oldDatabaseType = options.connectionOptions.databaseType;
   options.connectionOptions.databaseType = (
     await inquirer.prompt([

@@ -100,7 +100,7 @@ function generateFiles(
     noEscape: true,
   });
 
-  databaseModel.forEach((element) => {
+  databaseModel.forEach((element) => {    
     let casedFileName = "";
     switch (generationOptions.convertCaseFile) {
       case "camel":
@@ -116,7 +116,7 @@ function generateFiles(
         casedFileName = element.tscName;
         break;
       default:
-        throw new Error("Unknown case style");
+        throw new Error("Unknown case style 1");
     }
 
     element.tscName = singular(element.tscName);
@@ -393,7 +393,7 @@ function getEntityName(convertCase: string, str: string) {
       retStr = str;
       break;
     default:
-      throw new Error("Unknown case style");
+      throw new Error("Unknown case style 2");
   }
   return retStr;
 }

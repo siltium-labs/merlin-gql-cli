@@ -47,9 +47,6 @@ export interface IDBReverseFlags {
   secureResolvers: boolean;
 }
 
-const connectionOptions = getDefaultConnectionOptions();
-const generationOptions = getDefaultGenerationOptions();
-
 export default class DBReverse extends Command {
   static description = `generate models with database reverse engineering.\n
   Usage: merlin-gql db-reverse -h <host> -d <database> -p [port] -u <user> -x [password] -e [engine]\n
@@ -183,11 +180,17 @@ export default class DBReverse extends Command {
   async run() {
     const { args, flags } = this.parse(DBReverse);
 
-    let options = makeDefaultConfigs();
-    const TOMLConfig = readTOMLConfig(options);
-    options = TOMLConfig.options;
+    let options = makeDefaultConfigs();    
 
-    if (Object.values(flags).length > 2) {
+    const TOMLConfig = readTOMLConfig(options);
+    options = TOMLConfig.options;   
+
+    if (Object.values(flags).length >= 1) {
+      //Check required arguments
+      if(!flags.database && !flags.engine){
+        this.error("If you run the generator with arguments you have to specify required arguments: database (-d) and engine (-e)");
+        return;
+      }
       options = this.checkFlagsParameters(options, flags as IDBReverseFlags);
     } else if (!TOMLConfig.fullConfigFile) {
       options = await useInquirer(options);
@@ -198,6 +201,7 @@ export default class DBReverse extends Command {
     this.log(
       `[${new Date().toLocaleTimeString()}] Starting creation of model classes.`
     );
+
     await createModelFromDatabase(
       driver,
       options.connectionOptions,
@@ -212,43 +216,45 @@ export default class DBReverse extends Command {
     options: DBReverseoptions,
     flags: IDBReverseFlags
   ): DBReverseoptions {
-    options.connectionOptions.databaseName = flags.database;
-    options.connectionOptions.databaseType = flags.engine as DatabaseType;
+    options.connectionOptions.databaseName = flags.database ?? options.connectionOptions.databaseName;
+    options.connectionOptions.databaseType = flags.engine as DatabaseType ?? options.connectionOptions.databaseType;
 
     const driver = createDriver(options.connectionOptions.databaseType);
     const { standardPort, standardSchema, standardUser } = driver;
 
-    options.connectionOptions.host = flags.host;
-    options.connectionOptions.password = flags.pass;
+    options.connectionOptions.host = flags.host ?? options.connectionOptions.host;
+    options.connectionOptions.password = flags.pass ?? options.connectionOptions.password;
     options.connectionOptions.port = flags.port || standardPort;
     options.connectionOptions.schemaName = flags.schema
       ? flags.schema.toString()
       : standardSchema;
-    options.connectionOptions.ssl = flags.ssl;
+    options.connectionOptions.ssl = flags.ssl ??  options.connectionOptions.ssl;
     options.connectionOptions.user = flags.user || standardUser;
-    let skipTables = flags.skipTables.split(",");
+    let skipTables = flags.skipTables ? flags.skipTables.split(",") : [];
+
     if (skipTables.length === 1 && skipTables[0] === "") {
-      skipTables = []; // #252
+      skipTables = [];
     }
-    options.connectionOptions.skipTables = skipTables;
-    options.generationOptions.generateConstructor = flags.generateConstructor;
-    options.generationOptions.convertCaseEntity = flags.ce as IGenerationOptions["convertCaseEntity"];
-    options.generationOptions.convertCaseFile = flags.cf as IGenerationOptions["convertCaseFile"];
-    options.generationOptions.convertCaseProperty = flags.cp as IGenerationOptions["convertCaseProperty"];
-    options.generationOptions.convertEol = flags.eol as IGenerationOptions["convertEol"];
-    options.generationOptions.lazy = flags.lazy;
-    options.generationOptions.customNamingStrategyPath = flags.namingStrategy;
-    options.generationOptions.noConfigs = flags.noConfig;
-    options.generationOptions.propertyVisibility = flags.pv as IGenerationOptions["propertyVisibility"];
-    options.generationOptions.relationIds = flags.relationIds;
-    options.generationOptions.skipSchema = flags.skipSchema;
-    options.generationOptions.resultsPath = flags.output;
-    options.generationOptions.pluralizeNames = !flags.disablePluralization;
-    options.generationOptions.strictMode = flags.strictMode as IGenerationOptions["strictMode"];
+
+    options.connectionOptions.skipTables = skipTables;    
+    options.generationOptions.generateConstructor = flags.generateConstructor ?? options.generationOptions.generateConstructor;
+    options.generationOptions.convertCaseEntity = flags.ce as IGenerationOptions["convertCaseEntity"] ?? options.generationOptions.convertCaseEntity;
+    options.generationOptions.convertCaseFile = flags.cf as IGenerationOptions["convertCaseFile"] ?? options.generationOptions.convertCaseFile;
+    options.generationOptions.convertCaseProperty = flags.cp as IGenerationOptions["convertCaseProperty"] ?? options.generationOptions.convertCaseProperty;
+    options.generationOptions.convertEol = flags.eol as IGenerationOptions["convertEol"] ?? options.generationOptions.convertEol;
+    options.generationOptions.lazy = flags.lazy ?? options.generationOptions.lazy;
+    options.generationOptions.customNamingStrategyPath = flags.namingStrategy ?? options.generationOptions.customNamingStrategyPath;
+    options.generationOptions.noConfigs = flags.noConfig ?? options.generationOptions.noConfigs;
+    options.generationOptions.propertyVisibility = flags.pv as IGenerationOptions["propertyVisibility"] ?? options.generationOptions.propertyVisibility;
+    options.generationOptions.relationIds = flags.relationIds ?? options.generationOptions.relationIds;
+    options.generationOptions.skipSchema = flags.skipSchema ?? options.generationOptions.skipSchema;
+    options.generationOptions.resultsPath = flags.output ?? options.generationOptions.resultsPath;
+    options.generationOptions.pluralizeNames = !flags.disablePluralization ?? options.generationOptions.pluralizeNames;
+    options.generationOptions.strictMode = flags.strictMode as IGenerationOptions["strictMode"] ?? options.generationOptions.strictMode;
     options.generationOptions.exportType = flags.defaultExport
       ? "default"
       : "named";
-    options.generationOptions.secureResolvers = flags.secureResolvers;
+    options.generationOptions.secureResolvers = flags.secureResolvers ?? options.generationOptions.secureResolvers;
     return options;
   }
 }

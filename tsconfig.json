@@ -10,6 +10,7 @@
     "target": "es2018",
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
+    "resolveJsonModule": true,
     "types": ["reflect-metadata"]
   },
   "include": ["src/**/*"]

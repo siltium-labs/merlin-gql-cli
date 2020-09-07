@@ -1,0 +1,18 @@
+{{#*inline "Column"}}
+{{^generated}}@Field((type) => SortDirectionsEnum, { nullable: true })
+{{toPropertyName tscName}}?:{{tscType}}
+{{/generated}}
+
+{{/inline}}
+{{#*inline "Sorts"}}
+@InputType()
+export {{defaultExport}} class {{toSortsName tscName}} extends BaseSortFields {
+
+{{#columns}}{{> Column}}{{/columns~}}
+}
+{{/inline}}
+
+import {InputType,Field} from "type-graphql";
+import { BaseSortFields, SortDirectionsEnum } from "merlin-gql";
+
+{{> Sorts}}

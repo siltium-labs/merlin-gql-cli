@@ -7,8 +7,17 @@
         "name": "Launch Program",
         "program": "${workspaceFolder}/bin/run",
         "args": [
-          "list:entities"
+          "db-reverse"         
+        ]        
+      },
+      {
+        "type": "node",
+        "request": "attach",
+        "name": "Attach by Process ID",
+        "processId": "${command:PickProcess}",
+        "skipFiles": [
+          "<node_internals>/**"
         ]
-      }
+      }     
     ]
   }

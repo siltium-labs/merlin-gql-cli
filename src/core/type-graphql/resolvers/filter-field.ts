@@ -1,7 +1,25 @@
 import { GraphQLScalarType } from "graphql";
-import { ClassType, InputType, Field, ID } from "type-graphql";
+import { ClassType, InputType, Field, ID, Int, Float, GraphQLISODateTime } from "type-graphql";
 import { FilterTypesEnum } from "./query-resolver";
 
+
+@InputType()
+export class FilteredID extends FilterField(ID) {}
+
+@InputType()
+export class FilteredString extends FilterField(String) {}
+
+@InputType()
+export class FilteredInt extends FilterField(Int) {}
+
+@InputType()
+export class FilteredFloat extends FilterField(Float) {}
+
+@InputType()
+export class FilteredBoolean extends FilterField(Boolean) {}
+
+@InputType()
+export class FilteredDate extends FilterField(GraphQLISODateTime) {}
 
 export default function FilterField<TField>(
   TFieldClass: ClassType<TField> | GraphQLScalarType

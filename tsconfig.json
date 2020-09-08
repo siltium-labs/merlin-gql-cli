@@ -11,7 +11,7 @@
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "types": ["reflect-metadata"],
-    "composite": true
+    "resolveJsonModule": true
   },
   "include": ["src/**/*", "test/fake-database.test.ts"]
 }

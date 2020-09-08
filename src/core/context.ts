@@ -1,5 +1,3 @@
-
-
 export interface IDecodedToken {
   id: number;
   username: string;
@@ -7,16 +5,13 @@ export interface IDecodedToken {
 }
 
 export interface IGqlContext {
-  user: IDecodedToken;
+  user?: IDecodedToken;
 }
 
-
 export class GqlContext implements IGqlContext {
-  user: IDecodedToken;
+  user?: IDecodedToken;
 
-  constructor(user: IDecodedToken) {
+  constructor(user?: IDecodedToken) {
     this.user = user;
   }
 }
-
-

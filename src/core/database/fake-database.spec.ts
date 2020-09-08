@@ -1,4 +1,5 @@
 import { SimpleBaseModel } from "./simple-base.model";
+
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -78,7 +79,6 @@ describe("Database Model", () => {
         id: 1,
       },
     });
-    console.log(joe[0]);
     expect(joe[0]).to.to.have.property("id");
   });
 
@@ -92,7 +92,6 @@ describe("Database Model", () => {
         id: 1,
       },
     });
-    console.log(joe[0]);
     expect(joe[0]).to.to.have.property("created");
   });
 });

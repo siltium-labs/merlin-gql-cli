@@ -12,11 +12,10 @@ export const mustBeAuthenticated = (context: IGqlContext) => {
   }
 };
 export const mustHaveRole = (context: IGqlContext, ...roles: string[]) => {
-  if (!roles.includes(context.user.role)) {
+  if (!roles.includes(context.user?.role ?? "")) {
     throw new AuthenticationError(`Must be ${roles}`);
   }
 };
-
 
 export function MustHaveRoles(...roles: string[]) {
   return createMethodDecorator(
@@ -26,3 +25,5 @@ export function MustHaveRoles(...roles: string[]) {
     }
   );
 }
+
+ 

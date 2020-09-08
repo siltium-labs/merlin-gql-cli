@@ -48,7 +48,7 @@ export interface IDBReverseFlags {
 }
 
 export default class DBReverse extends Command {
-  static description = `generate models with database reverse engineering.\n
+  static description = `generate models and graphql resolvers with database reverse engineering.\n
   Usage: merlin-gql db-reverse -h <host> -d <database> -p [port] -u <user> -x [password] -e [engine]\n
   You can also run program without specifying any parameters to launch interactive mode.`;
 

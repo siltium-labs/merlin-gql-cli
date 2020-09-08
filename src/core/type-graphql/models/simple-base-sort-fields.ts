@@ -1,7 +1,7 @@
 import { Field, InputType } from "type-graphql";
 import { SortDirectionsEnum } from "../resolvers/query-resolver";
 
-@InputType()
+@InputType({isAbstract:true})
 export class SimpleBaseSortFields {
   @Field((type) => SortDirectionsEnum, { nullable: true })
   id?: number;

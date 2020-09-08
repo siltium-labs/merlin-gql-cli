@@ -15,8 +15,23 @@ merlin-gql
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
+* [Usage](#usage)
+* [Commands](#commands)
+<!-- tocstop -->
 # Usage
 <!-- usage -->
+```sh-session
+$ npm install -g merlin-gql
+$ merlin-gql COMMAND
+running command...
+$ merlin-gql (-v|--version|version)
+merlin-gql/0.2.3 win32-x64 node-v10.15.0
+$ merlin-gql --help [COMMAND]
+USAGE
+  $ merlin-gql COMMAND
+...
+```
+<!-- usagestop -->
 ```sh-session
 $ npm install -g merlin-gql
 $ merlin-gql COMMAND
@@ -43,6 +58,65 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`merlin-gql generate:entity`](#merlin-gql-generateentity)
+* [`merlin-gql help [COMMAND]`](#merlin-gql-help-command)
+* [`merlin-gql list:entities`](#merlin-gql-listentities)
+
+## `merlin-gql generate:entity`
+
+Allows code generation
+
+```
+USAGE
+  $ merlin-gql generate:entity
+
+OPTIONS
+  -n, --name=name
+  -r, --resolver
+
+ALIASES
+  $ merlin-gql g:e
+
+EXAMPLE
+  $ merlin-gql generate:entity
+```
+
+_See code: [src\commands\generate\entity.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.3/src\commands\generate\entity.ts)_
+
+## `merlin-gql help [COMMAND]`
+
+display help for merlin-gql
+
+```
+USAGE
+  $ merlin-gql help [COMMAND]
+
+ARGUMENTS
+  COMMAND  command to show help for
+
+OPTIONS
+  --all  see all commands in CLI
+```
+
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.1.0/src\commands\help.ts)_
+
+## `merlin-gql list:entities`
+
+Lists all typeorm existing entities
+
+```
+USAGE
+  $ merlin-gql list:entities
+
+ALIASES
+  $ merlin-gql l
+
+EXAMPLE
+  $ merlin-gql list:entities
+```
+
+_See code: [src\commands\list\entities.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.3/src\commands\list\entities.ts)_
+<!-- commandsstop -->
 * [`merlin-gql db-reverse`](#merlin-gql-db-reverse)
 * [`merlin-gql generate:entity`](#merlin-gql-generateentity)
 * [`merlin-gql help [COMMAND]`](#merlin-gql-help-command)

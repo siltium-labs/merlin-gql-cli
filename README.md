@@ -25,7 +25,7 @@ $ npm install -g merlin-gql
 $ merlin-gql COMMAND
 running command...
 $ merlin-gql (-v|--version|version)
-merlin-gql/0.2.3 win32-x64 node-v10.15.0
+merlin-gql/0.2.4 win32-x64 node-v10.15.0
 $ merlin-gql --help [COMMAND]
 USAGE
   $ merlin-gql COMMAND
@@ -134,7 +134,7 @@ DESCRIPTION
      You can also run program without specifying any parameters to launch interactive mode.
 ```
 
-_See code: [src\commands\db-reverse.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.3/src\commands\db-reverse.ts)_
+_See code: [src\commands\db-reverse.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.4/src\commands\db-reverse.ts)_
 
 ## `merlin-gql generate:entity`
 
@@ -155,7 +155,7 @@ EXAMPLE
   $ merlin-gql generate:entity
 ```
 
-_See code: [src\commands\generate\entity.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.3/src\commands\generate\entity.ts)_
+_See code: [src\commands\generate\entity.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.4/src\commands\generate\entity.ts)_
 
 ## `merlin-gql help [COMMAND]`
 
@@ -189,7 +189,7 @@ EXAMPLE
   $ merlin-gql list:entities
 ```
 
-_See code: [src\commands\list\entities.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.3/src\commands\list\entities.ts)_
+_See code: [src\commands\list\entities.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.4/src\commands\list\entities.ts)_
 <!-- commandsstop -->
 * [`merlin-gql db-reverse`](#merlin-gql-db-reverse)
 * [`merlin-gql generate:entity`](#merlin-gql-generateentity)

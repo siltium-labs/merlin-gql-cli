@@ -2,6 +2,7 @@ import { singular } from "pluralize";
 import {
   Arg,
   ClassType,
+  Ctx,
   ID,
   Info,
   Mutation,
@@ -10,20 +11,15 @@ import {
   Resolver,
   Root,
   Subscription,
-  Ctx,
 } from "type-graphql";
 import { getManager } from "typeorm";
+import { IGqlContext } from "../../context";
 import { BaseModel } from "../../database/base.model";
 import { GraphQLInfo } from "../../gql/utils";
-import { BaseInputFields } from "../models/base-input-fields";
 import { ModelDecoratorMetadataKeys } from "../model-decorators/model-decorator.keys";
-import { EntityToGraphResolver } from "./entity-resolver";
-import { IGqlContext } from "../../context";
-import {
-  mustBeAuthenticated,
-  mustHaveRole,
-} from "../../security/security.decorators";
 import { AbstractSecureResolver } from "../models/abstract-secure-resolver";
+import { BaseInputFields } from "../models/base-input-fields";
+import { EntityToGraphResolver } from "./entity-resolver";
 
 export abstract class AbstractUpdateResolver<T> extends AbstractSecureResolver {
   async update(

@@ -1,11 +1,10 @@
 {
   "name": "merlin-gql",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "author": "silentium-labs",
   "bin": {
     "merlin-gql": "./bin/run"
   },
- 
   "dependencies": {
     "@oclif/command": "^1.7.0",
     "@oclif/config": "^1.16.0",
@@ -62,6 +61,7 @@
     "eslint-config-oclif-typescript": "^0.1.0",
     "globby": "^10.0.2",
     "rimraf": "^3.0.2",
+    "sqlite3": "^5.0.0",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7",
     "array.prototype.flatmap": "^1.2.3",
@@ -108,14 +108,11 @@
   },
   "repository": "silentium-labs/merlin-gql-cli",
   "bugs": "https://github.com/silentium-labs/merlin-gql-cli/issues",
-  
   "scripts": {
     "postpack": "rimraf oclif.manifest.json",
-    "posttest": "eslint . --ext .ts --config .eslintrc",
     "prepack": "rimraf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
-    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
-    "version": "oclif-dev readme && git add README.md",
-    "db-reverse": "ts-node ./src/db-reverse/index.ts"
+    "test": "nyc --extension .ts mocha --forbid-only \"src/**/*.spec.ts\"",
+    "version": "oclif-dev readme && git add README.md"
   },
   "types": "lib/index.d.ts",
   "main": "lib/index.js"

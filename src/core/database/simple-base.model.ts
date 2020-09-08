@@ -9,18 +9,18 @@ import {
 } from "typeorm";
 import { Field, ID, ObjectType } from "type-graphql";
 
-@ObjectType()
+@ObjectType({isAbstract:true})
 export class SimpleBaseModel extends BaseModel {
   @Field((type) => ID)
   @PrimaryGeneratedColumn()
   id: number = 0;
 
-  @Field(type => Date)
-  @Column("timestamp")
+  @Field((type) => Date)
+  @Column("datetime")
   created: Date = new Date();
 
-  @Field(type => Date)
-  @Column("timestamp", { nullable: true })
+  @Field((type) => Date)
+  @Column("datetime", { nullable: true })
   updated: Date | null = null;
 
   @BeforeUpdate()
@@ -28,7 +28,7 @@ export class SimpleBaseModel extends BaseModel {
     this.updated = new Date();
   }
 
-  @Field(type => Boolean)
+  @Field((type) => Boolean)
   @Column("boolean", { default: false })
   deleted: boolean = false;
 }

@@ -10,7 +10,8 @@
     "target": "es2018",
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
-    "types": ["reflect-metadata"]
+    "types": ["reflect-metadata"],
+    "composite": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "test/fake-database.test.ts"]
 }

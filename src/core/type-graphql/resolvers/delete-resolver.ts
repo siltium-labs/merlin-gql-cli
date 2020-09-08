@@ -2,6 +2,7 @@ import { singular } from "pluralize";
 import {
   Arg,
   ClassType,
+  Ctx,
   ID,
   Info,
   Mutation,
@@ -10,18 +11,13 @@ import {
   Resolver,
   Root,
   Subscription,
-  Ctx,
 } from "type-graphql";
 import { getManager } from "typeorm";
+import { IGqlContext } from "../../context";
 import { BaseModel } from "../../database/base.model";
 import { GraphQLInfo } from "../../gql/utils";
-import { EntityToGraphResolver } from "./entity-resolver";
-import { IGqlContext } from "../../context";
-import {
-  mustBeAuthenticated,
-  mustHaveRole,
-} from "../../security/security.decorators";
 import { AbstractSecureResolver } from "../models/abstract-secure-resolver";
+import { EntityToGraphResolver } from "./entity-resolver";
 
 export abstract class AbstractDeleteResolver<T> extends AbstractSecureResolver {
   async delete(

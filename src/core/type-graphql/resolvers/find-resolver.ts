@@ -1,14 +1,10 @@
 import { singular } from "pluralize";
-import { Arg, ClassType, ID, Info, Query, Resolver, Ctx } from "type-graphql";
+import { Arg, ClassType, Ctx, ID, Info, Query, Resolver } from "type-graphql";
+import { IGqlContext } from "../../context";
 import { BaseModel } from "../../database/base.model";
 import { GraphQLInfo } from "../../gql/utils";
-import { EntityToGraphResolver } from "./entity-resolver";
-import {
-  mustBeAuthenticated,
-  mustHaveRole,
-} from "../../security/security.decorators";
-import { IGqlContext } from "../../context";
 import { AbstractSecureResolver } from "../models/abstract-secure-resolver";
+import { EntityToGraphResolver } from "./entity-resolver";
 
 export abstract class AbstractFindResolver<T> extends AbstractSecureResolver {
   async getById(
@@ -42,6 +38,5 @@ export function FindResolver<T extends ClassType>(
       return EntityToGraphResolver.find<T>(id, baseModelType, info);
     }
   }
-
   return FindResolver;
 }

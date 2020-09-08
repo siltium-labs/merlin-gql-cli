@@ -1,12 +1,20 @@
 {{#*inline "Index"}}
 @Index("{{name}}",[{{#columns}}"{{toPropertyName .}}",{{/columns~}}],{ {{json options}} })
 {{/inline}}
+
 {{#*inline "Import"}}
 import {{localImport (toEntityName .)}} from "../{{toEntityDirectoryName .}}/{{toEntityFileName .}}"
 {{/inline}}
+
 {{#*inline "Column"}}
 {{#generated}}@Field(type => ID){{/generated}}
-{{^generated}}@Field(){{/generated}}
+{{^generated}}@Field({{#if (and options.nullable (eq tscType "string"))}} type => String, { nullable: true }
+{{else if (and options.nullable (eq tscType "number"))}} type => Float, { nullable: true }
+{{else if (and options.nullable (eq tscType "Date"))}} type => Date, { nullable: true }
+{{else if (and options.nullable (eq tscType "boolean"))}} type => Boolean, { nullable: true }
+{{/if}}
+)
+{{/generated}}
 {{#generated}}@PrimaryGeneratedColumn({ type:"{{type}}", {{/generated}}{{^generated}}@Column("{{type}}",{
 {{#primary}}primary:{{primary}},{{/primary}}{{/generated}}{{json options}}{{#default}},default: {{.}},{{/default}} })
 {{#if (eq (toPropertyName tscName) "deletedAt") }}@DeleteDateColumn(){{/if}}
@@ -17,9 +25,8 @@ import {{localImport (toEntityName .)}} from "../{{toEntityDirectoryName .}}/{{t
 {{else if (eq tscType "Date")}} = new Date();
 {{else if (eq tscType "boolean")}} = false;
 {{/if}}
-
-
 {{/inline}}
+
 {{#*inline "JoinColumnOptions"}}
 { name: "{{name}}", referencedColumnName: "{{toPropertyName referencedColumnName}}" },
 {{/inline}}
@@ -62,7 +69,7 @@ joinColumns:[{{#joinColumns}}{{> JoinColumnOptions}}{{/joinColumns}}],inverseJoi
     import
     {BaseEntity,Column,Entity,Index,JoinColumn,JoinTable,ManyToMany,ManyToOne,OneToMany,OneToOne,PrimaryColumn,PrimaryGeneratedColumn,RelationId,DeleteDateColumn}
     from "typeorm";
-    import {Field,ID,ObjectType} from "type-graphql";
+    import {Field, ID, ObjectType, Int, Float} from "type-graphql";
     import { Inputs, Sorts, Filters, BaseModel} from "merlin-gql";
     import {{localImport (toInputsName tscName)}} from "./{{toFileName tscName}}-inputs.model";
     import {{localImport (toFiltersName tscName)}} from "./{{toFileName tscName}}-filters.model";

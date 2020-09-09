@@ -6,13 +6,18 @@ import {
 } from "type-graphql";
 import { AuthenticationError } from "apollo-server";
 
+const someElementMatches = (arr1: string[], arr2: string[]) => {
+  const matches = arr1.some((el) => arr2.includes(el));
+  return matches;
+};
+
 export const mustBeAuthenticated = (context: IGqlContext) => {
   if (!context.user) {
     throw new AuthenticationError("Must provide credentials");
   }
 };
 export const mustHaveRole = (context: IGqlContext, ...roles: string[]) => {
-  if (!roles.includes(context.user?.role ?? "")) {
+  if (!someElementMatches(roles, context.user?.roles ?? [])) {
     throw new AuthenticationError(`Must be ${roles}`);
   }
 };
@@ -25,5 +30,3 @@ export function MustHaveRoles(...roles: string[]) {
     }
   );
 }
-
- 

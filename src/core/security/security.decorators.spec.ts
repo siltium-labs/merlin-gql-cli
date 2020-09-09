@@ -11,7 +11,7 @@ const mockUserContext: IGqlContext = {
   user: {
     id: 1,
     username: "admin",
-    role: mockAdminRole,
+    roles: [mockAdminRole],
   },
 };
 

@@ -1,7 +1,7 @@
 export interface IDecodedToken {
   id: number;
   username: string;
-  role: string;
+  roles: [string];
 }
 
 export interface IGqlContext {

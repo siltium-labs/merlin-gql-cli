@@ -22,6 +22,7 @@ export const generateDependencies = (
       "jsonwebtoken",
       "mysql2",
       "node-fetch",
+      "moment",
     ];
   } else {
     return baseDependencies;

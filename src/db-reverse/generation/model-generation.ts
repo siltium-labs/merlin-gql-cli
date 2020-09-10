@@ -44,6 +44,25 @@ export default function modelGenerationPhase(
   generateFiles(databaseModel, generationOptions, entitiesPath);
 }
 
+export function modelGenerationCodeFirst(
+  generationOptions: IGenerationOptions,
+  databaseModel: Entity[]
+) {
+  createHandlebarsHelpers(generationOptions);
+  const resultPath = generationOptions.resultsPath;
+  if (!fs.existsSync(resultPath)) {
+    fs.mkdirSync(resultPath);
+  }
+  let entitiesPath = resultPath;
+  if (!generationOptions.noConfigs) {
+    entitiesPath = path.resolve(resultPath, "./entities");
+    if (!fs.existsSync(entitiesPath)) {
+      fs.mkdirSync(entitiesPath);
+    }
+  }
+  generateGraphQLFiles(databaseModel, generationOptions, entitiesPath);
+}
+
 function generateFiles(
   databaseModel: Entity[],
   generationOptions: IGenerationOptions,
@@ -100,7 +119,7 @@ function generateFiles(
     noEscape: true,
   });
 
-  databaseModel.forEach((element) => {    
+  databaseModel.forEach((element) => {
     let casedFileName = "";
     switch (generationOptions.convertCaseFile) {
       case "camel":
@@ -135,6 +154,114 @@ function generateFiles(
       entityCompliedTemplate,
       element
     );
+    generateFilters(
+      databaseModel,
+      generationOptions,
+      baseFileName,
+      filesPathModels,
+      filtersCompliedTemplate,
+      element
+    );
+    generateSort(
+      databaseModel,
+      generationOptions,
+      baseFileName,
+      filesPathModels,
+      sortsCompliedTemplate,
+      element
+    );
+    generateInput(
+      databaseModel,
+      generationOptions,
+      baseFileName,
+      filesPathModels,
+      inputsCompliedTemplate,
+      element
+    );
+    generateResolver(
+      databaseModel,
+      generationOptions,
+      baseFileName,
+      filesPathResolvers,
+      resolverCompliedTemplate,
+      element
+    );
+  });
+}
+
+function generateGraphQLFiles(
+  databaseModel: Entity[],
+  generationOptions: IGenerationOptions,
+  entitiesPath: string
+) { 
+  const filtersTemplatePath = path.resolve(
+    __dirname,
+    "../templates",
+    "filters.handlebars"
+  );
+  const sortsTemplatePath = path.resolve(
+    __dirname,
+    "../templates",
+    "sorts.handlebars"
+  );
+  const inputsTemplatePath = path.resolve(
+    __dirname,
+    "../templates",
+    "inputs.handlebars"
+  );
+  const resolverTemplatePath = path.resolve(
+    __dirname,
+    "../templates",
+    "resolver.handlebars"
+  );  
+
+  const filtersTemplate = fs.readFileSync(filtersTemplatePath, "utf-8");
+  const filtersCompliedTemplate = Handlebars.compile(filtersTemplate, {
+    noEscape: true,
+  });
+
+  const sortsTemplate = fs.readFileSync(sortsTemplatePath, "utf-8");
+  const sortsCompliedTemplate = Handlebars.compile(sortsTemplate, {
+    noEscape: true,
+  });
+
+  const inputsTemplate = fs.readFileSync(inputsTemplatePath, "utf-8");
+  const inputsCompliedTemplate = Handlebars.compile(inputsTemplate, {
+    noEscape: true,
+  });
+
+  const resolverTemplate = fs.readFileSync(resolverTemplatePath, "utf-8");
+  const resolverCompliedTemplate = Handlebars.compile(resolverTemplate, {
+    noEscape: true,
+  });
+
+  databaseModel.forEach((element) => {
+    let casedFileName = "";
+    switch (generationOptions.convertCaseFile) {
+      case "camel":
+        casedFileName = changeCase.camelCase(element.tscName);
+        break;
+      case "param":
+        casedFileName = changeCase.paramCase(element.tscName);
+        break;
+      case "pascal":
+        casedFileName = changeCase.pascalCase(element.tscName);
+        break;
+      case "none":
+        casedFileName = element.tscName;
+        break;
+      default:
+        throw new Error("Unknown case style 1");
+    }
+
+    element.tscName = singular(element.tscName);
+    let baseFileName = singular(casedFileName);
+    let filesPathModels = path.join(entitiesPath, "models", baseFileName);
+    let filesPathResolvers = path.join(entitiesPath, "resolvers");
+
+    fs.mkdirSync(filesPathModels, { recursive: true });
+    fs.mkdirSync(filesPathResolvers, { recursive: true });
+      
     generateFilters(
       databaseModel,
       generationOptions,

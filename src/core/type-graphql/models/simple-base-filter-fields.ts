@@ -1,8 +1,9 @@
+import { BaseFilterFields } from './base-filter-fields';
 import { Field, ID, InputType, ClassType } from "type-graphql";
 import { FilteredID, FilteredString, FilteredDate, FilteredBoolean } from '../resolvers/filter-field';
 
 @InputType({isAbstract:true})
-export class SimpleBaseFilterFields {
+export class SimpleBaseFilterFields extends BaseFilterFields {
     @Field((type) => FilteredID, { nullable: true })
     id?: number;
   

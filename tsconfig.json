@@ -13,5 +13,6 @@
     "types": ["reflect-metadata"],
     "resolveJsonModule": true
   },
-  "include": ["src/**/*", "test/fake-database.test.ts"]
+  "include": ["src/**/*", "test/fake-database.test.ts"],
+  "exclude": ["src/new/templates/**/*"]
 }

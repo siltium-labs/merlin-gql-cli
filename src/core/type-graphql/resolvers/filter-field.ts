@@ -1,7 +1,6 @@
 import { GraphQLScalarType } from "graphql";
-import { ClassType, InputType, Field, ID, Int, Float, GraphQLISODateTime } from "type-graphql";
+import { ClassType, InputType, Field, ID, Int, Float } from "type-graphql";
 import { FilterTypesEnum } from "./query-resolver";
-
 
 @InputType()
 export class FilteredID extends FilterField(ID) {}
@@ -19,11 +18,11 @@ export class FilteredFloat extends FilterField(Float) {}
 export class FilteredBoolean extends FilterField(Boolean) {}
 
 @InputType()
-export class FilteredDate extends FilterField(GraphQLISODateTime) {}
+export class FilteredDate extends FilterField(Date) {}
 
 export default function FilterField<TField>(
   TFieldClass: ClassType<TField> | GraphQLScalarType
-):any {
+): any {
   // `isAbstract` decorator option is mandatory to prevent registering in schema
   @InputType({ isAbstract: true })
   abstract class FilterFieldClass {

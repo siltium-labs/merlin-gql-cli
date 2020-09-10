@@ -1,3 +1,5 @@
+import { OrmConfigTemplateParams } from "./new";
+
 export enum NewProjectTemplatesEnum {
   Basic = "basic",
   Example = "example",
@@ -6,4 +8,6 @@ export enum NewProjectTemplatesEnum {
 export type NewProjectConfig = {
   name: string;
   template: NewProjectTemplatesEnum;
+  ormConfigParams: OrmConfigTemplateParams;
+  jwtSecret?: string;
 };

@@ -1,15 +1,42 @@
-import { emoji } from "node-emoji";
-import { spawnCommand } from "./cmd";
-import { NewProjectConfig, NewProjectTemplatesEnum } from "./new.config";
-import Listr, { ListrTask } from "listr";
-import chalk from "chalk";
 import fs from "fs";
+import Listr from "listr";
+import { emoji } from "node-emoji";
 import path from "path";
+import { spawnCommand } from "./cmd";
 import { generateDependencies, generateDevDependencies } from "./dependencies";
-import { Observable } from "rxjs";
+import { NewProjectConfig, NewProjectTemplatesEnum } from "./new.config";
+import { ncp } from "ncp";
+import handlebars from "handlebars";
+
+export const kebabCase = (str: string) =>
+  str
+    .match(
+      /[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g
+    )!
+    .map((x) => x.toLowerCase())
+    .join("-");
 
 type TasksContext = {
   projectPath: string;
+};
+
+type ReadmeTemplateParams = {
+  appName: string;
+};
+
+export type OrmConfigTemplateParams = {
+  database: {
+    type: string;
+    name: string;
+    user: string;
+    password: string;
+    host: string;
+    port: string;
+  };
+};
+
+export type ConfigTemplateParams = {
+  jwtSecret?: string;
 };
 
 export const createNew = async (config: NewProjectConfig) => {
@@ -29,17 +56,14 @@ export const createNew = async (config: NewProjectConfig) => {
     {
       title: "Create package.json",
       task: async (context: TasksContext, task) => {
-        const projectPath = await createPackageJson(
-          config.name,
-          context.projectPath
-        );
+        await createPackageJson(config.name, context.projectPath);
         task.title = `Package.json created ${emoji.white_check_mark}`;
       },
     },
     {
       title: `Install dependencies`,
       task: async (context: TasksContext, task) => {
-        task.title = `Installing dependencies... Might take a couple if minutes, you can go grab a ${emoji.coffee}`;
+        task.title = `Installing dependencies... This might take a couple of minutes, you can go grab a ${emoji.coffee}`;
         await runNpmInstallForDependencies(
           config.template,
           context.projectPath
@@ -58,19 +82,32 @@ export const createNew = async (config: NewProjectConfig) => {
         task.title = `Dev dependencies installed ${emoji.white_check_mark}`;
       },
     },
+    {
+      title: `Create project files`,
+      task: async (context: TasksContext, task) => {
+        task.title = `Creating project files...`;
+        await copyTemplateToProjectFolder(config.template, context.projectPath);
+        await generateReadmeFile(config.name, context.projectPath);
+        await generateOrmConfigFile(
+          config.template,
+          context.projectPath,
+          config.ormConfigParams
+        );
+        await generateConfigFile(config.template, context.projectPath, {
+          jwtSecret: config.jwtSecret,
+        });
+        task.title = `Project files created ${emoji.white_check_mark}`;
+      },
+    },
   ]);
   await tasks.run();
-};
-
-const checkIfFolderIsEmpty = () => {
-  const folder = process;
 };
 
 //returns the full path of the created project
 const createProjectFolder = (appName: string): Promise<string> => {
   return new Promise<string>((resolve, reject) => {
     const currentFolder = process.cwd();
-    const appPath = path.join(currentFolder, appName);
+    const appPath = path.join(currentFolder, kebabCase(appName));
     const folderAlreadyExists = fs.existsSync(appPath);
     if (folderAlreadyExists) {
       return reject("There is already a folder called " + appName);
@@ -87,7 +124,7 @@ const createProjectFolder = (appName: string): Promise<string> => {
 const createPackageJson = (appName: string, appPath: string): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     const packageDotJsonObjectContent = {
-      name: appName,
+      name: kebabCase(appName),
       version: "0.1.0",
     };
     const packajeDotJsonPath = path.join(appPath, "package.json");
@@ -137,7 +174,101 @@ const runNpmInstallForDevDependencies = async (
   );
 };
 
-const wait = (ms: number) =>
-  new Promise((resolve, reject) => {
-    setTimeout(resolve, ms);
+const copyTemplateToProjectFolder = async (
+  template: NewProjectTemplatesEnum,
+  appPath: string
+): Promise<void> => {
+  return new Promise<void>((resolve, reject) => {
+    const templatePath = path.join(__dirname, "templates", template, "content");
+    ncp(templatePath, appPath, (err) => {
+      if (err) {
+        return reject(err);
+      }
+      return resolve();
+    });
   });
+};
+
+const generateReadmeFile = async (
+  appName: string,
+  appPath: string
+): Promise<void> => {
+  return new Promise<void>((resolve, reject) => {
+    try {
+      const readmeTemplatePath = path.join(
+        __dirname,
+        "templates",
+        "global",
+        "handlebars",
+        "README.md.handlebars"
+      );
+      const readmeSource = fs.readFileSync(readmeTemplatePath, "utf-8");
+      const readme = handlebars.compile<ReadmeTemplateParams>(readmeSource);
+      const readmeFileContent = readme({
+        appName,
+      });
+      const readmeDestinationPath = path.join(appPath, "README.md");
+      fs.writeFileSync(readmeDestinationPath, readmeFileContent);
+      return resolve();
+    } catch (e) {
+      return reject(e);
+    }
+  });
+};
+
+const generateOrmConfigFile = async (
+  template: NewProjectTemplatesEnum,
+  appPath: string,
+  configParams: OrmConfigTemplateParams
+): Promise<void> => {
+  return new Promise<void>((resolve, reject) => {
+    try {
+      const ormConfigTemplatPath = path.join(
+        __dirname,
+        "templates",
+        template,
+        "handlebars",
+        "ormconfig.json.handlebars"
+      );
+      const ormConfigSource = fs.readFileSync(ormConfigTemplatPath, "utf-8");
+      const ormConfig = handlebars.compile<OrmConfigTemplateParams>(
+        ormConfigSource
+      );
+      const ormConfigFileContent = ormConfig(configParams);
+      const ormConfigDestinationPath = path.join(appPath, "ormconfig.json");
+      fs.writeFileSync(ormConfigDestinationPath, ormConfigFileContent);
+      return resolve();
+    } catch (e) {
+      return reject(e);
+    }
+  });
+};
+
+const generateConfigFile = async (
+  template: NewProjectTemplatesEnum,
+  appPath: string,
+  configParams: ConfigTemplateParams
+): Promise<void> => {
+  return new Promise<void>((resolve, reject) => {
+    try {
+      const configTemplatPath = path.join(
+        __dirname,
+        "templates",
+        template,
+        "handlebars",
+        "config.development.json.handlebars"
+      );
+      const configSource = fs.readFileSync(configTemplatPath, "utf-8");
+      const config = handlebars.compile<ConfigTemplateParams>(configSource);
+      const configFileContent = config(configParams);
+      const configDestinationPath = path.join(
+        appPath,
+        "config.development.json"
+      );
+      fs.writeFileSync(configDestinationPath, configFileContent);
+      return resolve();
+    } catch (e) {
+      return reject(e);
+    }
+  });
+};

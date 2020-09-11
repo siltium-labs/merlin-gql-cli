@@ -13,6 +13,10 @@ import { modelGenerationCodeFirst } from "../../db-reverse/generation/model-gene
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import { emoji } from 'node-emoji';
+import { resolve } from 'path';
+import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
+import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
+
 
 export type ModelGenerationOptions = {
   input: boolean,
@@ -91,13 +95,26 @@ export default class GenerateCrud extends Command {
       }      
     }
     
+    if(!flags.input && !flags.filter && !flags.sort && !flags.resolver){
+      this.log(
+        `${chalk.cyan.bold("No files types selected")} ${emoji.airplane_departure} . Finished`        
+      );
+      resolve();
+      return;
+    }
+    
+    cli.action.start(`${chalk.yellow.bold("Start generating files")} ${emoji.pizza}`);
+
     let entities = await gatherModelsInfo();    
     let configOptions = makeDefaultConfigs();
 
     modelGenerationCodeFirst(configOptions.generationOptions, entities, flags);
+
+    cli.action.stop();
+
     this.log(
       `${chalk.cyan.bold("Files generated succesfully")} ${emoji.rocket}`
-    );
+    );    
   }
 }
 
@@ -137,16 +154,21 @@ const generateModelEntities = async (entityMetadata: EntityMetadata[]) => {
       relations: [],
       fileImports: [],
       indices: [],
-      columns: await generateEntityColumns(metadata),
+      columns: []
     };
+  
+    const propertyColumns = await generateEntityColumns(metadata.columns);
+    const relationColumns = await generateRelationColumns(metadata.relations);
+    entity.columns = [...propertyColumns, ...relationColumns];
+    
     entities.push(entity);
   }
   return entities;
 };
 
-const generateEntityColumns = async (entityMetadata: EntityMetadata) => {
+const generateEntityColumns = async (cols: ColumnMetadata[]) => {
   const columns: Column[] = [];
-  entityMetadata.columns.forEach((columnMetadata) => {
+  cols.forEach((columnMetadata) => {    
     const column: Column = {
       tscName: columnMetadata.propertyName,
       tscType: getColumnTscType(columnMetadata.type),
@@ -162,6 +184,10 @@ const generateEntityColumns = async (entityMetadata: EntityMetadata) => {
 
   return columns;
 };
+
+const generateRelationColumns = async (relations: RelationMetadata[]):Promise<Column[]> => {
+  return [];
+}
 
 const getColumnTscType = (columnType: ColumnType) => {
   switch (columnType) {      

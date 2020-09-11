@@ -1,7 +1,8 @@
-import { NewProjectTemplatesEnum } from "./new.config";
+import { NewProjectTemplatesEnum, TemplateArgsDictionary } from "./new.config";
 
 export const generateDependencies = (
-  template: NewProjectTemplatesEnum
+  template: NewProjectTemplatesEnum,
+  templateArgs: TemplateArgsDictionary
 ): Array<string> => {
   const baseDependencies = [
     "apollo-server",
@@ -16,8 +17,11 @@ export const generateDependencies = (
     "typeorm",
   ];
   if (template === NewProjectTemplatesEnum.Example) {
+    const argDependantDependencies: string[] = [];
+
     return [
       ...baseDependencies,
+      ...argDependantDependencies,
       "bcryptjs",
       "jsonwebtoken",
       "mysql2",
@@ -30,7 +34,8 @@ export const generateDependencies = (
 };
 
 export const generateDevDependencies = (
-  template: NewProjectTemplatesEnum
+  template: NewProjectTemplatesEnum,
+  templateArgs: TemplateArgsDictionary
 ): Array<string> => {
   const baseDevDependencies = [
     "concurrently",
@@ -45,8 +50,13 @@ export const generateDevDependencies = (
     "typescript",
   ];
   if (template === NewProjectTemplatesEnum.Example) {
+    const argDependantDevDependencies: string[] = [];
+    if (templateArgs["ngrok"]) {
+      argDependantDevDependencies.push("ngrok");
+    }
     return [
       ...baseDevDependencies,
+      ...argDependantDevDependencies,
       "@types/bcryptjs",
       "@types/jsonwebtoken",
       "@types/node-fetch",

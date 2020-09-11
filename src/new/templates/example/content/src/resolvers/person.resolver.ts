@@ -27,13 +27,7 @@ export class PersonListResolver extends BaseListResolver<
 > {}
 
 @Resolver()
-export class PersonFindResolver extends BaseFindResolver<Person> {
-  //This resolver is as extensible and customizable as any other
-  @Query((type) => String)
-  foo() {
-    return "bar";
-  }
-}
+export class PersonFindResolver extends BaseFindResolver<Person> {}
 @Resolver()
 export class PersonUpdateResolver extends BaseUpdateResolver<Person> {}
 @Resolver()
@@ -42,15 +36,3 @@ export class PersonCreateResolver extends BaseCreateResolver<Person> {}
 @Secure(RolesEnum.Administrator)
 export class PersonDeleteResolver extends BaseDeleteResolver<Person> {}
 
-@Resolver((of) => Person)
-export class PersonFieldsResolver {
-  @FieldResolver((type) => String)
-  foo(@Root() person: Person): string {
-    return `${person.name} bar`;
-  }
-
-  @FieldResolver((type) => Int)
-  multiplyIdBy2(@Root() person: Person): number {
-    return person.id * 2;
-  }
-}

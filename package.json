@@ -1,6 +1,6 @@
 {
   "name": "merlin-gql",
-  "version": "0.2.7",
+  "version": "0.2.12",
   "author": "silentium-labs",
   "bin": {
     "merlin-gql": "./bin/run"
@@ -34,7 +34,8 @@
     "type-graphql": "^1.0.0",
     "typeorm": "^0.2.25",
     "uuid": "^8.3.0",
-    "yargs": "^15.4.1"
+    "yargs": "^15.4.1",
+    "ncp": "^2.0.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
@@ -83,7 +84,6 @@
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
     "mocha": "^8.1.0",
-    "ncp": "^2.0.0",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
     "sinon": "^9.0.2",
@@ -121,9 +121,10 @@
   "bugs": "https://github.com/silentium-labs/merlin-gql-cli/issues",
   "scripts": {
     "postpack": "rimraf oclif.manifest.json",
-    "prepack": "rimraf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "prepack": "rimraf lib && tsc -b && oclif-dev manifest && oclif-dev readme && ncp \"src/new/templates\" \"lib/new/templates\"",
     "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register '**/*.spec.ts'",
-    "version": "oclif-dev readme && git add README.md"
+    "version": "oclif-dev readme && git add README.md",
+    "readme": "oclif-dev readme"
   },
   "types": "lib/index.d.ts",
   "main": "lib/index.js"

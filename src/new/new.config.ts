@@ -5,9 +5,12 @@ export enum NewProjectTemplatesEnum {
   Example = "example",
 }
 
+export type TemplateArgsDictionary = { [key: string]: any };
+
 export type NewProjectConfig = {
   name: string;
   template: NewProjectTemplatesEnum;
+  templateArgs: TemplateArgsDictionary;
   ormConfigParams: OrmConfigTemplateParams;
   jwtSecret?: string;
 };

@@ -11,9 +11,6 @@ import { graphqlSchema } from "./core/graphql-schema";
 import { SecurityFunctions } from "./core/security/security.functions";
 
 const startServer = async () => {
-  /*const personClass = PaginatedPerson;
-  console.log("CLASS: ", personClass);
-  const metadata = Reflect.getMetadata("design:paramtypes", personClass,"result");*/
   const app = express();
   app.use(json({ limit: "5mb" }));
   app.use(text({ limit: "5mb" }));
@@ -31,7 +28,7 @@ const startServer = async () => {
       return new GqlContext(user);
     }
   };
-  //const schema = await gqlSchema();
+  
   const server = new ApolloServer({
     introspection: config.enablePlayground,
     playground: config.enablePlayground,
@@ -48,7 +45,6 @@ const startServer = async () => {
       },
     },
   });
-  //this is a commentary
 
   server.applyMiddleware({ app });
   server.installSubscriptionHandlers(httpServer);
@@ -56,19 +52,14 @@ const startServer = async () => {
   const apolloGraphQLServerUrl = `localhost:${process.env.PORT || 4001}${
     server.graphqlPath
   }`;
-
-  // This `listen` method launches a web-server.  Existing apps
-
-  // can utilize middleware options, which we'll discuss later.
-  httpServer.listen({ port: process.env.PORT || 4002 }, () => {
+  
+  const PORT = +(process.env.PORT || 4000);
+  
+  httpServer.listen({ port: PORT }, async () => {
     console.log(`🚀 Server ready at http://${apolloGraphQLServerUrl}`);
-    console.log(
-      `🚀 Subscriptions ready at ws://localhost:${apolloGraphQLServerUrl}`
-    );
+    console.log(`🚀 Subscriptions ready at ws://${apolloGraphQLServerUrl}`);    
   });
   return apolloGraphQLServerUrl;
-
-  //Register endpoint for listen knime LOGS
 };
 
 startServer()

@@ -2,7 +2,11 @@ import { OrmConfigTemplateParams } from "./../new/new";
 import { createNew } from "../new/new";
 import { Command, flags } from "@oclif/command";
 import inquirer from "inquirer";
-import { NewProjectTemplatesEnum, NewProjectConfig } from "../new/new.config";
+import {
+  NewProjectTemplatesEnum,
+  NewProjectConfig,
+  TemplateArgsDictionary,
+} from "../new/new.config";
 import chalk from "chalk";
 import { emoji } from "node-emoji";
 
@@ -108,6 +112,12 @@ export default class New extends Command {
       name: "jwt-secret-token",
       char: "s",
       description: "Secret JWT Encryption Token",
+
+      //default: connectionOptions.host,
+    }),
+    ngrok: flags.boolean({
+      name: "ngrok",
+      description: "Enable ngrok for remote testing",
 
       //default: connectionOptions.host,
     }),
@@ -247,6 +257,16 @@ export default class New extends Command {
       flags.jwtSecretToken =
         jwtSecretToken !== "" ? jwtSecretToken : generateRandomJWTSecret(30);
     }
+    if (!flags.ngrok && flags.template === NewProjectTemplatesEnum.Example) {
+      const { ngrok }: { ngrok: boolean } = await inquirer.prompt([
+        {
+          name: "ngrok",
+          message: `Do you want to enable ngrok to allow for remote testing? (Recommended for mobile)`,
+          type: "confirm",
+        },
+      ]);
+      flags.ngrok = ngrok;
+    }
     const ormConfigParams: OrmConfigTemplateParams = {
       database: {
         type: flags.databaseType,
@@ -257,8 +277,14 @@ export default class New extends Command {
         port: flags.databasePort,
       },
     };
+    const templateArgs: TemplateArgsDictionary = {};
+    if (flags.template === NewProjectTemplatesEnum.Example) {
+      templateArgs["ngrok"] = flags.ngrok;
+    }
+
     const config: NewProjectConfig = {
       template: flags.template as NewProjectTemplatesEnum,
+      templateArgs: templateArgs,
       name: flags.name,
       ormConfigParams,
       jwtSecret: flags.jwtSecretToken,

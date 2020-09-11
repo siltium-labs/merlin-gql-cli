@@ -6,45 +6,9 @@ import * as fs from "fs";
 export const isProduction = process.env.NODE_ENV === "prod";
 
 export interface IEnvironmentalConfig {
-  database: IDatabaseConfig;
-  scheduledMaintenanceCheckInterval: number;
   secretToken: string;
-  serverUrl: string;
-  googleMapsApiKey: string;
-  mailer: IMailerConfig;
   enablePlayground: boolean;
-  metabase: IPostgresDBConfig;
-  temp: IPostgresDBConfig;
-  knimeExecutablePath: string;
 }
-
-export interface IDatabaseConfig {
-  type: string;
-  host: string;
-  port: number;
-  name: string;
-  user: string;
-  password: string;
-  logging: LoggerOptions;
-  synchronize: boolean;
-}
-
-export interface IPostgresDBConfig {
-  host: string;
-  port: number;
-  name: string;
-  user: string;
-  password: string;
-}
-
-export interface IMailerConfig {
-  service: string;
-  user: string;
-  password: string;
-  alias: string;
-}
-
-
 
 export const getCurrentEnvironmentalConfig = (): Promise<
   IEnvironmentalConfig

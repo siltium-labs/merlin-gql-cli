@@ -1,0 +1,11 @@
+{
+  "type": "mysql",
+  "database": "merlin",
+  "username": "root",
+  "password": "32814809",
+  "port": 3306,
+  "host": "localhost",
+  "logging": ["query"],
+  "synchronize": true,
+  "entities": ["../merlin-gql-playground/dist/**/*.model.js"]
+}

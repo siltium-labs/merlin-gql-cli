@@ -1,6 +1,16 @@
+import { Column } from "./../../db-reverse/models/column";
 import { Command } from "@oclif/command";
-import { createConnection, ConnectionOptionsReader } from "typeorm";
+import {
+  createConnection,
+  ConnectionOptionsReader,
+  EntityMetadata,
+  ColumnType,
+} from "typeorm";
 import { cli } from "cli-ux";
+import { Entity } from "../../db-reverse/library";
+import { makeDefaultConfigs } from "../../db-reverse";
+import modelCustomizationPhase from "../../db-reverse/generation/model-customization";
+import { modelGenerationCodeFirst } from "../../db-reverse/generation/model-generation";
 
 export default class EntitiesList extends Command {
   static aliases = ["l"];
@@ -14,9 +24,8 @@ export default class EntitiesList extends Command {
 
   async run() {
     cli.action.start("Reading metadata...");
-    const entities = await gatherModelsInfo();
-    cli.action.stop();
-
+    let entities = await gatherModelsInfo();    
+    
     cli.table(entities, {
       name: { minWidth: 10 },
       relations: { minWidth: 10 },
@@ -39,11 +48,12 @@ const gatherModelsInfo = async () => {
   };
 
   const connection = await createConnection(connectionOptions);
-
   const entities = connection.entityMetadatas.map((m) => ({
     name: m.name,
     relations: `[${m.relations.map((r) => (r.type as any).name).join(", ")}]`,
   }));
+
+ 
   return entities;
 };
 

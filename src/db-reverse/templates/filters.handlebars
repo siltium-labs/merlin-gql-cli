@@ -1,5 +1,15 @@
+{{#*inline "Import"}}
+import {{localImport (toEntityName .)}} from "../{{toEntityDirectoryName .}}/{{toEntityFileName .}}"
+{{/inline}}
+
 {{#*inline "Column"}}
-{{^generated}}@Field({{#if options.nullable}}{ nullable: true }{{/if}})
+{{^generated}}@Field((type)=>
+{{#if (eq tscType "string")}} FilteredString
+{{else if (eq tscType "number")}} FilteredFloat
+{{else if (eq tscType "Date")}} FilteredDate
+{{else if (eq tscType "boolean")}} FilteredBoolean
+{{/if}}
+{{#if options.nullable}},{ nullable: true }{{/if}})
 {{toPropertyName tscName}}{{#if options.nullable}}?{{/if}}:{{tscType}}
 {{#if options.nullable}};
 {{else if (eq tscType "string")}} = "";
@@ -8,6 +18,11 @@
 {{else if (eq tscType "boolean")}} = false;
 {{/if}}
 {{/generated}}
+{{/inline}}
+
+{{#*inline "Relation"}}
+@Field((type) => {{toGraphQLRelation (toEntityName relatedTable) relationType}}, { nullable: true })
+{{printPropertyVisibility}}{{toPropertyName fieldName}}?:{{toRelation (toEntityName relatedTable) relationType}};
 {{/inline}}
 
 
@@ -22,11 +37,14 @@ or?: {{toFiltersName tscName}}[];
 and?: {{toFiltersName tscName}}[];
 
 {{#columns}}{{> Column}}{{/columns~}}
+{{#relations}}{{> Relation}}{{/relations~}}
 
 }
 {{/inline}}
 
 import {InputType,Field} from "type-graphql";
-import { BaseFilterFields } from "merlin-gql";
+import { BaseFilterFields, FilteredID, FilteredInt, FilteredFloat, FilteredBoolean, FilteredDate, FilteredString } from
+"merlin-gql";
+{{#fileImports}}{{> Import}}{{/fileImports}}
 
 {{> Filters}}

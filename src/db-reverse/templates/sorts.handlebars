@@ -1,7 +1,14 @@
+{{#*inline "Import"}}
+import {{localImport (toEntityName .)}} from "../{{toEntityDirectoryName .}}/{{toEntityFileName .}}"
+{{/inline}}
+
 {{#*inline "Column"}}
 {{^generated}}@Field((type) => SortDirectionsEnum, { nullable: true })
 {{toPropertyName tscName}}?:{{tscType}}
 {{/generated}}
+
+
+
 
 {{/inline}}
 {{#*inline "Sorts"}}
@@ -9,10 +16,13 @@
 export {{defaultExport}} class {{toSortsName tscName}} extends BaseSortFields {
 
 {{#columns}}{{> Column}}{{/columns~}}
+
+
 }
 {{/inline}}
 
 import {InputType,Field} from "type-graphql";
 import { BaseSortFields, SortDirectionsEnum } from "merlin-gql";
+{{#fileImports}}{{> Import}}{{/fileImports}}
 
 {{> Sorts}}

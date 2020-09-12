@@ -494,6 +494,31 @@ function createHandlebarsHelpers(generationOptions: IGenerationOptions): void {
       return retVal;
     }
   );
+
+  Handlebars.registerHelper(
+    "toGraphQLSortRelation",
+    (entityType: string, relationType: Relation["relationType"]) => {
+      let retVal = entityType;
+      if (relationType === "ManyToMany" || relationType === "OneToMany") {
+        retVal = `[${retVal}Sorts]`;
+      }     
+      else{
+        retVal = `${retVal}Sorts`;
+      } 
+      return retVal;
+    }
+  );
+
+  Handlebars.registerHelper(
+    "toGraphQLRelation",
+    (entityType: string, relationType: Relation["relationType"]) => {
+      let retVal = entityType;
+      if (relationType === "ManyToMany" || relationType === "OneToMany") {
+        retVal = `[${retVal}]`;
+      }      
+      return retVal;
+    }
+  );
   Handlebars.registerHelper("defaultExport", () =>
     generationOptions.exportType === "default" ? "default" : ""
   );

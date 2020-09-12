@@ -39,18 +39,19 @@ import {{localImport (toEntityName .)}} from "../{{toEntityDirectoryName .}}/{{t
 joinColumns:[{{#joinColumns}}{{> JoinColumnOptions}}{{/joinColumns}}],inverseJoinColumns:[{{#inverseJoinColumns}}{{> JoinColumnOptions}}{{/inverseJoinColumns}}],{{#database}}database:"{{.}}",{{/database}}{{#schema}}schema:"{{.}}"{{/schema}}
 }){{/joinTableOptions}}
 {{printPropertyVisibility}}{{toPropertyName fieldName}}?:{{toRelation (toEntityName relatedTable) relationType}};
-
 {{/inline}}
+
 {{#*inline "RelationId"}}
 @RelationId(({{toPropertyName entityName}}:{{toEntityName entityName}})=>{{toPropertyName entityName}}.{{toPropertyName relationField}})
 {{printPropertyVisibility}}{{toPropertyName fieldName}}?:{{fieldType}};
-
 {{/inline}}
+
 {{#*inline "Constructor"}}
 {{printPropertyVisibility}}constructor(init?: Partial<{{toEntityName entityName}}>) {
     Object.assign(this, init);
     }
     {{/inline}}
+
     {{#*inline "Entity"}}
     {{#indices}}{{> Index}}{{/indices~}}
     @Inputs({{toInputsName tscName}})

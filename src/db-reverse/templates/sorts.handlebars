@@ -1,5 +1,5 @@
 {{#*inline "Import"}}
-import {{localImport (toEntityName .)}} from "../{{toEntityDirectoryName .}}/{{toEntityFileName .}}"
+import {{localImport (toSortsName .)}} from "../{{toEntityDirectoryName .}}/{{toEntityFileName  (toSortsName .)}}"
 {{/inline}}
 
 {{#*inline "Column"}}

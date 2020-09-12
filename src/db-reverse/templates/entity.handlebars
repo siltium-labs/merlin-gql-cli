@@ -30,6 +30,7 @@ import {{localImport (toEntityName .)}} from "../{{toEntityDirectoryName .}}/{{t
 {{#*inline "JoinColumnOptions"}}
 { name: "{{name}}", referencedColumnName: "{{toPropertyName referencedColumnName}}" },
 {{/inline}}
+
 {{#*inline "Relation"}}
 @{{relationType}}(()=>{{toEntityName relatedTable}},{{toPropertyName relatedTable}}=>{{toPropertyName relatedTable}}.{{toPropertyName relatedField}}{{#if relationOptions}},{
 {{json relationOptions}} }{{/if}})

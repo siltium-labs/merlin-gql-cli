@@ -143,7 +143,7 @@ export default class New extends Command {
             {
               name: `${toTitleCase(
                 NewProjectTemplatesEnum.Example
-              )} - Showcases basic functionality examples. For more info check https://foo.bar.`,
+              )} - Showcases basic functionality examples. For more info check https://github.com/silentium-labs/merlin-gql`,
               value: NewProjectTemplatesEnum.Example,
             },
           ],

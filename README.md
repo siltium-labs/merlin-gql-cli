@@ -1,13 +1,111 @@
-merlin-gql
-==========
-
-
-
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/merlin-gql.svg)](https://npmjs.org/package/merlin-gql)
 [![Downloads/week](https://img.shields.io/npm/dw/merlin-gql.svg)](https://npmjs.org/package/merlin-gql)
 [![License](https://img.shields.io/npm/l/merlin-gql.svg)](https://github.com/ezequielzacca/merlin-gql/blob/master/package.json)
 
+Merlin GQL
+==========
+
+**Merlin GQL** is a framework to create Graphql APIs using ***Typescript***, ***TypeORM*** and ***TypeGraphQL*** whose aim is to make developing database oriented GraphQL APIs as simple and straightforward as possible without making compromises on customization or extensibility of your APIs.
+
+We simplify common use cases with out of the box features that help developers to simplify and speed up the development of GraphQL APIs.
+
+## Features
+  
+ 
+### Code Generation
+Merlin GQL has a cli that will generate pretty much everything you need to make a functional GraphQL API.
+
+You can develop your API using two approaches, both are covered in the **TypeORM Entities** section of the documentation
+
+- Database First (reverse engineering an existing database)
+- Code First (creating your database entities in the code and synchronizing your database schema with your code)
+
+You can switch from one to the other at *any point* and starting with either *doesn't lock you* into using that strategy through the rest of the development cycle of your API.
+
+### Templates
+
+Using the CLI you can create the basic structure of your API and you can select between a *basic* and an *example* template, which will showcase and provide example code for all of the features included in Merlin GQL plus some examples of customizations that you might find usefull later. We encourage to select our example template as a guide and starting point if this is the first time using this framework.
+
+### Authentication and Authorization
+
+This is a very common feature needed in the majority of cases when creating an API, so we decided to provide out of the box features to secure your APIs, this approach is very simple and may not be suitable for all cases, but you can customize it, extend it or completely ignore it and create your own security layer.
+
+For more information on this feature please refer to the **Authentication and Authorization** section of the documentation.
+
+### Data Generation
+
+We provide some simple tools and guidelines for automatically generating testing data for your API, this step is often overlooked and will help you to create "fake" data in order to have some interesting data for your tests, measure performance, put your API in stress or simply provide a starting point for the developer and avoid an empty database.
+
+## Getting Started
+
+To start with Merlin GQL, we strongly recommend to install our CLI, you might find it really usefull and it will speed up your development, altough *it is not required*.
+
+### CLI Installation
+
+You can use *npx* or install it globally with *npm*, both approaches are valid and will work without any kind of problems.
+
+If you want to install Merlin GQL globally with npm you need to run the command:
+
+```
+npm install --global merlin-gql
+```
+or it's short version
+```
+npm i -g merlin-gql
+```
+
+If you want to use *npx* instead, you don't need to install Merlin GQL globally.
+
+
+>From now on and through the rest of the guide, we will assume that you have the CLI installed globally, if you decided to use *npx* then all you need to do is to prefix all the commands with `npx `.
+
+
+### Starting a new project
+With the CLI you can create a new project using the *new* command
+
+```
+merlin-gql new
+```
+or with npx
+```
+npx merlin-gql new
+```
+
+Once you run the command, the CLI will guide ask you to choose a template for your project, if you are familiar with Merlin GQL you can select the **Bascic** template, which is a template with only the bare minimum files required to create your API without any example files and without boilerplate code. 
+
+As previously recommended, if this is your first time using Merlin GQL or you want to explore it's features, we recommend to select the **Example** template.
+
+#### Example Template
+
+The first thing the CLI will ask you for, is the *name* of your project.
+
+![Imgur](https://i.imgur.com/JojUxbU.png)
+
+
+
+
+
+  
+  <details>
+    <summary>Templates</summary>
+  </details>
+  <details>
+    <summary>Authentication & Authorization</summary>
+  </details>
+  <details>
+    <summary>
+      CRUD (with Queries, Mutations and Subscriptions)
+    </summary>
+  </details>
+  <details>
+    <summary>
+      Data Generation (for testing or debbuging purposes)
+    </summary>
+  </details>
+
+
+### CLI
 <!-- toc -->
 * [Usage](#usage)
 * [Commands](#commands)

@@ -1,10 +1,11 @@
 
+![Logo](https://i.imgur.com/JfeUASw.png)
 
 [![Version](https://img.shields.io/npm/v/merlin-gql.svg)](https://npmjs.org/package/merlin-gql)
 [![Downloads/week](https://img.shields.io/npm/dw/merlin-gql.svg)](https://npmjs.org/package/merlin-gql)
 [![License](https://img.shields.io/npm/l/merlin-gql.svg)](https://github.com/silentium-labs/merlin-gql/blob/master/package.json)
 
-![Logo](https://i.imgur.com/VXoAHdq.png) Merlin GQL
+Merlin GQL
 ==========
 
 **Merlin GQL** is a framework to create Graphql APIs using ***Typescript***, ***TypeORM*** and ***TypeGraphQL*** with the objective of making the development of database oriented GraphQL APIs as simple and straightforward as possible without making compromises on customization or extensibility.

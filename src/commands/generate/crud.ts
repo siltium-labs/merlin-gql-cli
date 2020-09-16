@@ -207,10 +207,8 @@ const generateModelEntities = async (entityMetadata: EntityMetadata[]) => {
       columns: [],
     };
 
-    const { columns, relations } = await generateColumnsAndRelations(
-      metadata.columns
-    );
-    relations.push(...generateRelations(metadata.relations));
+    const columns = await generateColumns(metadata.columns);
+    const relations = generateRelations(metadata.relations);
     entity.columns = columns;
     entity.relations = relations;
     entities.push(entity);
@@ -218,9 +216,8 @@ const generateModelEntities = async (entityMetadata: EntityMetadata[]) => {
   return entities;
 };
 
-const generateColumnsAndRelations = (cols: ColumnMetadata[]) => {
-  const columns: Column[] = [];
-  const relations: Relation[] = [];
+const generateColumns = (cols: ColumnMetadata[]) => {
+  const columns: Column[] = [];  
   cols.forEach((columnMetadata) => {
     if (!columnMetadata.relationMetadata) {
       const column: Column = {
@@ -234,19 +231,9 @@ const generateColumnsAndRelations = (cols: ColumnMetadata[]) => {
         },
       };
       columns.push(column);
-    } else {
-      const relationMetadata = columnMetadata.relationMetadata;
-      const relation: Relation = {
-        fieldName: relationMetadata.propertyName,
-        relationType: getRelationType(relationMetadata),
-        relatedField: relationMetadata.inverseRelation?.propertyName!,
-        relatedTable: relationMetadata.inverseEntityMetadata.tableName,
-      };
-      relations.push(relation);
-    }
+    } 
   });
-
-  return { columns, relations };
+  return columns;
 };
 
 const generateRelations = (relationsMetadata: RelationMetadata[]):Relation[] => {

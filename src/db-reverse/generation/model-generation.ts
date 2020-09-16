@@ -514,8 +514,11 @@ function createHandlebarsHelpers(generationOptions: IGenerationOptions): void {
     (entityType: string, relationType: Relation["relationType"]) => {
       let retVal = entityType;
       if (relationType === "ManyToMany" || relationType === "OneToMany") {
-        retVal = `[${retVal}]`;
-      }      
+        retVal = `[${retVal}Filters]`;
+      }  
+      else{
+        retVal = `${retVal}Filters`;
+      }     
       return retVal;
     }
   );

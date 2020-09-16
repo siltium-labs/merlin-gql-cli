@@ -1,9 +1,10 @@
-[![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
+
+
 [![Version](https://img.shields.io/npm/v/merlin-gql.svg)](https://npmjs.org/package/merlin-gql)
 [![Downloads/week](https://img.shields.io/npm/dw/merlin-gql.svg)](https://npmjs.org/package/merlin-gql)
-[![License](https://img.shields.io/npm/l/merlin-gql.svg)](https://github.com/ezequielzacca/merlin-gql/blob/master/package.json)
+[![License](https://img.shields.io/npm/l/merlin-gql.svg)](https://github.com/silentium-labs/merlin-gql/blob/master/package.json)
 
-Merlin GQL
+<img style="height: 40px; margin-bottom: -10px" src="https://i.imgur.com/1QzdK2u.png"> Merlin GQL
 ==========
 
 **Merlin GQL** is a framework to create Graphql APIs using ***Typescript***, ***TypeORM*** and ***TypeGraphQL*** whose aim is to make developing database oriented GraphQL APIs as simple and straightforward as possible without making compromises on customization or extensibility of your APIs.
@@ -76,43 +77,32 @@ Once you run the command, the CLI will guide ask you to choose a template for yo
 
 As previously recommended, if this is your first time using Merlin GQL or you want to explore it's features, we recommend to select the **Example** template.
 
-#### Example Template
+
+### Example Template
+
 
 The first thing the CLI will ask you for, is the *name* of your project.
 
-![Imgur](https://i.imgur.com/JojUxbU.png)
+![Imgur](https://i.imgur.com/fLOu3ut.png)
+
+> You can use blank spaces or uppercase characters in your project name, the CLI will automatically make a ***kebab case*** version of your project name to create a folder and use that name in the generated package.json. For example, if you name your project **My App**, the CLI will create a ***my-app*** folder.
+
+Then you will be asked for your database information in order to configure your project's database connection.
+
+> This information is used to create the *ormconfig.json* file and can be modified.
+
+After you introduce your database configuration values the CLI will request a *Secret Key* to encrypt your *JWT Authentication Tokens*, it is not required to manually provide this value, and if you opt to not provide one, we will automatically generate one for you.
+
+>For more information regarding **JWT** and the **Secret Key** please refer to https://jwt.io/
+
+Finally, the CLI will ask you if you want to enable *ngrok* for remote testing or debbuging of your API.
+
+***ngrok*** is a tool that will create a reverse proxy to your API accessible from anywhere and will allow you to easily access your API from outside of your local machile or lan network, it is very usefull when testing your API with a mobile client or from a remote connection, we recommend to select ***yes*** and allow the CLI to configure ngrok for you.
+
+>For more information  **ngrok** and and how it does work, please refer to https://ngrok.com/
 
 
-
-
-
-  
-  <details>
-    <summary>Templates</summary>
-  </details>
-  <details>
-    <summary>Authentication & Authorization</summary>
-  </details>
-  <details>
-    <summary>
-      CRUD (with Queries, Mutations and Subscriptions)
-    </summary>
-  </details>
-  <details>
-    <summary>
-      Data Generation (for testing or debbuging purposes)
-    </summary>
-  </details>
-
-
-### CLI
-<!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
-<!-- tocstop -->
-
-
-# Usage
+## CLI Commands
 <!-- usage -->
 ```sh-session
 $ npm install -g merlin-gql
@@ -126,15 +116,7 @@ USAGE
 ...
 ```
 <!-- usagestop -->
-
-# Commands
 <!-- commands -->
-* [`merlin-gql db-reverse`](#merlin-gql-db-reverse)
-* [`merlin-gql generate:crud`](#merlin-gql-generatecrud)
-* [`merlin-gql generate:entity`](#merlin-gql-generateentity)
-* [`merlin-gql help [COMMAND]`](#merlin-gql-help-command)
-* [`merlin-gql list:entities`](#merlin-gql-listentities)
-* [`merlin-gql new`](#merlin-gql-new)
 
 ## `merlin-gql db-reverse`
 

@@ -5,10 +5,11 @@ import {
   ConnectionOptionsReader,
   EntityMetadata,
   ColumnType,
+  Connection,
 } from "typeorm";
 import { cli } from "cli-ux";
-import { Entity } from "../../db-reverse/library";
-import { makeDefaultConfigs } from "../../db-reverse";
+import { Entity, Relation } from "../../db-reverse/library";
+import { makeDefaultConfigs, readTOMLConfig } from "../../db-reverse";
 import { modelGenerationCodeFirst } from "../../db-reverse/generation/model-generation";
 import inquirer from "inquirer";
 import chalk from "chalk";
@@ -49,73 +50,115 @@ export default class GenerateCrud extends Command {
       char: "r",
       description: "Generate GraphQL resolver from entity model",
     }),
+    all: flags.boolean({
+      char: "a",
+      description: "Generate for all model entities",
+    }),
   };
 
   static args = [];
 
   async run() {
     const { args, flags } = this.parse(GenerateCrud);
+    let connection: Connection | null = null;
+    try {
+      connection = await getConnection();
+      //Check generation options
+      if (!flags.input && !flags.filter && !flags.sort && !flags.resolver) {
+        const options: { options: string[] } = await inquirer.prompt([
+          {
+            name: "options",
+            message: `Select wich files types do you want to generate`,
+            type: "checkbox",
+            choices: ["inputs", "filters", "sorts", "resolvers"],
+          },
+        ]);
 
-    if (!flags.input && !flags.filter && !flags.sort && !flags.resolver) {
-      const options: { options: string[] } = await inquirer.prompt([
-        {
-          name: "options",
-          message: `Select wich files types do you want to generate`,
-          type: "checkbox",
-          choices: ["inputs", "filters", "sorts", "resolvers"],
-        },
-      ]);
-
-      for (const option of options.options) {
-        switch (option) {
-          case "inputs": {
-            flags.input = true;
-            break;
-          }
-          case "filters": {
-            flags.filter = true;
-            break;
-          }
-          case "sorts": {
-            flags.sort = true;
-            break;
-          }
-          case "resolvers": {
-            flags.resolver = true;
-            break;
+        for (const option of options.options) {
+          switch (option) {
+            case "inputs": {
+              flags.input = true;
+              break;
+            }
+            case "filters": {
+              flags.filter = true;
+              break;
+            }
+            case "sorts": {
+              flags.sort = true;
+              break;
+            }
+            case "resolvers": {
+              flags.resolver = true;
+              break;
+            }
           }
         }
       }
-    }
 
-    if (!flags.input && !flags.filter && !flags.sort && !flags.resolver) {
+      if (!flags.input && !flags.filter && !flags.sort && !flags.resolver) {
+        this.log(
+          `${chalk.cyan.bold("No files types selected")} ${
+            emoji.airplane_departure
+          } . Finished`
+        );
+        return;
+      }
+      //End check generation options
+
+      let entities = await gatherModelsInfo(connection);
+      if (!flags.all) {
+        const selectedModels: {models: string[]} = await inquirer.prompt([
+          {
+            name: "models",
+            message: `Select for wich models do you want to generate files`,
+            type: "checkbox",
+            choices: (answers) => getAllTables(connection!),
+          },
+        ]);
+
+        console.log("PEPE:", selectedModels);
+
+        if (selectedModels.models.length > 0) {
+          entities = entities.filter((entity) =>
+            selectedModels.models.some((model) => model === entity.tscName)
+          );
+        } else {
+          this.log(
+            `${chalk.cyan.bold("No models selected")} ${
+              emoji.airplane_departure
+            } . Finished`
+          );
+          return;
+        }
+      }
+
       this.log(
-        `${chalk.cyan.bold("No files types selected")} ${
-          emoji.airplane_departure
-        } . Finished`
+        `${chalk.cyan.bold(
+          `[${new Date().toLocaleTimeString()}] Start generating files.`
+        )} ${emoji.pizza}`
       );
-      resolve();
-      return;
+      let configOptions = makeDefaultConfigs();
+
+      modelGenerationCodeFirst(
+        configOptions.generationOptions,
+        entities,
+        flags
+      );
+      this.log(
+        `${chalk.cyan.bold(
+          `[${new Date().toLocaleTimeString()}] Files created.`
+        )} ${emoji.rocket}`
+      );
+    } catch (error) {
+      this.log(error);
+    } finally {
+      connection?.close();
     }
-
-    cli.action.start(
-      `${chalk.yellow.bold("Start generating files")} ${emoji.pizza}`
-    );
-
-    let entities = await gatherModelsInfo();
-    let configOptions = makeDefaultConfigs();
-
-    modelGenerationCodeFirst(configOptions.generationOptions, entities, flags);
-
-    cli.action.stop();
-
-    this.log(
-      `${chalk.cyan.bold("Files generated succesfully")} ${emoji.rocket}`
-    );
   }
 }
 
-const gatherModelsInfo = async () => {
+const getConnection = async () => {
   const connectionOptionsReader = new ConnectionOptionsReader({
     root: process.cwd(),
     configName: "ormconfig",
@@ -129,13 +172,23 @@ const gatherModelsInfo = async () => {
     logging: false,
   };
 
-  //const connection = await createConnection(connectionOptions);
-  //const entities = connection.entityMetadatas.map((m) => ({
-  //   name: m.name,
-  //   relations: `[${m.relations.map((r) => (r.type as any).name).join(", ")}]`,
-  // }));
+  return await createConnection(connectionOptions);
+};
 
-  const connection = await createConnection(connectionOptions); 
+const getAllTables = async (connection: Connection) => {
+  const tables: { name: string; value: string }[] = [];
+  const entitiesMetadata = connection.entityMetadatas;
+  entitiesMetadata.forEach((metadata) => {
+    const table: { name: string; value: string } = {
+      name: metadata.name,
+      value: metadata.name,
+    };
+    tables.push(table);
+  });  
+  return tables;
+};
+
+const gatherModelsInfo = async (connection: Connection) => {
   const entitiesMetadata = connection.entityMetadatas;
   const entities = generateModelEntities(entitiesMetadata);
   return entities;
@@ -154,60 +207,71 @@ const generateModelEntities = async (entityMetadata: EntityMetadata[]) => {
       columns: [],
     };
 
-    const propertyColumns = await generateEntityColumns(metadata.columns);
-    const relationColumns = await generateRelationColumns(metadata.relations);
-    let filteredColumns: Column[] = [];
-
-    propertyColumns.forEach((column) => {
-      let exists = relationColumns.some((relation) => column.tscName === relation.tscName);
-      if(!exists){
-        filteredColumns.push(column);
-      }
-    });   
-
-    entity.columns = [...filteredColumns, ...relationColumns];
+    const { columns, relations } = await generateColumnsAndRelations(
+      metadata.columns
+    );
+    relations.push(...generateRelations(metadata.relations));
+    entity.columns = columns;
+    entity.relations = relations;
     entities.push(entity);
   }
   return entities;
 };
 
-const generateEntityColumns = async (cols: ColumnMetadata[]) => {
+const generateColumnsAndRelations = (cols: ColumnMetadata[]) => {
   const columns: Column[] = [];
+  const relations: Relation[] = [];
   cols.forEach((columnMetadata) => {
-    const column: Column = {
-      tscName: columnMetadata.propertyName,
-      tscType: getColumnTscType(columnMetadata.type),
-      type: columnMetadata.type,
-      primary: columnMetadata.isPrimary,
-      options: {
-        name: columnMetadata.databaseName,
-        nullable: columnMetadata.isNullable,
-      },
-    };
-    columns.push(column);
+    if (!columnMetadata.relationMetadata) {
+      const column: Column = {
+        tscName: columnMetadata.propertyName,
+        tscType: getColumnTscType(columnMetadata.type),
+        type: columnMetadata.type,
+        primary: columnMetadata.isPrimary,
+        options: {
+          name: columnMetadata.databaseName,
+          nullable: columnMetadata.isNullable,
+        },
+      };
+      columns.push(column);
+    } else {
+      const relationMetadata = columnMetadata.relationMetadata;
+      const relation: Relation = {
+        fieldName: relationMetadata.propertyName,
+        relationType: getRelationType(relationMetadata),
+        relatedField: relationMetadata.inverseRelation?.propertyName!,
+        relatedTable: relationMetadata.inverseEntityMetadata.tableName,
+      };
+      relations.push(relation);
+    }
   });
 
-  return columns;
+  return { columns, relations };
 };
 
-const generateRelationColumns = async (
-  relations: RelationMetadata[]
-): Promise<Column[]> => {
-  const columns: Column[] = [];
-  relations.forEach((relation) => {
-    const column: Column = {
-      tscName: relation.propertyName,
-      tscType: relation.inverseEntityMetadata.name,
-      type: relation.inverseEntityMetadata.name,
-      primary: false,
-      options: {
-        name: relation.inverseEntityMetadata.name,
-        nullable: relation.isNullable,
-      },
+const generateRelations = (relationsMetadata: RelationMetadata[]):Relation[] => {
+  const relations:Relation[] = [];
+  relationsMetadata.forEach((metadata) => {
+    const relation: Relation = {
+      fieldName: metadata.propertyName,
+      relationType: getRelationType(metadata),
+      relatedField: metadata.inverseRelation?.propertyName!,
+      relatedTable: metadata.inverseEntityMetadata.tableName
     };
-    columns.push(column);
-  });
-  return columns;
+    relation.fieldName = metadata.propertyName
+    relations.push(relation);
+  })
+  return relations;
+}
+
+const getRelationType = (relation: RelationMetadata) => {
+  return relation.isManyToMany
+    ? "ManyToMany"
+    : relation.isManyToOne
+    ? "ManyToOne"
+    : relation.isOneToMany
+    ? "OneToMany"
+    : "OneToOne";
 };
 
 const getColumnTscType = (columnType: ColumnType) => {

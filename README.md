@@ -119,7 +119,7 @@ $ npm install -g merlin-gql
 $ merlin-gql COMMAND
 running command...
 $ merlin-gql (-v|--version|version)
-merlin-gql/0.2.12 win32-x64 node-v10.15.0
+merlin-gql/0.2.13 win32-x64 node-v10.15.0
 $ merlin-gql --help [COMMAND]
 USAGE
   $ merlin-gql COMMAND
@@ -130,6 +130,7 @@ USAGE
 # Commands
 <!-- commands -->
 * [`merlin-gql db-reverse`](#merlin-gql-db-reverse)
+* [`merlin-gql generate:crud`](#merlin-gql-generatecrud)
 * [`merlin-gql generate:entity`](#merlin-gql-generateentity)
 * [`merlin-gql help [COMMAND]`](#merlin-gql-help-command)
 * [`merlin-gql list:entities`](#merlin-gql-listentities)
@@ -206,7 +207,33 @@ DESCRIPTION
      You can also run program without specifying any parameters to launch interactive mode.
 ```
 
-_See code: [src\commands\db-reverse.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.12/src\commands\db-reverse.ts)_
+_See code: [src\commands\db-reverse.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.13/src\commands\db-reverse.ts)_
+
+## `merlin-gql generate:crud`
+
+Generate input, filter, sort GraphQL models and GraphQL resolvers from entity models.
+
+```
+USAGE
+  $ merlin-gql generate:crud
+
+OPTIONS
+  -f, --filter    Generate filter GraphQL model from entity model
+  -i, --input     Generate input GraphQL model from entity model
+  -r, --resolver  Generate GraphQL resolver from entity model
+  -s, --sort      Generate sort GraphQL model from entity model
+  --help          show CLI help
+
+DESCRIPTION
+  Usage: merlin-gql generate:crud -i -f -s -r
+
+       You can also run program without specifying any parameters to launch interactive mode.
+
+EXAMPLE
+  $ merlin-gql generate:crud
+```
+
+_See code: [src\commands\generate\crud.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.13/src\commands\generate\crud.ts)_
 
 ## `merlin-gql generate:entity`
 
@@ -227,7 +254,7 @@ EXAMPLE
   $ merlin-gql generate:entity
 ```
 
-_See code: [src\commands\generate\entity.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.12/src\commands\generate\entity.ts)_
+_See code: [src\commands\generate\entity.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.13/src\commands\generate\entity.ts)_
 
 ## `merlin-gql help [COMMAND]`
 
@@ -261,7 +288,7 @@ EXAMPLE
   $ merlin-gql list:entities
 ```
 
-_See code: [src\commands\list\entities.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.12/src\commands\list\entities.ts)_
+_See code: [src\commands\list\entities.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.13/src\commands\list\entities.ts)_
 
 ## `merlin-gql new`
 
@@ -293,5 +320,5 @@ ALIASES
   $ merlin-gql new
 ```
 
-_See code: [src\commands\new.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.12/src\commands\new.ts)_
+_See code: [src\commands\new.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.13/src\commands\new.ts)_
 <!-- commandsstop -->

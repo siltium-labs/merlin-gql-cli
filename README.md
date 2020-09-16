@@ -1,5 +1,5 @@
 
-![Logo](https://i.imgur.com/JfeUASw.png)
+![Logo](https://i.imgur.com/4Yf8iaI.png)
 
 [![Version](https://img.shields.io/npm/v/merlin-gql.svg)](https://npmjs.org/package/merlin-gql)
 [![Downloads/week](https://img.shields.io/npm/dw/merlin-gql.svg)](https://npmjs.org/package/merlin-gql)

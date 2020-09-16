@@ -17,6 +17,8 @@ import {
   createModelFromDatabase,
 } from "../db-reverse/generation/engine";
 import { IConnectionOptions } from "../db-reverse/library";
+import chalk from 'chalk';
+import { emoji } from 'node-emoji';
 
 export interface IDBReverseFlags {
   help: void;
@@ -205,11 +207,12 @@ export default class DBReverse extends Command {
     await createModelFromDatabase(
       driver,
       options.connectionOptions,
-      options.generationOptions
+      options.generationOptions      
     );
+
     this.log(
-      `[${new Date().toLocaleTimeString()}] Merlin GQL model classes created.`
-    );  
+      `${chalk.cyan.bold(`[${new Date().toLocaleTimeString()}] Merlin GQL model classes created.`)} ${emoji.rocket}`
+    );    
   }
 
   checkFlagsParameters(

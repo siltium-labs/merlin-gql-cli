@@ -7,26 +7,26 @@
 ![Logo](https://i.imgur.com/VXoAHdq.png) Merlin GQL
 ==========
 
-**Merlin GQL** is a framework to create Graphql APIs using ***Typescript***, ***TypeORM*** and ***TypeGraphQL*** whose aim is to make developing database oriented GraphQL APIs as simple and straightforward as possible without making compromises on customization or extensibility of your APIs.
+**Merlin GQL** is a framework to create Graphql APIs using ***Typescript***, ***TypeORM*** and ***TypeGraphQL*** with the objective of making the development of database oriented GraphQL APIs as simple and straightforward as possible without making compromises on customization or extensibility.
 
-We simplify common use cases with out of the box features that help developers to simplify and speed up the development of GraphQL APIs.
+We provide solutions to common use cases with **out of the box features** to simplify and speed up the development of GraphQL APIs.
 
 ## Features
   
  
 ### Code Generation
-Merlin GQL has a cli that will generate pretty much everything you need to make a functional GraphQL API.
+Merlin GQL has a **CLI** that will generate pretty much everything you need to make a functional GraphQL API.
 
-You can develop your API using two approaches, both are covered in the **TypeORM Entities** section of the documentation
+You can develop your API using two approaches, which are covered in the **TypeORM Entities** section of the documentation:
 
-- Database First (reverse engineering an existing database)
-- Code First (creating your database entities in the code and synchronizing your database schema with your code)
+- Database First (doing reverse engineering on an existing database)
+- Code First (writing your database entities in the code and synchronizing your database schema with *TypeORM*)
 
 You can switch from one to the other at *any point* and starting with either *doesn't lock you* into using that strategy through the rest of the development cycle of your API.
 
 ### Templates
 
-Using the CLI you can create the basic structure of your API and you can select between a *basic* and an *example* template, which will showcase and provide example code for all of the features included in Merlin GQL plus some examples of customizations that you might find usefull later. We encourage to select our example template as a guide and starting point if this is the first time using this framework.
+Using the CLI, you can create the basic structure of your API by selecting between a ***Basic*** and an ***Example*** template, the latter will showcase and provide example code for all of the features included in Merlin GQL along with some examples of customizations that you might find usefull. We encourage to select this template as a guide and starting point if this is your first time using this framework.
 
 ### Authentication and Authorization
 
@@ -36,11 +36,13 @@ For more information on this feature please refer to the **Authentication and Au
 
 ### Data Generation
 
-We provide some simple tools and guidelines for automatically generating testing data for your API, this step is often overlooked and will help you to create "fake" data in order to have some interesting data for your tests, measure performance, put your API in stress or simply provide a starting point for the developer and avoid an empty database.
+We provide some simple tools and guidelines for automatically generating testing data for your API, this step is often overlooked and will help you to create "fake" entries in your database in order to have some interesting data for your tests, measure performance, put your API in stress or simply provide a starting point for the developer and avoid an empty database.
 
 ## Getting Started
 
-To start with Merlin GQL, we strongly recommend to install our CLI, you might find it really usefull and it will speed up your development, altough *it is not required*.
+To start with Merlin GQL, we strongly recommend to install our CLI, you might find it usefull and it will speed up your development, altough *it is not required*. 
+
+> All the things done with the CLI can be done manually altough some of them might take a considerably larger ammount of time when done this way
 
 ### CLI Installation
 
@@ -77,13 +79,13 @@ Once you run the command, the CLI will guide ask you to choose a template for yo
 
 As previously recommended, if this is your first time using Merlin GQL or you want to explore it's features, we recommend to select the **Example** template.
 
+![Imgur](https://i.imgur.com/fLOu3ut.png)
+
 
 ### Example Template
 
 
-The first thing the CLI will ask you for, is the *name* of your project.
-
-![Imgur](https://i.imgur.com/fLOu3ut.png)
+The first thing the CLI will ask you for, is the **name** of your project.
 
 > You can use blank spaces or uppercase characters in your project name, the CLI will automatically make a ***kebab case*** version of your project name to create a folder and use that name in the generated package.json. For example, if you name your project **My App**, the CLI will create a ***my-app*** folder.
 
@@ -100,6 +102,10 @@ Finally, the CLI will ask you if you want to enable *ngrok* for remote testing o
 ***ngrok*** is a tool that will create a reverse proxy to your API accessible from anywhere and will allow you to easily access your API from outside of your local machile or lan network, it is very usefull when testing your API with a mobile client or from a remote connection, we recommend to select ***yes*** and allow the CLI to configure ngrok for you.
 
 >For more information  **ngrok** and and how it does work, please refer to https://ngrok.com/
+
+### Project Structure
+
+
 
 
 ## CLI Commands

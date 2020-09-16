@@ -11,6 +11,7 @@ import IGenerationOptions, {
 import { Entity } from "../models/entity";
 import { Relation } from "../models/relation";
 import { singular } from "pluralize";
+import { ModelGenerationOptions } from '../../commands/generate/crud';
 
 const prettierOptions: Prettier.Options = {
   parser: "typescript",
@@ -44,10 +45,30 @@ export default function modelGenerationPhase(
   generateFiles(databaseModel, generationOptions, entitiesPath);
 }
 
+export function modelGenerationCodeFirst(
+  generationOptions: IGenerationOptions,
+  databaseModel: Entity[],
+  flags: ModelGenerationOptions
+) {
+  createHandlebarsHelpers(generationOptions);
+  const resultPath = generationOptions.resultsPath;
+  if (!fs.existsSync(resultPath)) {
+    fs.mkdirSync(resultPath);
+  }
+  let entitiesPath = resultPath;
+  if (!generationOptions.noConfigs) {
+    entitiesPath = path.resolve(resultPath, "./entities");
+    if (!fs.existsSync(entitiesPath)) {
+      fs.mkdirSync(entitiesPath);
+    }
+  }
+  generateGraphQLFiles(databaseModel, generationOptions, entitiesPath, flags);
+}
+
 function generateFiles(
   databaseModel: Entity[],
   generationOptions: IGenerationOptions,
-  entitiesPath: string
+  entitiesPath: string  
 ) {
   const entityTemplatePath = path.resolve(
     __dirname,
@@ -100,7 +121,7 @@ function generateFiles(
     noEscape: true,
   });
 
-  databaseModel.forEach((element) => {    
+  databaseModel.forEach((element) => {
     let casedFileName = "";
     switch (generationOptions.convertCaseFile) {
       case "camel":
@@ -167,6 +188,126 @@ function generateFiles(
       resolverCompliedTemplate,
       element
     );
+  });
+}
+
+function generateGraphQLFiles(
+  databaseModel: Entity[],
+  generationOptions: IGenerationOptions,
+  entitiesPath: string,
+  flags: ModelGenerationOptions
+) { 
+  const filtersTemplatePath = path.resolve(
+    __dirname,
+    "../templates",
+    "filters.handlebars"
+  );
+  const sortsTemplatePath = path.resolve(
+    __dirname,
+    "../templates",
+    "sorts.handlebars"
+  );
+  const inputsTemplatePath = path.resolve(
+    __dirname,
+    "../templates",
+    "inputs.handlebars"
+  );
+  const resolverTemplatePath = path.resolve(
+    __dirname,
+    "../templates",
+    "resolver.handlebars"
+  );  
+
+  const filtersTemplate = fs.readFileSync(filtersTemplatePath, "utf-8");
+  const filtersCompliedTemplate = Handlebars.compile(filtersTemplate, {
+    noEscape: true,
+  });
+
+  const sortsTemplate = fs.readFileSync(sortsTemplatePath, "utf-8");
+  const sortsCompliedTemplate = Handlebars.compile(sortsTemplate, {
+    noEscape: true,
+  });
+
+  const inputsTemplate = fs.readFileSync(inputsTemplatePath, "utf-8");
+  const inputsCompliedTemplate = Handlebars.compile(inputsTemplate, {
+    noEscape: true,
+  });
+
+  const resolverTemplate = fs.readFileSync(resolverTemplatePath, "utf-8");
+  const resolverCompliedTemplate = Handlebars.compile(resolverTemplate, {
+    noEscape: true,
+  });
+
+  databaseModel.forEach((element) => {
+    let casedFileName = "";
+    switch (generationOptions.convertCaseFile) {
+      case "camel":
+        casedFileName = changeCase.camelCase(element.tscName);
+        break;
+      case "param":
+        casedFileName = changeCase.paramCase(element.tscName);
+        break;
+      case "pascal":
+        casedFileName = changeCase.pascalCase(element.tscName);
+        break;
+      case "none":
+        casedFileName = element.tscName;
+        break;
+      default:
+        throw new Error("Unknown case style 1");
+    }
+
+    element.tscName = singular(element.tscName);
+    let baseFileName = singular(casedFileName);
+    let filesPathModels = path.join(entitiesPath, "models", baseFileName);
+    let filesPathResolvers = path.join(entitiesPath, "resolvers");
+
+    fs.mkdirSync(filesPathModels, { recursive: true });
+    fs.mkdirSync(filesPathResolvers, { recursive: true });
+     
+    if(flags.filter){
+      generateFilters(
+        databaseModel,
+        generationOptions,
+        baseFileName,
+        filesPathModels,
+        filtersCompliedTemplate,
+        element
+      );
+    }
+    
+    if(flags.sort){
+      generateSort(
+        databaseModel,
+        generationOptions,
+        baseFileName,
+        filesPathModels,
+        sortsCompliedTemplate,
+        element
+      );
+    }
+
+    if(flags.input){
+      generateInput(
+        databaseModel,
+        generationOptions,
+        baseFileName,
+        filesPathModels,
+        inputsCompliedTemplate,
+        element
+      );
+    }
+
+    if(flags.resolver){
+      generateResolver(
+        databaseModel,
+        generationOptions,
+        baseFileName,
+        filesPathResolvers,
+        resolverCompliedTemplate,
+        element
+      );
+    }   
   });
 }
 
@@ -350,6 +491,31 @@ function createHandlebarsHelpers(generationOptions: IGenerationOptions): void {
       if (generationOptions.lazy) {
         retVal = `Promise<${retVal}>`;
       }
+      return retVal;
+    }
+  );
+
+  Handlebars.registerHelper(
+    "toGraphQLSortRelation",
+    (entityType: string, relationType: Relation["relationType"]) => {
+      let retVal = entityType;
+      if (relationType === "ManyToMany" || relationType === "OneToMany") {
+        retVal = `[${retVal}Sorts]`;
+      }     
+      else{
+        retVal = `${retVal}Sorts`;
+      } 
+      return retVal;
+    }
+  );
+
+  Handlebars.registerHelper(
+    "toGraphQLRelation",
+    (entityType: string, relationType: Relation["relationType"]) => {
+      let retVal = entityType;
+      if (relationType === "ManyToMany" || relationType === "OneToMany") {
+        retVal = `[${retVal}]`;
+      }      
       return retVal;
     }
   );

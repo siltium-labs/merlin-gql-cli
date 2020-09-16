@@ -56,6 +56,8 @@ export async function createModelFromDatabase(
   );
   modelGenerationPhase(connectionOptions, generationOptions, dbModel);
 }
+
+
 export async function dataCollectionPhase(
   driver: AbstractDriver,
   connectionOptions: IConnectionOptions,

@@ -90,7 +90,7 @@ export const EntityToGraphResolver: IEntityResolver = {
           (node) => !isPageInfoFieldNode(<FieldNode>node)
         )
       );
-      const fields = getQueryData(fieldsNode, modelType);
+      const fields = getQueryData(fieldsNode, modelType, criteria?.sort);
       const modelAlias =
         inheritedQb?.alias ??
         modelType.name[0].toLowerCase() + modelType.name.substring(1);

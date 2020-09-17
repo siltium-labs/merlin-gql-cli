@@ -10,6 +10,7 @@ export * from "./type-graphql/resolvers/delete-resolver";
 export * from "./type-graphql/resolvers/list-resolver";
 export * from "./type-graphql/resolvers/find-resolver";
 export * from "./type-graphql/models/base-sort-fields";
+export * from "./type-graphql/models/simple-base-sort-fields";
 export * from "./type-graphql/resolvers/filter-field";
 export * from "./type-graphql/resolvers/paginated-response";
 export * from "./context";

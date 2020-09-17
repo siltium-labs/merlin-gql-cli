@@ -1,3 +1,4 @@
+import { SortField } from "./../models/base-sort-fields";
 import { FieldNode } from "graphql";
 import { Brackets, WhereExpression, SelectQueryBuilder } from "typeorm";
 import * as uuid from "uuid";
@@ -135,12 +136,16 @@ export const criteriaToQbOrderBy = (
 ): SelectQueryBuilder<BaseModel> => {
   if (!sort) return qb;
   Object.keys(sort)
-    .map((property) => ({ property: property, direction: sort[property] }))
+
+    .map((property) => ({ property: property, directives: sort[property] }))
+    .sort((a, b) => b.directives.priority - a.directives.priority)
     .map((criterion) => {
       const propName = dotSplitedPropToQbAlias(criterion.property, prefix);
       qb.addOrderBy(
         propName,
-        criterion.direction === SortDirectionsEnum.DESC ? "DESC" : "ASC"
+        criterion.directives.direction === SortDirectionsEnum.DESC
+          ? "DESC"
+          : "ASC"
       );
     });
   return qb;
@@ -235,13 +240,8 @@ registerEnumType(SortDirectionsEnum, {
   description: "The direction on which you wish to sort..", // this one is optional
 });
 
-export interface ISortCriterion {
-  property: string;
-  direction: SortDirectionsEnum;
-}
-
 type SortedProperties = {
-  [key: string]: SortDirectionsEnum;
+  [key: string]: SortField;
 };
 
 export interface ISortCriteria extends SortedProperties {}

@@ -6,7 +6,7 @@ export const Sorts = (sortsType: typeof BaseInputFields) => {
     Reflect.defineMetadata(
       ModelDecoratorMetadataKeys.Sort,
       sortsType,
-      target
+      target 
     );
   };
 };

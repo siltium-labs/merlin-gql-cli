@@ -1,16 +1,9 @@
-import { Column } from "./../../db-reverse/models/column";
 import { Command } from "@oclif/command";
-import {
-  createConnection,
-  ConnectionOptionsReader,
-  EntityMetadata,
-  ColumnType,
-} from "typeorm";
 import { cli } from "cli-ux";
-import { Entity } from "../../db-reverse/library";
-import { makeDefaultConfigs } from "../../db-reverse";
-import modelCustomizationPhase from "../../db-reverse/generation/model-customization";
-import { modelGenerationCodeFirst } from "../../db-reverse/generation/model-generation";
+import {
+  ConnectionOptionsReader, createConnection
+} from "typeorm";
+
 
 export default class EntitiesList extends Command {
   static aliases = ["l"];

@@ -23,6 +23,7 @@ import { FieldNode, GraphQLResolveInfo, SelectionNode } from "graphql";
 export const getQueryData = (
   info: FieldNode,
   modelType: typeof BaseModel,
+  sort?: ISortCriteria,
   omitedFields?: Array<string>
 ): IQueryData => {
   const queryData: IQueryData = {
@@ -40,7 +41,10 @@ export const getQueryData = (
         .map((r) => r.name)
         .includes(field) && Object.keys(new modelType()).includes(field)
   );
-  queryData.selectedFields = mainEntityRequestedFields;
+  queryData.selectedFields = [
+    ...mainEntityRequestedFields,
+    ...(sort ? getAllPropertiesFromSort(sort) : []),
+  ];
   const relatedEntities = allRequestedFields.filter((field) =>
     modelType
       .getRelations()
@@ -61,6 +65,7 @@ export const getQueryData = (
           const relatedFieldsFromInfo = getQueryData(
             relatedInfo,
             relatedModel.model,
+            undefined,
             omitedFields
           );
           const subqueryData: ISubQueryData = {

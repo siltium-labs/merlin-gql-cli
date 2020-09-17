@@ -108,16 +108,14 @@ export default class GenerateCrud extends Command {
 
       let entities = await gatherModelsInfo(connection);
       if (!flags.all) {
-        const selectedModels: {models: string[]} = await inquirer.prompt([
+        const selectedModels: { models: string[] } = await inquirer.prompt([
           {
             name: "models",
-            message: `Select for wich models do you want to generate files`,
+            message: `Select the target models`,
             type: "checkbox",
             choices: (answers) => getAllTables(connection!),
           },
         ]);
-
-        console.log("PEPE:", selectedModels);
 
         if (selectedModels.models.length > 0) {
           entities = entities.filter((entity) =>
@@ -132,12 +130,10 @@ export default class GenerateCrud extends Command {
           return;
         }
       }
-
-      this.log(
-        `${chalk.cyan.bold(
-          `[${new Date().toLocaleTimeString()}] Start generating files.`
-        )} ${emoji.pizza}`
+      cli.action.start(
+        `${chalk.cyan.bold(`Generating files.`)} ${emoji.pizza}`
       );
+
       let configOptions = makeDefaultConfigs();
 
       modelGenerationCodeFirst(
@@ -145,11 +141,7 @@ export default class GenerateCrud extends Command {
         entities,
         flags
       );
-      this.log(
-        `${chalk.cyan.bold(
-          `[${new Date().toLocaleTimeString()}] Files created.`
-        )} ${emoji.rocket}`
-      );
+      cli.action.stop();
     } catch (error) {
       this.log(error);
     } finally {
@@ -184,7 +176,7 @@ const getAllTables = async (connection: Connection) => {
       value: metadata.name,
     };
     tables.push(table);
-  });  
+  });
   return tables;
 };
 
@@ -217,7 +209,7 @@ const generateModelEntities = async (entityMetadata: EntityMetadata[]) => {
 };
 
 const generateColumns = (cols: ColumnMetadata[]) => {
-  const columns: Column[] = [];  
+  const columns: Column[] = [];
   cols.forEach((columnMetadata) => {
     if (!columnMetadata.relationMetadata) {
       const column: Column = {
@@ -231,25 +223,27 @@ const generateColumns = (cols: ColumnMetadata[]) => {
         },
       };
       columns.push(column);
-    } 
+    }
   });
   return columns;
 };
 
-const generateRelations = (relationsMetadata: RelationMetadata[]):Relation[] => {
-  const relations:Relation[] = [];
+const generateRelations = (
+  relationsMetadata: RelationMetadata[]
+): Relation[] => {
+  const relations: Relation[] = [];
   relationsMetadata.forEach((metadata) => {
     const relation: Relation = {
       fieldName: metadata.propertyName,
       relationType: getRelationType(metadata),
       relatedField: metadata.inverseRelation?.propertyName!,
-      relatedTable: metadata.inverseEntityMetadata.tableName
+      relatedTable: metadata.inverseEntityMetadata.tableName,
     };
-    relation.fieldName = metadata.propertyName
+    relation.fieldName = metadata.propertyName;
     relations.push(relation);
-  })
+  });
   return relations;
-}
+};
 
 const getRelationType = (relation: RelationMetadata) => {
   return relation.isManyToMany

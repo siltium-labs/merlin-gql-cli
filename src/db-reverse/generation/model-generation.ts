@@ -11,7 +11,7 @@ import IGenerationOptions, {
 import { Entity } from "../models/entity";
 import { Relation } from "../models/relation";
 import { singular } from "pluralize";
-import { ModelGenerationOptions } from '../../commands/generate/crud';
+import { ModelGenerationOptions } from "../../commands/generate/crud";
 
 const prettierOptions: Prettier.Options = {
   parser: "typescript",
@@ -20,11 +20,11 @@ const prettierOptions: Prettier.Options = {
   printWidth: 200,
 };
 
-export default function modelGenerationPhase(
+const modelGenerationPhase = (
   connectionOptions: IConnectionOptions,
   generationOptions: IGenerationOptions,
   databaseModel: Entity[]
-): void {
+): void => {
   createHandlebarsHelpers(generationOptions);
 
   const resultPath = generationOptions.resultsPath;
@@ -43,13 +43,13 @@ export default function modelGenerationPhase(
   }
 
   generateFiles(databaseModel, generationOptions, entitiesPath);
-}
+};
 
-export function modelGenerationCodeFirst(
+export const modelGenerationCodeFirst = (
   generationOptions: IGenerationOptions,
   databaseModel: Entity[],
   flags: ModelGenerationOptions
-) {
+) => {
   createHandlebarsHelpers(generationOptions);
   const resultPath = generationOptions.resultsPath;
   if (!fs.existsSync(resultPath)) {
@@ -63,13 +63,13 @@ export function modelGenerationCodeFirst(
     }
   }
   generateGraphQLFiles(databaseModel, generationOptions, entitiesPath, flags);
-}
+};
 
-function generateFiles(
+const generateFiles = (
   databaseModel: Entity[],
   generationOptions: IGenerationOptions,
-  entitiesPath: string  
-) {
+  entitiesPath: string
+) => {
   const entityTemplatePath = path.resolve(
     __dirname,
     "../templates",
@@ -149,7 +149,6 @@ function generateFiles(
     fs.mkdirSync(filesPathResolvers, { recursive: true });
 
     generateEntity(
-      databaseModel,
       generationOptions,
       baseFileName,
       filesPathModels,
@@ -157,7 +156,6 @@ function generateFiles(
       element
     );
     generateFilters(
-      databaseModel,
       generationOptions,
       baseFileName,
       filesPathModels,
@@ -165,7 +163,6 @@ function generateFiles(
       element
     );
     generateSort(
-      databaseModel,
       generationOptions,
       baseFileName,
       filesPathModels,
@@ -173,7 +170,6 @@ function generateFiles(
       element
     );
     generateInput(
-      databaseModel,
       generationOptions,
       baseFileName,
       filesPathModels,
@@ -181,7 +177,6 @@ function generateFiles(
       element
     );
     generateResolver(
-      databaseModel,
       generationOptions,
       baseFileName,
       filesPathResolvers,
@@ -189,14 +184,14 @@ function generateFiles(
       element
     );
   });
-}
+};
 
-function generateGraphQLFiles(
+const generateGraphQLFiles = (
   databaseModel: Entity[],
   generationOptions: IGenerationOptions,
   entitiesPath: string,
   flags: ModelGenerationOptions
-) { 
+) => {
   const filtersTemplatePath = path.resolve(
     __dirname,
     "../templates",
@@ -216,7 +211,7 @@ function generateGraphQLFiles(
     __dirname,
     "../templates",
     "resolver.handlebars"
-  );  
+  );
 
   const filtersTemplate = fs.readFileSync(filtersTemplatePath, "utf-8");
   const filtersCompliedTemplate = Handlebars.compile(filtersTemplate, {
@@ -264,10 +259,9 @@ function generateGraphQLFiles(
 
     fs.mkdirSync(filesPathModels, { recursive: true });
     fs.mkdirSync(filesPathResolvers, { recursive: true });
-     
-    if(flags.filter){
+
+    if (flags.filter) {
       generateFilters(
-        databaseModel,
         generationOptions,
         baseFileName,
         filesPathModels,
@@ -275,10 +269,9 @@ function generateGraphQLFiles(
         element
       );
     }
-    
-    if(flags.sort){
+
+    if (flags.sort) {
       generateSort(
-        databaseModel,
         generationOptions,
         baseFileName,
         filesPathModels,
@@ -287,9 +280,8 @@ function generateGraphQLFiles(
       );
     }
 
-    if(flags.input){
+    if (flags.input) {
       generateInput(
-        databaseModel,
         generationOptions,
         baseFileName,
         filesPathModels,
@@ -298,93 +290,87 @@ function generateGraphQLFiles(
       );
     }
 
-    if(flags.resolver){
+    if (flags.resolver) {
       generateResolver(
-        databaseModel,
         generationOptions,
         baseFileName,
         filesPathResolvers,
         resolverCompliedTemplate,
         element
       );
-    }   
+    }
   });
-}
+};
 
-function generateEntity(
-  databaseModel: Entity[],
+const generateEntity = (
   generationOptions: IGenerationOptions,
   baseFileName: string,
   filesPath: string,
   entityCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
-) {
+) => {
   const filePath = path.resolve(filesPath, `${baseFileName}.model.ts`);
   const rendered = entityCompliedTemplate(element);
   writeFile(rendered, generationOptions, element, filePath);
-}
+};
 
-function generateFilters(
-  databaseModel: Entity[],
+const generateFilters = (
   generationOptions: IGenerationOptions,
   baseFileName: string,
   filesPath: string,
   filtersCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
-) {
+) => {
   const filePath = path.resolve(filesPath, `${baseFileName}-filters.model.ts`);
   const rendered = filtersCompliedTemplate(element);
   writeFile(rendered, generationOptions, element, filePath);
-}
+};
 
-function generateSort(
-  databaseModel: Entity[],
+const generateSort = (
   generationOptions: IGenerationOptions,
   baseFileName: string,
   filesPath: string,
   sortCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
-) {
+) => {
   const filePath = path.resolve(filesPath, `${baseFileName}-sorts.model.ts`);
   const rendered = sortCompliedTemplate(element);
   writeFile(rendered, generationOptions, element, filePath);
-}
+};
 
-function generateInput(
-  databaseModel: Entity[],
+const generateInput = (
   generationOptions: IGenerationOptions,
   baseFileName: string,
   filesPath: string,
   inputCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
-) {
+) => {
   const filePath = path.resolve(filesPath, `${baseFileName}-inputs.model.ts`);
   const rendered = inputCompliedTemplate(element);
   writeFile(rendered, generationOptions, element, filePath);
-}
+};
 
-function generateResolver(
-  databaseModel: Entity[],
+const generateResolver = (
   generationOptions: IGenerationOptions,
   baseFileName: string,
   filesPath: string,
   inputCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
-) {
+) => {
   const filePath = path.resolve(filesPath, `${baseFileName}.resolver.ts`);
   const rendered = inputCompliedTemplate({
     ...element,
     secureResolvers: generationOptions.secureResolvers,
   });
   writeFile(rendered, generationOptions, element, filePath);
-}
+};
 
-function writeFile(
+const writeFile = (
   rendered: any,
   generationOptions: IGenerationOptions,
   element: Entity,
   filePath: string
-) {
+) => {
   const withImportStatements = removeUnusedImports(
     EOL !== eolConverter[generationOptions.convertEol]
       ? rendered.replace(
@@ -408,9 +394,9 @@ function writeFile(
     encoding: "utf-8",
     flag: "w",
   });
-}
+};
 
-function removeUnusedImports(rendered: string) {
+const removeUnusedImports = (rendered: string) => {
   const openBracketIndex = rendered.indexOf("{") + 1;
   const closeBracketIndex = rendered.indexOf("}");
   const imports = rendered
@@ -428,9 +414,9 @@ function removeUnusedImports(rendered: string) {
   return `${rendered.substring(0, openBracketIndex)}${distinctImports.join(
     ","
   )}${restOfEntityDefinition}`;
-}
+};
 
-function createHandlebarsHelpers(generationOptions: IGenerationOptions): void {
+const createHandlebarsHelpers = (generationOptions: IGenerationOptions) => {
   Handlebars.registerHelper("json", (context) => {
     const json = JSON.stringify(context);
     const withoutQuotes = json.replace(/"([^(")"]+)":/g, "$1:");
@@ -501,10 +487,9 @@ function createHandlebarsHelpers(generationOptions: IGenerationOptions): void {
       let retVal = entityType;
       if (relationType === "ManyToMany" || relationType === "OneToMany") {
         retVal = `[${retVal}Sorts]`;
-      }     
-      else{
+      } else {
         retVal = `${retVal}Sorts`;
-      } 
+      }
       return retVal;
     }
   );
@@ -515,10 +500,9 @@ function createHandlebarsHelpers(generationOptions: IGenerationOptions): void {
       let retVal = entityType;
       if (relationType === "ManyToMany" || relationType === "OneToMany") {
         retVal = `[${retVal}Filters]`;
-      }  
-      else{
+      } else {
         retVal = `${retVal}Filters`;
-      }     
+      }
       return retVal;
     }
   );
@@ -541,9 +525,9 @@ function createHandlebarsHelpers(generationOptions: IGenerationOptions): void {
     ne: (v1, v2) => v1 !== v2,
     or: (v1, v2) => v1 || v2,
   });
-}
+};
 
-function getEntityName(convertCase: string, str: string) {
+const getEntityName = (convertCase: string, str: string) => {
   let retStr = "";
   switch (convertCase) {
     case "camel":
@@ -565,4 +549,6 @@ function getEntityName(convertCase: string, str: string) {
       throw new Error("Unknown case style 2");
   }
   return retStr;
-}
+};
+
+export default modelGenerationPhase;

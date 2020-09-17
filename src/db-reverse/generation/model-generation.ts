@@ -11,7 +11,7 @@ import IGenerationOptions, {
 import { Entity } from "../models/entity";
 import { Relation } from "../models/relation";
 import { singular } from "pluralize";
-import { ModelGenerationOptions } from '../../commands/generate/crud';
+import { ModelGenerationOptions } from "../../commands/generate/crud";
 
 const prettierOptions: Prettier.Options = {
   parser: "typescript",
@@ -20,37 +20,37 @@ const prettierOptions: Prettier.Options = {
   printWidth: 200,
 };
 
-export default function modelGenerationPhase(
-  connectionOptions: IConnectionOptions,
-  generationOptions: IGenerationOptions,
-  databaseModel: Entity[]
-): void {
-  createHandlebarsHelpers(generationOptions);
+// const modelGenerationPhase = (
+//   generationOptions: IGenerationOptions,
+//   databaseModel: Entity[]
+// ): void => {
+//   createHandlebarsHelpers(generationOptions);
 
-  const resultPath = generationOptions.resultsPath;
+//   const resultPath = generationOptions.resultsPath;
 
-  if (!fs.existsSync(resultPath)) {
-    fs.mkdirSync(resultPath);
-  }
+//   if (!fs.existsSync(resultPath)) {
+//     fs.mkdirSync(resultPath);
+//   }
 
-  let entitiesPath = resultPath;
+//   let entitiesPath = resultPath;
 
-  if (!generationOptions.noConfigs) {
-    entitiesPath = path.resolve(resultPath, "./entities");
-    if (!fs.existsSync(entitiesPath)) {
-      fs.mkdirSync(entitiesPath);
-    }
-  }
+//   if (!generationOptions.noConfigs) {
+//     entitiesPath = path.resolve(resultPath, "./entities");
+//     if (!fs.existsSync(entitiesPath)) {
+//       fs.mkdirSync(entitiesPath);
+//     }
+//   }
 
-  generateFiles(databaseModel, generationOptions, entitiesPath);
-}
+//   generateFiles(databaseModel, generationOptions, entitiesPath);
+// };
 
-export function modelGenerationCodeFirst(
+export const generator = (
   generationOptions: IGenerationOptions,
   databaseModel: Entity[],
-  flags: ModelGenerationOptions
-) {
+  flags?: ModelGenerationOptions
+) => {
   createHandlebarsHelpers(generationOptions);
+  //TODO: change this to use process.cwd
   const resultPath = generationOptions.resultsPath;
   if (!fs.existsSync(resultPath)) {
     fs.mkdirSync(resultPath);
@@ -63,181 +63,135 @@ export function modelGenerationCodeFirst(
     }
   }
   generateGraphQLFiles(databaseModel, generationOptions, entitiesPath, flags);
-}
+};
 
-function generateFiles(
-  databaseModel: Entity[],
-  generationOptions: IGenerationOptions,
-  entitiesPath: string  
-) {
-  const entityTemplatePath = path.resolve(
-    __dirname,
-    "../templates",
-    "entity.handlebars"
-  );
-  const filtersTemplatePath = path.resolve(
-    __dirname,
-    "../templates",
-    "filters.handlebars"
-  );
-  const sortsTemplatePath = path.resolve(
-    __dirname,
-    "../templates",
-    "sorts.handlebars"
-  );
-  const inputsTemplatePath = path.resolve(
-    __dirname,
-    "../templates",
-    "inputs.handlebars"
-  );
-  const resolverTemplatePath = path.resolve(
-    __dirname,
-    "../templates",
-    "resolver.handlebars"
-  );
+// const generateFiles = (
+//   databaseModel: Entity[],
+//   generationOptions: IGenerationOptions,
+//   entitiesPath: string
+// ) => {
+//   const entityTemplatePath = path.resolve(
+//     __dirname,
+//     "../templates",
+//     "entity.handlebars"
+//   );
+//   const filtersTemplatePath = path.resolve(
+//     __dirname,
+//     "../templates",
+//     "filters.handlebars"
+//   );
+//   const sortsTemplatePath = path.resolve(
+//     __dirname,
+//     "../templates",
+//     "sorts.handlebars"
+//   );
+//   const inputsTemplatePath = path.resolve(
+//     __dirname,
+//     "../templates",
+//     "inputs.handlebars"
+//   );
+//   const resolverTemplatePath = path.resolve(
+//     __dirname,
+//     "../templates",
+//     "resolver.handlebars"
+//   );
 
-  const entityTemplate = fs.readFileSync(entityTemplatePath, "utf-8");
-  const entityCompliedTemplate = Handlebars.compile(entityTemplate, {
-    noEscape: true,
-  });
+//   const entityTemplate = fs.readFileSync(entityTemplatePath, "utf-8");
+//   const entityCompliedTemplate = Handlebars.compile(entityTemplate, {
+//     noEscape: true,
+//   });
 
-  const filtersTemplate = fs.readFileSync(filtersTemplatePath, "utf-8");
-  const filtersCompliedTemplate = Handlebars.compile(filtersTemplate, {
-    noEscape: true,
-  });
+//   const filtersTemplate = fs.readFileSync(filtersTemplatePath, "utf-8");
+//   const filtersCompliedTemplate = Handlebars.compile(filtersTemplate, {
+//     noEscape: true,
+//   });
 
-  const sortsTemplate = fs.readFileSync(sortsTemplatePath, "utf-8");
-  const sortsCompliedTemplate = Handlebars.compile(sortsTemplate, {
-    noEscape: true,
-  });
+//   const sortsTemplate = fs.readFileSync(sortsTemplatePath, "utf-8");
+//   const sortsCompliedTemplate = Handlebars.compile(sortsTemplate, {
+//     noEscape: true,
+//   });
 
-  const inputsTemplate = fs.readFileSync(inputsTemplatePath, "utf-8");
-  const inputsCompliedTemplate = Handlebars.compile(inputsTemplate, {
-    noEscape: true,
-  });
+//   const inputsTemplate = fs.readFileSync(inputsTemplatePath, "utf-8");
+//   const inputsCompliedTemplate = Handlebars.compile(inputsTemplate, {
+//     noEscape: true,
+//   });
 
-  const resolverTemplate = fs.readFileSync(resolverTemplatePath, "utf-8");
-  const resolverCompliedTemplate = Handlebars.compile(resolverTemplate, {
-    noEscape: true,
-  });
+//   const resolverTemplate = fs.readFileSync(resolverTemplatePath, "utf-8");
+//   const resolverCompliedTemplate = Handlebars.compile(resolverTemplate, {
+//     noEscape: true,
+//   });
 
-  databaseModel.forEach((element) => {
-    let casedFileName = "";
-    switch (generationOptions.convertCaseFile) {
-      case "camel":
-        casedFileName = changeCase.camelCase(element.tscName);
-        break;
-      case "param":
-        casedFileName = changeCase.paramCase(element.tscName);
-        break;
-      case "pascal":
-        casedFileName = changeCase.pascalCase(element.tscName);
-        break;
-      case "none":
-        casedFileName = element.tscName;
-        break;
-      default:
-        throw new Error("Unknown case style 1");
-    }
+//   databaseModel.forEach((element) => {
+//     let casedFileName = "";
+//     switch (generationOptions.convertCaseFile) {
+//       case "camel":
+//         casedFileName = changeCase.camelCase(element.tscName);
+//         break;
+//       case "param":
+//         casedFileName = changeCase.paramCase(element.tscName);
+//         break;
+//       case "pascal":
+//         casedFileName = changeCase.pascalCase(element.tscName);
+//         break;
+//       case "none":
+//         casedFileName = element.tscName;
+//         break;
+//       default:
+//         throw new Error("Unknown case style 1");
+//     }
 
-    element.tscName = singular(element.tscName);
-    let baseFileName = singular(casedFileName);
-    let filesPathModels = path.join(entitiesPath, "models", baseFileName);
-    let filesPathResolvers = path.join(entitiesPath, "resolvers");
+//     element.tscName = singular(element.tscName);
+//     let baseFileName = singular(casedFileName);
+//     let filesPathModels = path.join(entitiesPath, "models", baseFileName);
+//     let filesPathResolvers = path.join(entitiesPath, "resolvers");
 
-    fs.mkdirSync(filesPathModels, { recursive: true });
-    fs.mkdirSync(filesPathResolvers, { recursive: true });
+//     fs.mkdirSync(filesPathModels, { recursive: true });
+//     fs.mkdirSync(filesPathResolvers, { recursive: true });
 
-    generateEntity(
-      databaseModel,
-      generationOptions,
-      baseFileName,
-      filesPathModels,
-      entityCompliedTemplate,
-      element
-    );
-    generateFilters(
-      databaseModel,
-      generationOptions,
-      baseFileName,
-      filesPathModels,
-      filtersCompliedTemplate,
-      element
-    );
-    generateSort(
-      databaseModel,
-      generationOptions,
-      baseFileName,
-      filesPathModels,
-      sortsCompliedTemplate,
-      element
-    );
-    generateInput(
-      databaseModel,
-      generationOptions,
-      baseFileName,
-      filesPathModels,
-      inputsCompliedTemplate,
-      element
-    );
-    generateResolver(
-      databaseModel,
-      generationOptions,
-      baseFileName,
-      filesPathResolvers,
-      resolverCompliedTemplate,
-      element
-    );
-  });
-}
+//     generateEntity(
+//       generationOptions,
+//       baseFileName,
+//       filesPathModels,
+//       entityCompliedTemplate,
+//       element
+//     );
+//     generateFilters(
+//       generationOptions,
+//       baseFileName,
+//       filesPathModels,
+//       filtersCompliedTemplate,
+//       element
+//     );
+//     generateSort(
+//       generationOptions,
+//       baseFileName,
+//       filesPathModels,
+//       sortsCompliedTemplate,
+//       element
+//     );
+//     generateInput(
+//       generationOptions,
+//       baseFileName,
+//       filesPathModels,
+//       inputsCompliedTemplate,
+//       element
+//     );
+//     generateResolver(
+//       generationOptions,
+//       baseFileName,
+//       filesPathResolvers,
+//       resolverCompliedTemplate,
+//       element
+//     );
+//   });
+// };
 
-function generateGraphQLFiles(
+const generateGraphQLFiles = (
   databaseModel: Entity[],
   generationOptions: IGenerationOptions,
   entitiesPath: string,
-  flags: ModelGenerationOptions
-) { 
-  const filtersTemplatePath = path.resolve(
-    __dirname,
-    "../templates",
-    "filters.handlebars"
-  );
-  const sortsTemplatePath = path.resolve(
-    __dirname,
-    "../templates",
-    "sorts.handlebars"
-  );
-  const inputsTemplatePath = path.resolve(
-    __dirname,
-    "../templates",
-    "inputs.handlebars"
-  );
-  const resolverTemplatePath = path.resolve(
-    __dirname,
-    "../templates",
-    "resolver.handlebars"
-  );  
-
-  const filtersTemplate = fs.readFileSync(filtersTemplatePath, "utf-8");
-  const filtersCompliedTemplate = Handlebars.compile(filtersTemplate, {
-    noEscape: true,
-  });
-
-  const sortsTemplate = fs.readFileSync(sortsTemplatePath, "utf-8");
-  const sortsCompliedTemplate = Handlebars.compile(sortsTemplate, {
-    noEscape: true,
-  });
-
-  const inputsTemplate = fs.readFileSync(inputsTemplatePath, "utf-8");
-  const inputsCompliedTemplate = Handlebars.compile(inputsTemplate, {
-    noEscape: true,
-  });
-
-  const resolverTemplate = fs.readFileSync(resolverTemplatePath, "utf-8");
-  const resolverCompliedTemplate = Handlebars.compile(resolverTemplate, {
-    noEscape: true,
-  });
-
+  flags?: ModelGenerationOptions
+) => {
   databaseModel.forEach((element) => {
     let casedFileName = "";
     switch (generationOptions.convertCaseFile) {
@@ -264,10 +218,18 @@ function generateGraphQLFiles(
 
     fs.mkdirSync(filesPathModels, { recursive: true });
     fs.mkdirSync(filesPathResolvers, { recursive: true });
-     
-    if(flags.filter){
+
+    if (!flags || flags.filter) {
+      const filtersTemplatePath = path.resolve(
+        __dirname,
+        "../templates",
+        "filters.handlebars"
+      );
+      const filtersTemplate = fs.readFileSync(filtersTemplatePath, "utf-8");
+      const filtersCompliedTemplate = Handlebars.compile(filtersTemplate, {
+        noEscape: true,
+      });
       generateFilters(
-        databaseModel,
         generationOptions,
         baseFileName,
         filesPathModels,
@@ -275,10 +237,19 @@ function generateGraphQLFiles(
         element
       );
     }
-    
-    if(flags.sort){
+
+    if (!flags || flags.sort) {
+      const sortsTemplatePath = path.resolve(
+        __dirname,
+        "../templates",
+        "sorts.handlebars"
+      );
+
+      const sortsTemplate = fs.readFileSync(sortsTemplatePath, "utf-8");
+      const sortsCompliedTemplate = Handlebars.compile(sortsTemplate, {
+        noEscape: true,
+      });
       generateSort(
-        databaseModel,
         generationOptions,
         baseFileName,
         filesPathModels,
@@ -287,9 +258,17 @@ function generateGraphQLFiles(
       );
     }
 
-    if(flags.input){
+    if (!flags || flags.input) {
+      const inputsTemplatePath = path.resolve(
+        __dirname,
+        "../templates",
+        "inputs.handlebars"
+      );
+      const inputsTemplate = fs.readFileSync(inputsTemplatePath, "utf-8");
+      const inputsCompliedTemplate = Handlebars.compile(inputsTemplate, {
+        noEscape: true,
+      });
       generateInput(
-        databaseModel,
         generationOptions,
         baseFileName,
         filesPathModels,
@@ -298,93 +277,96 @@ function generateGraphQLFiles(
       );
     }
 
-    if(flags.resolver){
+    if (!flags || flags.resolver) {
+      const resolverTemplatePath = path.resolve(
+        __dirname,
+        "../templates",
+        "resolver.handlebars"
+      );
+      const resolverTemplate = fs.readFileSync(resolverTemplatePath, "utf-8");
+      const resolverCompliedTemplate = Handlebars.compile(resolverTemplate, {
+        noEscape: true,
+      });
       generateResolver(
-        databaseModel,
         generationOptions,
         baseFileName,
         filesPathResolvers,
         resolverCompliedTemplate,
         element
       );
-    }   
+    }
   });
-}
+};
 
-function generateEntity(
-  databaseModel: Entity[],
+const generateEntity = (
   generationOptions: IGenerationOptions,
   baseFileName: string,
   filesPath: string,
   entityCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
-) {
+) => {
   const filePath = path.resolve(filesPath, `${baseFileName}.model.ts`);
   const rendered = entityCompliedTemplate(element);
   writeFile(rendered, generationOptions, element, filePath);
-}
+};
 
-function generateFilters(
-  databaseModel: Entity[],
+const generateFilters = (
   generationOptions: IGenerationOptions,
   baseFileName: string,
   filesPath: string,
   filtersCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
-) {
+) => {
   const filePath = path.resolve(filesPath, `${baseFileName}-filters.model.ts`);
   const rendered = filtersCompliedTemplate(element);
   writeFile(rendered, generationOptions, element, filePath);
-}
+};
 
-function generateSort(
-  databaseModel: Entity[],
+const generateSort = (
   generationOptions: IGenerationOptions,
   baseFileName: string,
   filesPath: string,
   sortCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
-) {
+) => {
   const filePath = path.resolve(filesPath, `${baseFileName}-sorts.model.ts`);
   const rendered = sortCompliedTemplate(element);
   writeFile(rendered, generationOptions, element, filePath);
-}
+};
 
-function generateInput(
-  databaseModel: Entity[],
+const generateInput = (
   generationOptions: IGenerationOptions,
   baseFileName: string,
   filesPath: string,
   inputCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
-) {
+) => {
   const filePath = path.resolve(filesPath, `${baseFileName}-inputs.model.ts`);
   const rendered = inputCompliedTemplate(element);
   writeFile(rendered, generationOptions, element, filePath);
-}
+};
 
-function generateResolver(
-  databaseModel: Entity[],
+const generateResolver = (
   generationOptions: IGenerationOptions,
   baseFileName: string,
   filesPath: string,
   inputCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
-) {
+) => {
   const filePath = path.resolve(filesPath, `${baseFileName}.resolver.ts`);
   const rendered = inputCompliedTemplate({
     ...element,
     secureResolvers: generationOptions.secureResolvers,
   });
   writeFile(rendered, generationOptions, element, filePath);
-}
+};
 
-function writeFile(
+const writeFile = (
   rendered: any,
   generationOptions: IGenerationOptions,
   element: Entity,
   filePath: string
-) {
+) => {
   const withImportStatements = removeUnusedImports(
     EOL !== eolConverter[generationOptions.convertEol]
       ? rendered.replace(
@@ -408,9 +390,9 @@ function writeFile(
     encoding: "utf-8",
     flag: "w",
   });
-}
+};
 
-function removeUnusedImports(rendered: string) {
+const removeUnusedImports = (rendered: string) => {
   const openBracketIndex = rendered.indexOf("{") + 1;
   const closeBracketIndex = rendered.indexOf("}");
   const imports = rendered
@@ -428,9 +410,9 @@ function removeUnusedImports(rendered: string) {
   return `${rendered.substring(0, openBracketIndex)}${distinctImports.join(
     ","
   )}${restOfEntityDefinition}`;
-}
+};
 
-function createHandlebarsHelpers(generationOptions: IGenerationOptions): void {
+const createHandlebarsHelpers = (generationOptions: IGenerationOptions) => {
   Handlebars.registerHelper("json", (context) => {
     const json = JSON.stringify(context);
     const withoutQuotes = json.replace(/"([^(")"]+)":/g, "$1:");
@@ -501,10 +483,9 @@ function createHandlebarsHelpers(generationOptions: IGenerationOptions): void {
       let retVal = entityType;
       if (relationType === "ManyToMany" || relationType === "OneToMany") {
         retVal = `[${retVal}Sorts]`;
-      }     
-      else{
+      } else {
         retVal = `${retVal}Sorts`;
-      } 
+      }
       return retVal;
     }
   );
@@ -515,10 +496,9 @@ function createHandlebarsHelpers(generationOptions: IGenerationOptions): void {
       let retVal = entityType;
       if (relationType === "ManyToMany" || relationType === "OneToMany") {
         retVal = `[${retVal}Filters]`;
-      }  
-      else{
+      } else {
         retVal = `${retVal}Filters`;
-      }     
+      }
       return retVal;
     }
   );
@@ -541,9 +521,9 @@ function createHandlebarsHelpers(generationOptions: IGenerationOptions): void {
     ne: (v1, v2) => v1 !== v2,
     or: (v1, v2) => v1 || v2,
   });
-}
+};
 
-function getEntityName(convertCase: string, str: string) {
+const getEntityName = (convertCase: string, str: string) => {
   let retStr = "";
   switch (convertCase) {
     case "camel":
@@ -565,4 +545,6 @@ function getEntityName(convertCase: string, str: string) {
       throw new Error("Unknown case style 2");
   }
   return retStr;
-}
+};
+
+export default generator;

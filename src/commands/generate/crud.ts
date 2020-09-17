@@ -10,7 +10,7 @@ import {
 import { cli } from "cli-ux";
 import { Entity, Relation } from "../../db-reverse/library";
 import { makeDefaultConfigs, readTOMLConfig } from "../../db-reverse";
-import { modelGenerationCodeFirst } from "../../db-reverse/generation/model-generation";
+import generator from "../../db-reverse/generation/model-generation";
 import inquirer from "inquirer";
 import chalk from "chalk";
 import { emoji } from "node-emoji";
@@ -68,7 +68,7 @@ export default class GenerateCrud extends Command {
         const options: { options: string[] } = await inquirer.prompt([
           {
             name: "options",
-            message: `Select wich files types do you want to generate`,
+            message: `Select wich files types you want to generate`,
             type: "checkbox",
             choices: ["inputs", "filters", "sorts", "resolvers"],
           },
@@ -108,16 +108,14 @@ export default class GenerateCrud extends Command {
 
       let entities = await gatherModelsInfo(connection);
       if (!flags.all) {
-        const selectedModels: {models: string[]} = await inquirer.prompt([
+        const selectedModels: { models: string[] } = await inquirer.prompt([
           {
             name: "models",
-            message: `Select for wich models do you want to generate files`,
+            message: `Select the target models`,
             type: "checkbox",
             choices: (answers) => getAllTables(connection!),
           },
         ]);
-
-        console.log("PEPE:", selectedModels);
 
         if (selectedModels.models.length > 0) {
           entities = entities.filter((entity) =>
@@ -132,24 +130,14 @@ export default class GenerateCrud extends Command {
           return;
         }
       }
-
-      this.log(
-        `${chalk.cyan.bold(
-          `[${new Date().toLocaleTimeString()}] Start generating files.`
-        )} ${emoji.pizza}`
+      cli.action.start(
+        `${chalk.cyan.bold(`Generating files.`)} ${emoji.pizza}`
       );
+
       let configOptions = makeDefaultConfigs();
 
-      modelGenerationCodeFirst(
-        configOptions.generationOptions,
-        entities,
-        flags
-      );
-      this.log(
-        `${chalk.cyan.bold(
-          `[${new Date().toLocaleTimeString()}] Files created.`
-        )} ${emoji.rocket}`
-      );
+      generator(configOptions.generationOptions, entities, flags);
+      cli.action.stop();
     } catch (error) {
       this.log(error);
     } finally {
@@ -184,7 +172,7 @@ const getAllTables = async (connection: Connection) => {
       value: metadata.name,
     };
     tables.push(table);
-  });  
+  });
   return tables;
 };
 
@@ -217,7 +205,7 @@ const generateModelEntities = async (entityMetadata: EntityMetadata[]) => {
 };
 
 const generateColumns = (cols: ColumnMetadata[]) => {
-  const columns: Column[] = [];  
+  const columns: Column[] = [];
   cols.forEach((columnMetadata) => {
     if (!columnMetadata.relationMetadata) {
       const column: Column = {
@@ -231,25 +219,27 @@ const generateColumns = (cols: ColumnMetadata[]) => {
         },
       };
       columns.push(column);
-    } 
+    }
   });
   return columns;
 };
 
-const generateRelations = (relationsMetadata: RelationMetadata[]):Relation[] => {
-  const relations:Relation[] = [];
+const generateRelations = (
+  relationsMetadata: RelationMetadata[]
+): Relation[] => {
+  const relations: Relation[] = [];
   relationsMetadata.forEach((metadata) => {
     const relation: Relation = {
       fieldName: metadata.propertyName,
       relationType: getRelationType(metadata),
       relatedField: metadata.inverseRelation?.propertyName!,
-      relatedTable: metadata.inverseEntityMetadata.tableName
+      relatedTable: metadata.inverseEntityMetadata.tableName,
     };
-    relation.fieldName = metadata.propertyName
+    relation.fieldName = metadata.propertyName;
     relations.push(relation);
-  })
+  });
   return relations;
-}
+};
 
 const getRelationType = (relation: RelationMetadata) => {
   return relation.isManyToMany

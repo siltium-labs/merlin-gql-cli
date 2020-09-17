@@ -19,6 +19,7 @@ import { RelationMetadata } from "typeorm/metadata/RelationMetadata";
 import { ColumnMetadata } from "typeorm/metadata/ColumnMetadata";
 
 export type ModelGenerationOptions = {
+  model?:boolean;
   input: boolean;
   filter: boolean;
   sort: boolean;

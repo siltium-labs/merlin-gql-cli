@@ -9,7 +9,7 @@ import MysqlDriver from "../drivers/mysql.driver";
 import OracleDriver from "../drivers/oracle.driver";
 import SqliteDriver from "../drivers/sqlite.driver";
 import modelCustomizationPhase from "./model-customization";
-import modelGenerationPhase from "./model-generation";
+import generator from "./model-generation";
 import { Entity } from "../models/entity";
 
 export function createDriver(driverName: string): AbstractDriver {
@@ -54,9 +54,8 @@ export async function createModelFromDatabase(
     generationOptions,
     driver.defaultValues
   );
-  modelGenerationPhase(connectionOptions, generationOptions, dbModel);
+  generator(generationOptions, dbModel);
 }
-
 
 export async function dataCollectionPhase(
   driver: AbstractDriver,

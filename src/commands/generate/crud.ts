@@ -10,7 +10,7 @@ import {
 import { cli } from "cli-ux";
 import { Entity, Relation } from "../../db-reverse/library";
 import { makeDefaultConfigs, readTOMLConfig } from "../../db-reverse";
-import { modelGenerationCodeFirst } from "../../db-reverse/generation/model-generation";
+import generator from "../../db-reverse/generation/model-generation";
 import inquirer from "inquirer";
 import chalk from "chalk";
 import { emoji } from "node-emoji";
@@ -136,11 +136,7 @@ export default class GenerateCrud extends Command {
 
       let configOptions = makeDefaultConfigs();
 
-      modelGenerationCodeFirst(
-        configOptions.generationOptions,
-        entities,
-        flags
-      );
+      generator(configOptions.generationOptions, entities, flags);
       cli.action.stop();
     } catch (error) {
       this.log(error);

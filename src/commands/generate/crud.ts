@@ -68,7 +68,7 @@ export default class GenerateCrud extends Command {
         const options: { options: string[] } = await inquirer.prompt([
           {
             name: "options",
-            message: `Select wich files types do you want to generate`,
+            message: `Select wich files types you want to generate`,
             type: "checkbox",
             choices: ["inputs", "filters", "sorts", "resolvers"],
           },

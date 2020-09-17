@@ -4,14 +4,14 @@ import {{localImport (toSortsName .)}} from "../{{toEntityDirectoryName .}}/{{to
 
 {{#*inline "Column"}}
 {{^generated}}@Field((type) => SortDirectionsEnum, { nullable: true })
-{{toPropertyName tscName}}?:{{tscType}}
+{{toPropertyName tscName}}?: SortDirectionsEnum
 {{/generated}}
 {{/inline}}
 
 
 {{#*inline "Relation"}}
 @Field((type) => {{toGraphQLSortRelation (toEntityName relatedTable) relationType}}, { nullable: true })
-{{printPropertyVisibility}}{{toPropertyName fieldName}}?:{{toRelation (toEntityName relatedTable) relationType}};
+{{printPropertyVisibility}}{{toPropertyName fieldName}}?:{{toRelation (toSortsName relatedTable) relationType}};
 {{/inline}}
 
 {{#*inline "Sorts"}}

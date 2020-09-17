@@ -217,7 +217,26 @@ const generateGraphQLFiles = (
     let filesPathResolvers = path.join(entitiesPath, "resolvers");
 
     fs.mkdirSync(filesPathModels, { recursive: true });
-    fs.mkdirSync(filesPathResolvers, { recursive: true });
+    fs.mkdirSync(filesPathResolvers, { recursive: true });    
+
+    if (!flags ||flags.model) {
+      const entityTemplatePath = path.resolve(
+        __dirname,
+        "../templates",
+        "entity.handlebars"
+      );
+      const entityTemplate = fs.readFileSync(entityTemplatePath, "utf-8");
+      const entityCompliedTemplate = Handlebars.compile(entityTemplate, {
+        noEscape: true,
+      });
+      generateEntity(
+        generationOptions,
+        baseFileName,
+        filesPathModels,
+        entityCompliedTemplate,
+        element
+      );
+    }
 
     if (!flags || flags.filter) {
       const filtersTemplatePath = path.resolve(
@@ -317,7 +336,7 @@ const generateFilters = (
   filtersCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
 ) => {
-  const filePath = path.resolve(filesPath, `${baseFileName}-filters.model.ts`);
+  const filePath = path.resolve(filesPath, `${baseFileName}-filter.model.ts`);
   const rendered = filtersCompliedTemplate(element);
   writeFile(rendered, generationOptions, element, filePath);
 };
@@ -329,7 +348,7 @@ const generateSort = (
   sortCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
 ) => {
-  const filePath = path.resolve(filesPath, `${baseFileName}-sorts.model.ts`);
+  const filePath = path.resolve(filesPath, `${baseFileName}-sort.model.ts`);
   const rendered = sortCompliedTemplate(element);
   writeFile(rendered, generationOptions, element, filePath);
 };
@@ -341,7 +360,7 @@ const generateInput = (
   inputCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
 ) => {
-  const filePath = path.resolve(filesPath, `${baseFileName}-inputs.model.ts`);
+  const filePath = path.resolve(filesPath, `${baseFileName}-input.model.ts`);
   const rendered = inputCompliedTemplate(element);
   writeFile(rendered, generationOptions, element, filePath);
 };

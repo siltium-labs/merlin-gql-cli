@@ -1,3 +1,4 @@
+import { ResolverTemplate } from "./../templates/resolver.template";
 import * as Handlebars from "handlebars";
 import * as Prettier from "prettier";
 import * as changeCase from "change-case";
@@ -217,9 +218,9 @@ const generateGraphQLFiles = (
     let filesPathResolvers = path.join(entitiesPath, "resolvers");
 
     fs.mkdirSync(filesPathModels, { recursive: true });
-    fs.mkdirSync(filesPathResolvers, { recursive: true });    
+    fs.mkdirSync(filesPathResolvers, { recursive: true });
 
-    if (!flags ||flags.model) {
+    if (!flags || flags.model) {
       const entityTemplatePath = path.resolve(
         __dirname,
         "../templates",
@@ -373,10 +374,11 @@ const generateResolver = (
   element: Entity
 ) => {
   const filePath = path.resolve(filesPath, `${baseFileName}.resolver.ts`);
-  const rendered = inputCompliedTemplate({
+  /*const rendered = inputCompliedTemplate({
     ...element,
     secureResolvers: generationOptions.secureResolvers,
-  });
+  });*/
+  const rendered = ResolverTemplate(element.tscName, generationOptions);
   writeFile(rendered, generationOptions, element, filePath);
 };
 
@@ -386,24 +388,24 @@ const writeFile = (
   element: Entity,
   filePath: string
 ) => {
-  const withImportStatements = removeUnusedImports(
+  /*const withImportStatements = removeUnusedImports(
     EOL !== eolConverter[generationOptions.convertEol]
       ? rendered.replace(
           /(\r\n|\n|\r)/gm,
           eolConverter[generationOptions.convertEol]
         )
       : rendered
-  );
+  );*/
   let formatted = "";
   try {
-    formatted = Prettier.format(withImportStatements, prettierOptions);
+    formatted = Prettier.format(rendered, prettierOptions);
   } catch (error) {
     console.error(
       "There were some problems with model generation for table: ",
       element.sqlName
     );
     console.error(error);
-    formatted = withImportStatements;
+    formatted = rendered;
   }
   fs.writeFileSync(filePath, formatted, {
     encoding: "utf-8",
@@ -431,7 +433,47 @@ const removeUnusedImports = (rendered: string) => {
   )}${restOfEntityDefinition}`;
 };
 
-const createHandlebarsHelpers = (generationOptions: IGenerationOptions) => {
+export const toEntityName = (
+  name: string,
+  generationOptions: IGenerationOptions
+) => singular(getEntityName(generationOptions.convertCaseEntity, name));
+
+export const toFileName = (
+  name: string,
+  generationOptions: IGenerationOptions
+) => {
+  return singular(getEntityName(generationOptions.convertCaseFile, name));
+};
+
+export const toEntityFileName = (
+  name: string,
+  generationOptions: IGenerationOptions
+) =>
+  singular(getEntityName(generationOptions.convertCaseFile, name)) + ".model";
+
+export const toLocalImport = (
+  name: string,
+  generationOptions: IGenerationOptions
+) => (generationOptions.exportType === "default" ? name : `{ ${name} }`);
+
+export const toFiltersName = (
+  name: string,
+  generationOptions: IGenerationOptions
+) => getEntityName(generationOptions.convertCaseEntity, name) + "Filters";
+
+export const toSortsName = (
+  name: string,
+  generationOptions: IGenerationOptions
+) => getEntityName(generationOptions.convertCaseEntity, name) + "Sorts";
+
+export const toPropertyName = (
+  name: string,
+  generationOptions: IGenerationOptions
+) => getEntityName(generationOptions.convertCaseProperty, name);
+
+export const createHandlebarsHelpers = (
+  generationOptions: IGenerationOptions
+) => {
   Handlebars.registerHelper("json", (context) => {
     const json = JSON.stringify(context);
     const withoutQuotes = json.replace(/"([^(")"]+)":/g, "$1:");
@@ -439,27 +481,27 @@ const createHandlebarsHelpers = (generationOptions: IGenerationOptions) => {
   });
 
   Handlebars.registerHelper("toEntityName", (str) => {
-    return singular(getEntityName(generationOptions.convertCaseEntity, str));
+    return toEntityName(str, generationOptions);
   });
 
   Handlebars.registerHelper("toInputsName", (str) => {
     return getEntityName(generationOptions.convertCaseEntity, str) + "Inputs";
   });
 
-  Handlebars.registerHelper("toFiltersName", (str) => {
-    return getEntityName(generationOptions.convertCaseEntity, str) + "Filters";
-  });
+  Handlebars.registerHelper("toFiltersName", (str) =>
+    toFiltersName(str, generationOptions)
+  );
 
-  Handlebars.registerHelper("toSortsName", (str) => {
-    return getEntityName(generationOptions.convertCaseEntity, str) + "Sorts";
-  });
+  Handlebars.registerHelper("toSortsName", (str) =>
+    toSortsName(str, generationOptions)
+  );
 
   Handlebars.registerHelper("toResolverName", (str) => {
     return getEntityName(generationOptions.convertCaseEntity, str) + "Resolver";
   });
 
   Handlebars.registerHelper("toFileName", (str) => {
-    return singular(getEntityName(generationOptions.convertCaseFile, str));
+    return toFileName(str, generationOptions);
   });
 
   Handlebars.registerHelper("toEntityDirectoryName", (str) => {
@@ -467,14 +509,12 @@ const createHandlebarsHelpers = (generationOptions: IGenerationOptions) => {
   });
 
   Handlebars.registerHelper("toEntityFileName", (str) => {
-    return (
-      singular(getEntityName(generationOptions.convertCaseFile, str)) + ".model"
-    );
+    return toEntityFileName(str, generationOptions);
   });
 
-  Handlebars.registerHelper("toPropertyName", (str) => {
-    return getEntityName(generationOptions.convertCaseProperty, str);
-  });
+  Handlebars.registerHelper("toPropertyName", (str) =>
+    toPropertyName(str, generationOptions)
+  );
 
   Handlebars.registerHelper("printPropertyVisibility", () =>
     generationOptions.propertyVisibility !== "none"
@@ -525,7 +565,7 @@ const createHandlebarsHelpers = (generationOptions: IGenerationOptions) => {
     generationOptions.exportType === "default" ? "default" : ""
   );
   Handlebars.registerHelper("localImport", (entityName: string) =>
-    generationOptions.exportType === "default" ? entityName : `{${entityName}}`
+    toLocalImport(entityName, generationOptions)
   );
   Handlebars.registerHelper("strictMode", () =>
     generationOptions.strictMode !== "none" ? generationOptions.strictMode : ""

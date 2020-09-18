@@ -2,7 +2,7 @@
   "type": "mysql",
   "database": "merlin",
   "username": "root",
-  "password": "32814809",
+  "password": "",
   "port": 3306,
   "host": "localhost",
   "logging": ["query"],

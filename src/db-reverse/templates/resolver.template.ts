@@ -23,8 +23,8 @@ export const ResolverTemplate = (
     
     import { Resolver } from "type-graphql";
     import { ${entityName} } from "../models/${fileName}/${toEntityFileName(tscName, generationOptions)}";
-    import ${toLocalImport(filtersName, generationOptions)} from "../models/${fileName}/${fileName}-filters.model";
-    import ${toLocalImport(sortsName, generationOptions)} from "../models/${fileName}/${fileName}-sorts.model";
+    import ${toLocalImport(filtersName, generationOptions)} from "../models/${fileName}/${fileName}.filter";
+    import ${toLocalImport(sortsName, generationOptions)} from "../models/${fileName}/${fileName}.sort";
     import { CreateResolver, DeleteResolver, FindResolver, ListResolver, ${secureImport} UpdateResolver } from "merlin-gql";
     
     const BaseListResolver = ListResolver(${entityName});

@@ -1,4 +1,4 @@
-import { DatabaseType } from './../db-reverse/options/connection-options.interface';
+import { DatabaseType } from "./../db-reverse/options/connection-options.interface";
 import { Command, flags } from "@oclif/command";
 import { userInfo } from "os";
 import { getDefaultConnectionOptions } from "../db-reverse/options/connection-options.interface";
@@ -17,8 +17,9 @@ import {
   createModelFromDatabase,
 } from "../db-reverse/generation/engine";
 import { IConnectionOptions } from "../db-reverse/library";
-import chalk from 'chalk';
-import { emoji } from 'node-emoji';
+import chalk from "chalk";
+import { emoji } from "node-emoji";
+import LocalCommand from "./core/local-command";
 
 export interface IDBReverseFlags {
   help: void;
@@ -49,21 +50,21 @@ export interface IDBReverseFlags {
   secureResolvers: boolean;
 }
 
-export default class DBReverse extends Command {
+export default class DBReverse extends LocalCommand {
   static description = `generate models and graphql resolvers with database reverse engineering.\n
   Usage: merlin-gql db-reverse -h <host> -d <database> -p [port] -u <user> -x [password] -e [engine]\n
   You can also run program without specifying any parameters to launch interactive mode.`;
 
   static flags = {
     help: flags.help(),
-   
+
     host: flags.string({
       char: "h",
       description: "IP address/Hostname for database server",
       //default: connectionOptions.host,
     }),
     database: flags.string({
-      char: "d",      
+      char: "d",
       description:
         "Database name(or path for sqlite). You can pass multiple values separated by comma.",
       //default: connectionOptions.databaseName,
@@ -180,58 +181,71 @@ export default class DBReverse extends Command {
   };
 
   async run() {
-    const { args, flags } = this.parse(DBReverse);
+    try {
+      this.checks();
+      const { args, flags } = this.parse(DBReverse);
 
-    let options = makeDefaultConfigs();    
+      let options = makeDefaultConfigs();
 
-    const TOMLConfig = readTOMLConfig(options);
-    options = TOMLConfig.options;   
+      const TOMLConfig = readTOMLConfig(options);
+      options = TOMLConfig.options;
 
-    if (Object.values(flags).length >= 1) {
-      //Check required arguments
-      if(!flags.database && !flags.engine){
-        this.error("If you run the generator with arguments you have to specify required arguments: database (-d) and engine (-e)");
-        return;
+      if (Object.values(flags).length >= 1) {
+        //Check required arguments
+        if (!flags.database && !flags.engine) {
+          this.error(
+            "If you run the generator with arguments you have to specify required arguments: database (-d) and engine (-e)"
+          );
+          return;
+        }
+        options = this.checkFlagsParameters(options, flags as IDBReverseFlags);
+      } else if (!TOMLConfig.fullConfigFile) {
+        options = await useInquirer(options);
       }
-      options = this.checkFlagsParameters(options, flags as IDBReverseFlags);
-    } else if (!TOMLConfig.fullConfigFile) {
-      options = await useInquirer(options);
+
+      options = validateConfig(options);
+      const driver = createDriver(options.connectionOptions.databaseType);
+      this.log(
+        `[${new Date().toLocaleTimeString()}] Starting creation of model classes.`
+      );
+
+      await createModelFromDatabase(
+        driver,
+        options.connectionOptions,
+        options.generationOptions
+      );
+
+      this.log(
+        `${chalk.cyan.bold(
+          `[${new Date().toLocaleTimeString()}] Merlin GQL model classes created.`
+        )} ${emoji.rocket}`
+      );
+    } catch (e) {
+      this.error(e);
     }
-
-    options = validateConfig(options);
-    const driver = createDriver(options.connectionOptions.databaseType);
-    this.log(
-      `[${new Date().toLocaleTimeString()}] Starting creation of model classes.`
-    );
-
-    await createModelFromDatabase(
-      driver,
-      options.connectionOptions,
-      options.generationOptions      
-    );
-
-    this.log(
-      `${chalk.cyan.bold(`[${new Date().toLocaleTimeString()}] Merlin GQL model classes created.`)} ${emoji.rocket}`
-    );    
   }
 
   checkFlagsParameters(
     options: DBReverseoptions,
     flags: IDBReverseFlags
   ): DBReverseoptions {
-    options.connectionOptions.databaseName = flags.database ?? options.connectionOptions.databaseName;
-    options.connectionOptions.databaseType = flags.engine as DatabaseType ?? options.connectionOptions.databaseType;
+    options.connectionOptions.databaseName =
+      flags.database ?? options.connectionOptions.databaseName;
+    options.connectionOptions.databaseType =
+      (flags.engine as DatabaseType) ?? options.connectionOptions.databaseType;
 
     const driver = createDriver(options.connectionOptions.databaseType);
     const { standardPort, standardSchema, standardUser } = driver;
 
-    options.connectionOptions.host = flags.host ?? options.connectionOptions.host;
-    options.connectionOptions.password = flags.pass ?? options.connectionOptions.password;
+    options.connectionOptions.host =
+      flags.host ?? options.connectionOptions.host;
+    options.connectionOptions.password =
+      flags.pass ?? options.connectionOptions.password;
     options.connectionOptions.port = flags.port || standardPort;
     options.connectionOptions.schemaName = flags.schema
       ? flags.schema.toString()
       : standardSchema;
-    options.connectionOptions.ssl = flags.ssl ??  options.connectionOptions.ssl;
+    options.connectionOptions.ssl = flags.ssl ?? options.connectionOptions.ssl;
     options.connectionOptions.user = flags.user || standardUser;
     let skipTables = flags.skipTables ? flags.skipTables.split(",") : [];
 
@@ -239,25 +253,48 @@ export default class DBReverse extends Command {
       skipTables = [];
     }
 
-    options.connectionOptions.skipTables = skipTables;    
-    options.generationOptions.generateConstructor = flags.generateConstructor ?? options.generationOptions.generateConstructor;
-    options.generationOptions.convertCaseEntity = flags.ce as IGenerationOptions["convertCaseEntity"] ?? options.generationOptions.convertCaseEntity;
-    options.generationOptions.convertCaseFile = flags.cf as IGenerationOptions["convertCaseFile"] ?? options.generationOptions.convertCaseFile;
-    options.generationOptions.convertCaseProperty = flags.cp as IGenerationOptions["convertCaseProperty"] ?? options.generationOptions.convertCaseProperty;
-    options.generationOptions.convertEol = flags.eol as IGenerationOptions["convertEol"] ?? options.generationOptions.convertEol;
-    options.generationOptions.lazy = flags.lazy ?? options.generationOptions.lazy;
-    options.generationOptions.customNamingStrategyPath = flags.namingStrategy ?? options.generationOptions.customNamingStrategyPath;
-    options.generationOptions.noConfigs = flags.noConfig ?? options.generationOptions.noConfigs;
-    options.generationOptions.propertyVisibility = flags.pv as IGenerationOptions["propertyVisibility"] ?? options.generationOptions.propertyVisibility;
-    options.generationOptions.relationIds = flags.relationIds ?? options.generationOptions.relationIds;
-    options.generationOptions.skipSchema = flags.skipSchema ?? options.generationOptions.skipSchema;
-    options.generationOptions.resultsPath = flags.output ?? options.generationOptions.resultsPath;
-    options.generationOptions.pluralizeNames = !flags.disablePluralization ?? options.generationOptions.pluralizeNames;
-    options.generationOptions.strictMode = flags.strictMode as IGenerationOptions["strictMode"] ?? options.generationOptions.strictMode;
+    options.connectionOptions.skipTables = skipTables;
+    options.generationOptions.generateConstructor =
+      flags.generateConstructor ??
+      options.generationOptions.generateConstructor;
+    options.generationOptions.convertCaseEntity =
+      (flags.ce as IGenerationOptions["convertCaseEntity"]) ??
+      options.generationOptions.convertCaseEntity;
+    options.generationOptions.convertCaseFile =
+      (flags.cf as IGenerationOptions["convertCaseFile"]) ??
+      options.generationOptions.convertCaseFile;
+    options.generationOptions.convertCaseProperty =
+      (flags.cp as IGenerationOptions["convertCaseProperty"]) ??
+      options.generationOptions.convertCaseProperty;
+    options.generationOptions.convertEol =
+      (flags.eol as IGenerationOptions["convertEol"]) ??
+      options.generationOptions.convertEol;
+    options.generationOptions.lazy =
+      flags.lazy ?? options.generationOptions.lazy;
+    options.generationOptions.customNamingStrategyPath =
+      flags.namingStrategy ??
+      options.generationOptions.customNamingStrategyPath;
+    options.generationOptions.noConfigs =
+      flags.noConfig ?? options.generationOptions.noConfigs;
+    options.generationOptions.propertyVisibility =
+      (flags.pv as IGenerationOptions["propertyVisibility"]) ??
+      options.generationOptions.propertyVisibility;
+    options.generationOptions.relationIds =
+      flags.relationIds ?? options.generationOptions.relationIds;
+    options.generationOptions.skipSchema =
+      flags.skipSchema ?? options.generationOptions.skipSchema;
+    options.generationOptions.resultsPath =
+      flags.output ?? options.generationOptions.resultsPath;
+    options.generationOptions.pluralizeNames =
+      !flags.disablePluralization ?? options.generationOptions.pluralizeNames;
+    options.generationOptions.strictMode =
+      (flags.strictMode as IGenerationOptions["strictMode"]) ??
+      options.generationOptions.strictMode;
     options.generationOptions.exportType = flags.defaultExport
       ? "default"
       : "named";
-    options.generationOptions.secureResolvers = flags.secureResolvers ?? options.generationOptions.secureResolvers;
+    options.generationOptions.secureResolvers =
+      flags.secureResolvers ?? options.generationOptions.secureResolvers;
     return options;
   }
 }

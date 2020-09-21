@@ -17,16 +17,17 @@ import { emoji } from "node-emoji";
 import { resolve } from "path";
 import { RelationMetadata } from "typeorm/metadata/RelationMetadata";
 import { ColumnMetadata } from "typeorm/metadata/ColumnMetadata";
+import LocalCommand from "../core/local-command";
 
 export type ModelGenerationOptions = {
-  model?:boolean;
+  model?: boolean;
   input: boolean;
   filter: boolean;
   sort: boolean;
   resolver: boolean;
 };
 
-export default class GenerateCrud extends Command {
+export default class GenerateCrud extends LocalCommand {
   static description = `Generate input, filter, sort GraphQL models and GraphQL resolvers from entity models.\n
     Usage: merlin-gql generate:crud -i -f -s -r\n
     You can also run program without specifying any parameters to launch interactive mode.`;
@@ -60,89 +61,98 @@ export default class GenerateCrud extends Command {
   static args = [];
 
   async run() {
-    const { args, flags } = this.parse(GenerateCrud);
-    let connection: Connection | null = null;
     try {
-      connection = await getConnection();
-      //Check generation options
-      if (!flags.input && !flags.filter && !flags.sort && !flags.resolver) {
-        const options: { options: string[] } = await inquirer.prompt([
-          {
-            name: "options",
-            message: `Select wich files types you want to generate`,
-            type: "checkbox",
-            choices: ["inputs", "filters", "sorts", "resolvers"],
-          },
-        ]);
+      this.checks();
 
-        for (const option of options.options) {
-          switch (option) {
-            case "inputs": {
-              flags.input = true;
-              break;
-            }
-            case "filters": {
-              flags.filter = true;
-              break;
-            }
-            case "sorts": {
-              flags.sort = true;
-              break;
-            }
-            case "resolvers": {
-              flags.resolver = true;
-              break;
+      const { args, flags } = this.parse(GenerateCrud);
+      let connection: Connection | null = null;
+      try {
+        cli.action.start("Loading TypeORM entities");
+        connection = await getConnection();
+        cli.action.stop();
+        //Check generation options
+        if (!flags.input && !flags.filter && !flags.sort && !flags.resolver) {
+          const options: { options: string[] } = await inquirer.prompt([
+            {
+              name: "options",
+              message: `What kind of files would you like to generate?`,
+              type: "checkbox",
+              choices: ["inputs", "filters", "sorts", "resolvers"],
+            },
+          ]);
+
+          for (const option of options.options) {
+            switch (option) {
+              case "inputs": {
+                flags.input = true;
+                break;
+              }
+              case "filters": {
+                flags.filter = true;
+                break;
+              }
+              case "sorts": {
+                flags.sort = true;
+                break;
+              }
+              case "resolvers": {
+                flags.resolver = true;
+                break;
+              }
             }
           }
         }
-      }
 
-      if (!flags.input && !flags.filter && !flags.sort && !flags.resolver) {
-        this.log(
-          `${chalk.cyan.bold("No files types selected")} ${
-            emoji.airplane_departure
-          } . Finished`
-        );
-        return;
-      }
-      //End check generation options
-
-      let entities = await gatherModelsInfo(connection);
-      if (!flags.all) {
-        const selectedModels: { models: string[] } = await inquirer.prompt([
-          {
-            name: "models",
-            message: `Select the target models`,
-            type: "checkbox",
-            choices: (answers) => getAllTables(connection!),
-          },
-        ]);
-
-        if (selectedModels.models.length > 0) {
-          entities = entities.filter((entity) =>
-            selectedModels.models.some((model) => model === entity.tscName)
-          );
-        } else {
+        if (!flags.input && !flags.filter && !flags.sort && !flags.resolver) {
           this.log(
-            `${chalk.cyan.bold("No models selected")} ${
+            `${chalk.cyan.bold("No files types selected")} ${
               emoji.airplane_departure
             } . Finished`
           );
           return;
         }
+        //End check generation options
+
+        let entities = await gatherModelsInfo(connection);
+
+        if (!flags.all) {
+          const selectedModels: { models: string[] } = await inquirer.prompt([
+            {
+              name: "models",
+              message: `Select the target models`,
+              type: "checkbox",
+              choices: (answers) => getAllTables(connection!),
+            },
+          ]);
+
+          if (selectedModels.models.length > 0) {
+            entities = entities.filter((entity) =>
+              selectedModels.models.some((model) => model === entity.tscName)
+            );
+          } else {
+            this.log(
+              `${chalk.cyan.bold("No models selected")} ${
+                emoji.airplane_departure
+              } . Finished`
+            );
+            return;
+          }
+        }
+        cli.action.start(
+          `${chalk.cyan.bold(`Generating files.`)} ${emoji.pizza}`
+        );
+
+        let configOptions = makeDefaultConfigs();
+
+        generator(configOptions.generationOptions, entities, flags);
+        cli.action.stop();
+      } catch (error) {
+        this.log(error);
+      } finally {
+        connection?.close();
       }
-      cli.action.start(
-        `${chalk.cyan.bold(`Generating files.`)} ${emoji.pizza}`
-      );
-
-      let configOptions = makeDefaultConfigs();
-
-      generator(configOptions.generationOptions, entities, flags);
-      cli.action.stop();
-    } catch (error) {
-      this.log(error);
-    } finally {
-      connection?.close();
+    } catch (e) {
+      this.error(e);
     }
   }
 }

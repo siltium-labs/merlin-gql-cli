@@ -1,3 +1,4 @@
+import { InputsTemplate } from "./../templates/inputs.template";
 import { ResolverTemplate } from "./../templates/resolver.template";
 import * as Handlebars from "handlebars";
 import * as Prettier from "prettier";
@@ -279,39 +280,14 @@ const generateGraphQLFiles = (
     }
 
     if (!flags || flags.input) {
-      const inputsTemplatePath = path.resolve(
-        __dirname,
-        "../templates",
-        "inputs.handlebars"
-      );
-      const inputsTemplate = fs.readFileSync(inputsTemplatePath, "utf-8");
-      const inputsCompliedTemplate = Handlebars.compile(inputsTemplate, {
-        noEscape: true,
-      });
-      generateInput(
-        generationOptions,
-        baseFileName,
-        filesPathModels,
-        inputsCompliedTemplate,
-        element
-      );
+      generateInput(generationOptions, baseFileName, filesPathModels, element);
     }
 
     if (!flags || flags.resolver) {
-      const resolverTemplatePath = path.resolve(
-        __dirname,
-        "../templates",
-        "resolver.handlebars"
-      );
-      const resolverTemplate = fs.readFileSync(resolverTemplatePath, "utf-8");
-      const resolverCompliedTemplate = Handlebars.compile(resolverTemplate, {
-        noEscape: true,
-      });
       generateResolver(
         generationOptions,
         baseFileName,
         filesPathResolvers,
-        resolverCompliedTemplate,
         element
       );
     }
@@ -337,7 +313,7 @@ const generateFilters = (
   filtersCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
 ) => {
-  const filePath = path.resolve(filesPath, `${baseFileName}-filter.model.ts`);
+  const filePath = path.resolve(filesPath, `${baseFileName}.filter.ts`);
   const rendered = filtersCompliedTemplate(element);
   writeFile(rendered, generationOptions, element, filePath);
 };
@@ -349,7 +325,7 @@ const generateSort = (
   sortCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
 ) => {
-  const filePath = path.resolve(filesPath, `${baseFileName}-sort.model.ts`);
+  const filePath = path.resolve(filesPath, `${baseFileName}.sort.ts`);
   const rendered = sortCompliedTemplate(element);
   writeFile(rendered, generationOptions, element, filePath);
 };
@@ -358,11 +334,15 @@ const generateInput = (
   generationOptions: IGenerationOptions,
   baseFileName: string,
   filesPath: string,
-  inputCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
 ) => {
-  const filePath = path.resolve(filesPath, `${baseFileName}-input.model.ts`);
-  const rendered = inputCompliedTemplate(element);
+  const filePath = path.resolve(filesPath, `${baseFileName}.input.ts`);
+
+  const rendered = InputsTemplate(
+    element.tscName,
+    element.columns,
+    generationOptions
+  );
   writeFile(rendered, generationOptions, element, filePath);
 };
 
@@ -370,14 +350,10 @@ const generateResolver = (
   generationOptions: IGenerationOptions,
   baseFileName: string,
   filesPath: string,
-  inputCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
 ) => {
   const filePath = path.resolve(filesPath, `${baseFileName}.resolver.ts`);
-  /*const rendered = inputCompliedTemplate({
-    ...element,
-    secureResolvers: generationOptions.secureResolvers,
-  });*/
+
   const rendered = ResolverTemplate(element.tscName, generationOptions);
   writeFile(rendered, generationOptions, element, filePath);
 };
@@ -461,6 +437,13 @@ export const toFiltersName = (
   generationOptions: IGenerationOptions
 ) => getEntityName(generationOptions.convertCaseEntity, name) + "Filters";
 
+export const toInputsName = (
+  name: string,
+  generationOptions: IGenerationOptions
+) => {
+  return getEntityName(generationOptions.convertCaseEntity, name) + "Inputs";
+};
+
 export const toSortsName = (
   name: string,
   generationOptions: IGenerationOptions
@@ -484,9 +467,9 @@ export const createHandlebarsHelpers = (
     return toEntityName(str, generationOptions);
   });
 
-  Handlebars.registerHelper("toInputsName", (str) => {
-    return getEntityName(generationOptions.convertCaseEntity, str) + "Inputs";
-  });
+  Handlebars.registerHelper("toInputsName", (str) =>
+    toInputsName(str, generationOptions)
+  );
 
   Handlebars.registerHelper("toFiltersName", (str) =>
     toFiltersName(str, generationOptions)

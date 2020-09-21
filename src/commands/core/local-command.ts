@@ -18,8 +18,8 @@ export const packageJsonContainsModule = (
 
 export default abstract class LocalCommand extends Command {
   checks() {
-    this.checkIfInsideAMerlinGQLProject();
-    this.checkIfOrmConfigExists();
+    //this.checkIfInsideAMerlinGQLProject();
+    //this.checkIfOrmConfigExists();
   }
 
   //We gotta check if the package.json contains merlin-gql as a dependency

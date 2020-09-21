@@ -193,7 +193,7 @@ const gatherModelsInfo = async (connection: Connection) => {
   return entities;
 };
 
-const generateModelEntities = async (entityMetadata: EntityMetadata[]) => {
+const generateModelEntities = (entityMetadata: EntityMetadata[]) => {
   const entities: Entity[] = [];
   for (const metadata of entityMetadata) {
     let entity: Entity = {
@@ -206,7 +206,7 @@ const generateModelEntities = async (entityMetadata: EntityMetadata[]) => {
       columns: [],
     };
 
-    const columns = await generateColumns(metadata.columns);
+    const columns = generateColumns(metadata.columns);
     const relations = generateRelations(metadata.relations);
     entity.columns = columns;
     entity.relations = relations;
@@ -291,7 +291,8 @@ const getColumnTscType = (columnType: ColumnType) => {
     case "alphanum":
     case "shorttext":
     case "uuid":
-    case "string": {
+    case "string":
+    case String: {
       return "string";
     }
     case "float":
@@ -320,7 +321,8 @@ const getColumnTscType = (columnType: ColumnType) => {
     case "float8":
     case "smallmoney":
     case "money":
-    case "long": {
+    case "long":
+    case Number: {
       return "number";
     }
     case "datetime":
@@ -340,11 +342,13 @@ const getColumnTscType = (columnType: ColumnType) => {
     case "date":
     case "interval year to month":
     case "interval day to second":
-    case "interval": {
+    case "interval":
+    case Date: {
       return "Date";
     }
     case "boolean":
-    case "bool": {
+    case "bool":
+    case Boolean: {
       return "boolean";
     }
     default: {

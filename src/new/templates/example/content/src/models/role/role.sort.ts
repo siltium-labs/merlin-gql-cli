@@ -1,8 +1,8 @@
-import { BaseSortFields, SortDirectionsEnum } from "merlin-gql";
+import { BaseSortFields, SortField } from "merlin-gql";
 import { Field, InputType } from "type-graphql";
 
 @InputType()
 export class RoleSortFields extends BaseSortFields {
-  @Field((type) => SortDirectionsEnum, { nullable: true })
-  name?: SortDirectionsEnum;
+  @Field((type) => SortField, { nullable: true })
+  name?: SortField;
 }

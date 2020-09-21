@@ -1,8 +1,8 @@
-import { BaseSortFields, SortDirectionsEnum } from "merlin-gql";
+import { BaseSortFields, SortField } from "merlin-gql";
 import { Field, InputType } from "type-graphql";
 
 @InputType()
 export class UserSortFields extends BaseSortFields {
-  @Field((type) => SortDirectionsEnum, { nullable: true })
-  username?: SortDirectionsEnum;
+  @Field((type) => SortField, { nullable: true })
+  username?: SortField;
 }

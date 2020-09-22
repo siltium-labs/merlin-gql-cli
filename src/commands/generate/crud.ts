@@ -208,8 +208,10 @@ const generateModelEntities = (entityMetadata: EntityMetadata[]) => {
 
     const columns = generateColumns(metadata.columns);
     const relations = generateRelations(metadata.relations);
+    
     entity.columns = columns;
     entity.relations = relations;
+    entity.fileImports = relations.map(relation => relation.relatedTable);
     entities.push(entity);
   }
   return entities;

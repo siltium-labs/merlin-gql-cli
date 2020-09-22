@@ -1,5 +1,5 @@
 {{#*inline "Import"}}
-import {{localImport (toFiltersName .)}} from "../{{toEntityDirectoryName .}}/{{toEntityFileName (toFiltersName .)}}"
+import {{localImport (toFiltersName .)}} from "../{{toEntityDirectoryName .}}/{{toFileName .}}.filter";
 {{/inline}}
 
 {{#*inline "Column"}}
@@ -22,7 +22,7 @@ import {{localImport (toFiltersName .)}} from "../{{toEntityDirectoryName .}}/{{
 
 {{#*inline "Relation"}}
 @Field((type) => {{toGraphQLRelation (toEntityName relatedTable) relationType}}, { nullable: true })
-{{printPropertyVisibility}}{{toPropertyName fieldName}}?:{{toRelation (toEntityName relatedTable) relationType}};
+{{printPropertyVisibility}}{{toPropertyName fieldName}}?:{{toGraphQLRelationType (toEntityName relatedTable) relationType}};
 {{/inline}}
 
 

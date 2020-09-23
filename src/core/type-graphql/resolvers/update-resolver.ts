@@ -44,8 +44,8 @@ export abstract class AbstractUpdateResolver<T> extends AbstractSecureResolver {
 export function UpdateResolver<T extends ClassType>(
   baseModelType: typeof BaseModel
 ): typeof AbstractUpdateResolver {
-  const inputClass: typeof BaseInputFields = Reflect.getMetadata(
-    ModelDecoratorMetadataKeys.Input,
+  const inputUpdateClass: typeof BaseInputFields = Reflect.getMetadata(
+    ModelDecoratorMetadataKeys.Update,
     baseModelType
   );
 
@@ -60,7 +60,7 @@ export function UpdateResolver<T extends ClassType>(
     })
     async update(
       @Arg("id", (type) => ID) id: number,
-      @Arg("data", (type) => inputClass) entity: Partial<T>,
+      @Arg("data", (type) => inputUpdateClass) entity: Partial<T>,
       @PubSub() pubSub: PubSubEngine,
       @Info() info: GraphQLInfo,
       @Ctx() context: IGqlContext

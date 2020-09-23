@@ -3,26 +3,21 @@ import {{localImport (toFiltersName .)}} from "../{{toEntityDirectoryName .}}/{{
 {{/inline}}
 
 {{#*inline "Column"}}
+{{#generated}}@Field((type)=> FilteredID, {nullable: true}){{/generated}}
 {{^generated}}@Field((type)=>
 {{#if (eq tscType "string")}} FilteredString
 {{else if (eq tscType "number")}} FilteredFloat
 {{else if (eq tscType "Date")}} FilteredDate
 {{else if (eq tscType "boolean")}} FilteredBoolean
 {{/if}}
-{{#if options.nullable}},{ nullable: true }{{/if}})
-{{toPropertyName tscName}}{{#if options.nullable}}?{{/if}}:{{tscType}}
-{{#if options.nullable}};
-{{else if (eq tscType "string")}} = "";
-{{else if (eq tscType "number")}} = 0;
-{{else if (eq tscType "Date")}} = new Date();
-{{else if (eq tscType "boolean")}} = false;
-{{/if}}
+,{ nullable: true })
 {{/generated}}
+{{toPropertyName tscName}}?:{{tscType}};
 {{/inline}}
 
 {{#*inline "Relation"}}
-@Field((type) => {{toGraphQLRelation (toEntityName relatedTable) relationType}}, { nullable: true })
-{{printPropertyVisibility}}{{toPropertyName fieldName}}?:{{toGraphQLRelationType (toEntityName relatedTable) relationType}};
+@Field((type) => {{toGraphQLFilterRelation (toEntityName relatedTable) relationType}}, { nullable: true })
+{{printPropertyVisibility}}{{toPropertyName fieldName}}?:{{toGraphQLFilterRelationType (toEntityName relatedTable) relationType}};
 {{/inline}}
 
 

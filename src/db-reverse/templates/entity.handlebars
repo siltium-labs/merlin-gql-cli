@@ -32,6 +32,7 @@ import {{localImport (toEntityName .)}} from "../{{toEntityDirectoryName .}}/{{t
 {{/inline}}
 
 {{#*inline "Relation"}}
+@Field((type) => {{toGraphQLModelRelation (toEntityName relatedTable) relationType}}, { nullable: true })
 @{{relationType}}(()=>{{toEntityName relatedTable}},{{toPropertyName relatedTable}}=>{{toPropertyName relatedTable}}.{{toPropertyName relatedField}}{{#if relationOptions}},{
 {{json relationOptions}} }{{/if}})
 {{#if joinColumnOptions}}@JoinColumn([{{#joinColumnOptions}}{{> JoinColumnOptions}}{{/joinColumnOptions}}]){{/if}}
@@ -39,6 +40,7 @@ import {{localImport (toEntityName .)}} from "../{{toEntityDirectoryName .}}/{{t
 joinColumns:[{{#joinColumns}}{{> JoinColumnOptions}}{{/joinColumns}}],inverseJoinColumns:[{{#inverseJoinColumns}}{{> JoinColumnOptions}}{{/inverseJoinColumns}}],{{#database}}database:"{{.}}",{{/database}}{{#schema}}schema:"{{.}}"{{/schema}}
 }){{/joinTableOptions}}
 {{printPropertyVisibility}}{{toPropertyName fieldName}}?:{{toRelation (toEntityName relatedTable) relationType}};
+
 {{/inline}}
 
 {{#*inline "RelationId"}}
@@ -54,7 +56,7 @@ joinColumns:[{{#joinColumns}}{{> JoinColumnOptions}}{{/joinColumns}}],inverseJoi
 
     {{#*inline "Entity"}}
     {{#indices}}{{> Index}}{{/indices~}}
-    @Inputs({{toInputsName tscName}})
+    @Inputs({{toInputsName tscName}}, {{toInputsUpdateName tscName}})
     @Filters({{toFiltersName tscName}})
     @Sorts({{toSortsName tscName}})
     @Entity("{{sqlName}}"{{#schema}} ,{schema:"{{.}}"{{#if ../database}}, database:"{{../database}}"{{/if}} }
@@ -63,7 +65,9 @@ joinColumns:[{{#joinColumns}}{{> JoinColumnOptions}}{{/joinColumns}}],inverseJoi
     export {{defaultExport}} class {{toEntityName tscName}} extends BaseModel {
 
     {{#columns}}{{> Column}}{{/columns~}}
+
     {{#relations}}{{> Relation}}{{/relations~}}
+
     {{#relationIds}}{{> RelationId entityName=../tscName}}{{/relationIds~}}
     {{#if generateConstructor}}{{>Constructor entityName=tscName}}{{/if~}}
     }
@@ -73,7 +77,8 @@ joinColumns:[{{#joinColumns}}{{> JoinColumnOptions}}{{/joinColumns}}],inverseJoi
     from "typeorm";
     import {Field, ID, ObjectType, Int, Float} from "type-graphql";
     import { Inputs, Sorts, Filters, BaseModel} from "merlin-gql";
-    import {{localImport (toInputsName tscName)}} from "./{{toFileName tscName}}.input";
+    import {{localImport (toInputsName tscName)}} from "./{{toFileName tscName}}.input";    
+    import {{localImport (toInputsUpdateName tscName)}} from "./{{toFileName tscName}}.input";    
     import {{localImport (toFiltersName tscName)}} from "./{{toFileName tscName}}.filter";
     import {{localImport (toSortsName tscName)}} from "./{{toFileName tscName}}.sort";
     {{#fileImports}}{{> Import}}{{/fileImports}}

@@ -444,6 +444,13 @@ export const toInputsName = (
   return getEntityName(generationOptions.convertCaseEntity, name) + "Inputs";
 };
 
+export const toInputsUpdateName = (
+  name: string,
+  generationOptions: IGenerationOptions
+) => {
+  return getEntityName(generationOptions.convertCaseEntity, name) + "InputsUpdate";
+};
+
 export const toSortsName = (
   name: string,
   generationOptions: IGenerationOptions
@@ -470,6 +477,10 @@ export const createHandlebarsHelpers = (
   Handlebars.registerHelper("toInputsName", (str) =>
     toInputsName(str, generationOptions)
   );
+  
+  Handlebars.registerHelper("toInputsUpdateName", (str) =>
+    toInputsUpdateName(str, generationOptions)
+  );  
 
   Handlebars.registerHelper("toFiltersName", (str) =>
     toFiltersName(str, generationOptions)
@@ -520,6 +531,19 @@ export const createHandlebarsHelpers = (
   );
 
   Handlebars.registerHelper(
+    "toGraphQLModelRelation",
+    (entityType: string, relationType: Relation["relationType"]) => {
+      let retVal = entityType;
+      if (relationType === "ManyToMany" || relationType === "OneToMany") {
+        retVal = `[${retVal}]`;
+      } else {
+        retVal = `${retVal}`;
+      }
+      return retVal;
+    }
+  );
+
+  Handlebars.registerHelper(
     "toGraphQLSortRelation",
     (entityType: string, relationType: Relation["relationType"]) => {
       let retVal = entityType;
@@ -533,7 +557,7 @@ export const createHandlebarsHelpers = (
   );
 
   Handlebars.registerHelper(
-    "toGraphQLRelation",
+    "toGraphQLFilterRelation",
     (entityType: string, relationType: Relation["relationType"]) => {
       let retVal = entityType;
       if (relationType === "ManyToMany" || relationType === "OneToMany") {
@@ -545,7 +569,7 @@ export const createHandlebarsHelpers = (
     }
   );
   Handlebars.registerHelper(
-    "toGraphQLRelationType",
+    "toGraphQLFilterRelationType",
     (entityType: string, relationType: Relation["relationType"]) => {
       let retVal = entityType;
       if (relationType === "ManyToMany" || relationType === "OneToMany") {

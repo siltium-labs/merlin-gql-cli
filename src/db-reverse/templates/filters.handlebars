@@ -1,5 +1,5 @@
 {{#*inline "Import"}}
-import {{localImport (toFiltersName .)}} from "../{{toEntityDirectoryName .}}/{{toEntityFileName (toFiltersName .)}}"
+import {{localImport (toFiltersName .)}} from "../{{toEntityDirectoryName .}}/{{toEntityFileName tscName}}.filter"
 {{/inline}}
 
 {{#*inline "Column"}}

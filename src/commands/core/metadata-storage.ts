@@ -1,4 +1,4 @@
-declare global {
+/*declare global {
   namespace NodeJS {
     interface Global {
       MerlinGQLMetadataStorage: MerlinGQLMetadataStorage;
@@ -16,3 +16,4 @@ export const getMetadataStorage = (): MerlinGQLMetadataStorage => {
     (global.MerlinGQLMetadataStorage = new MerlinGQLMetadataStorage())
   );
 };
+*/

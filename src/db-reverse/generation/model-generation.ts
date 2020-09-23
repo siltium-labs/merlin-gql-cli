@@ -435,7 +435,7 @@ export const toLocalImport = (
 export const toFiltersName = (
   name: string,
   generationOptions: IGenerationOptions
-) => getEntityName(generationOptions.convertCaseEntity, name) + "Filters";
+) => singular(getEntityName(generationOptions.convertCaseEntity, name)) + "Filters";
 
 export const toInputsName = (
   name: string,
@@ -447,7 +447,7 @@ export const toInputsName = (
 export const toSortsName = (
   name: string,
   generationOptions: IGenerationOptions
-) => getEntityName(generationOptions.convertCaseEntity, name) + "Sorts";
+) => singular(getEntityName(generationOptions.convertCaseEntity, name)) + "Sorts";
 
 export const toPropertyName = (
   name: string,
@@ -538,6 +538,18 @@ export const createHandlebarsHelpers = (
       let retVal = entityType;
       if (relationType === "ManyToMany" || relationType === "OneToMany") {
         retVal = `[${retVal}Filters]`;
+      } else {
+        retVal = `${retVal}Filters`;
+      }
+      return retVal;
+    }
+  );
+  Handlebars.registerHelper(
+    "toGraphQLRelationType",
+    (entityType: string, relationType: Relation["relationType"]) => {
+      let retVal = entityType;
+      if (relationType === "ManyToMany" || relationType === "OneToMany") {
+        retVal = `${retVal}Filters[]`;
       } else {
         retVal = `${retVal}Filters`;
       }

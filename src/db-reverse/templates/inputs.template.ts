@@ -4,6 +4,7 @@ import {
   toEntityFileName,
   toEntityName,
   toInputsName,
+  toInputsUpdateName,
   toPropertyName,
 } from "./../generation/model-generation";
 
@@ -37,6 +38,19 @@ const ColumnTemplate = (
         ${propertyName}${questionMarkIfNullable}:${column.tscType}${defaultValue};
         `;
 };
+
+const ColumnUpdateTemplate = (
+  column: Column,
+  generationOptions: IGenerationOptions
+) => {
+  const fieldNullable = `{ nullable: true }`;
+  const propertyName = toPropertyName(column.tscName, generationOptions);
+  const questionMarkNullable = "?";  
+  return `
+        @Field(${fieldNullable})
+        ${propertyName}${questionMarkNullable}:${column.tscType};
+        `;
+};
 // prettier-ignore
 export const InputsTemplate = (
     tscName: string,
@@ -47,6 +61,8 @@ export const InputsTemplate = (
       const entityName:string = toEntityName(tscName, generationOptions)
       const entityFileName:string = toEntityFileName(tscName, generationOptions)
       const inputsName:string = toInputsName(tscName, generationOptions);
+      const inputUpdateName:string = toInputsUpdateName(tscName, generationOptions);
+
       return `
       
       import {InputType,Field} from "type-graphql";
@@ -56,6 +72,11 @@ export const InputsTemplate = (
       @InputType()
       export class ${inputsName} extends BaseInputFields implements Partial<${entityName}> {
         ${columns.filter(c => !c.generated).map(c => ColumnTemplate(c, generationOptions)).join("\n")}
+      }
+
+      @InputType()
+      export class ${inputUpdateName} extends BaseInputFields implements Partial<${entityName}> {
+        ${columns.filter(c => !c.generated).map(c => ColumnUpdateTemplate(c, generationOptions)).join("\n")}
       }
       `
   }

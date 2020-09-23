@@ -12,15 +12,30 @@
 
 {{#*inline "Inputs"}}
 @InputType()
-export {{defaultExport}} class {{toInputsName tscName}} extends BaseInputFields implements Partial
-<{{toEntityName tscName}}> {
-
+export {{defaultExport}} class {{toInputsName tscName}} extends BaseInputFields implements Partial<{{toEntityName tscName}}> {
     {{#columns}}{{> Column}}{{/columns~}}
-    }
-    {{/inline}}
+}
+{{/inline}}
 
-    import {InputType,Field} from "type-graphql";
-    import { BaseInputFields } from 'merlin-gql';
-    import { {{toEntityName tscName}} } from "./{{toEntityFileName tscName}}";
+import {InputType,Field} from "type-graphql";
+import { BaseInputFields } from 'merlin-gql';
+import { {{toEntityName tscName}} } from "./{{toEntityFileName tscName}}";
 
-    {{> Inputs}}
+{{> Inputs}}
+
+
+{{#*inline "ColumnUpdate"}}
+{{^generated}}@Field({ nullable: true })
+{{toPropertyName tscName}}?:{{tscType}};
+{{/generated}}
+{{/inline}}
+
+{{#*inline "InputsUpdate"}}
+@InputType()
+export class {{toInputsUpdateName tscName}} extends BaseInputFields implements Partial<{{toEntityName tscName}}> {
+    {{#columns}}{{> ColumnUpdate}}{{/columns~}}
+}
+{{/inline}}
+
+
+{{> InputsUpdate}}

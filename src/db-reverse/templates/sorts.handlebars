@@ -3,9 +3,8 @@ import {{localImport (toSortsName .)}} from "../{{toEntityDirectoryName .}}/{{to
 {{/inline}}
 
 {{#*inline "Column"}}
-{{^generated}}@Field((type) => SortField, { nullable: true })
+@Field((type) => SortField, { nullable: true })
 {{toPropertyName tscName}}?: SortField
-{{/generated}}
 {{/inline}}
 
 

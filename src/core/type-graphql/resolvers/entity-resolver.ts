@@ -91,15 +91,15 @@ export const EntityToGraphResolver: IEntityResolver = {
         )
       );
       const fields = getQueryData(fieldsNode, modelType, criteria?.sort);
+      const idName = modelType.getIdDatabaseName();
       const modelAlias =
         inheritedQb?.alias ??
         modelType.name[0].toLowerCase() + modelType.name.substring(1);
       let queryBuilder =
         inheritedQb ??
         manager.getRepository(modelType).createQueryBuilder(modelAlias);
-
       queryBuilder.select([
-        `${modelAlias}.id`,
+        `${modelAlias}.${idName}`,
         ...fields.selectedFields.map((f) => `${modelAlias}.${f}`),
       ]);
       const filterParsed = criteria?.filter ?? null;
@@ -111,7 +111,7 @@ export const EntityToGraphResolver: IEntityResolver = {
         modelType.getRelations()
       );
       queryDataFromFilters.relatedEntities?.map((relation) => {
-        populate(modelAlias, queryBuilder, relation);
+        populate(modelAlias, idName, queryBuilder, relation);
       });
       criteriaToQbWhere(modelAlias, queryBuilder, filterParsed);
       criteriaToQbOrderBy(modelAlias, queryBuilder, sortParsed);
@@ -145,22 +145,23 @@ export const EntityToGraphResolver: IEntityResolver = {
     try {
       const manager = em ?? getManager();
       const fields = getQueryData(<FieldNode>info.fieldNodes[0], modelType);
+      const idName = modelType.getIdDatabaseName();
       const modelAlias =
         modelType.name[0].toLowerCase() + modelType.name.substring(1);
-      const qb = manager
+      const queryBuilder = manager
         .getRepository(modelType)
         .createQueryBuilder(modelAlias)
         .select([
-          `${modelAlias}.id`,
+          `${modelAlias}.${idName}`,
           ...fields.selectedFields.map((f) => `${modelAlias}.${f}`),
         ])
-        .where(`${modelAlias}.id = :id`, { id });
+        .where(`${modelAlias}.${idName} = :id`, { id });
 
       fields.relatedEntities?.map((relation) => {
-        populate(modelAlias, qb, relation);
+        populate(modelAlias, idName, queryBuilder, relation);
       });
 
-      const result = await qb.getOne();
+      const result = await queryBuilder.getOne();
       return result ?? null;
     } catch (e) {
       console.log(e);

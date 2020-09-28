@@ -121,7 +121,7 @@
   "bugs": "https://github.com/silentium-labs/merlin-gql-cli/issues",
   "scripts": {
     "postpack": "rimraf oclif.manifest.json",
-    "prepack": "rimraf lib && tsc -b && oclif-dev manifest && oclif-dev readme && ncp \"src/new/templates\" \"lib/new/templates\"",
+    "prepack": "rimraf lib && tsc -b && oclif-dev readme && ncp \"src/new/templates\" \"lib/new/templates\" && ncp \"src/db-reverse/templates\" \"lib/db-reverse/templates\"",
     "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register '**/*.spec.ts'",
     "version": "oclif-dev readme && git add README.md",
     "readme": "oclif-dev readme"

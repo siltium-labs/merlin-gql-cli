@@ -225,6 +225,7 @@ const generateGraphQLFiles = (
       const entityTemplatePath = path.resolve(
         __dirname,
         "../templates",
+        "old",
         "entity.handlebars"
       );
       const entityTemplate = fs.readFileSync(entityTemplatePath, "utf-8");
@@ -244,6 +245,7 @@ const generateGraphQLFiles = (
       const filtersTemplatePath = path.resolve(
         __dirname,
         "../templates",
+        "old",
         "filters.handlebars"
       );
       const filtersTemplate = fs.readFileSync(filtersTemplatePath, "utf-8");
@@ -263,6 +265,7 @@ const generateGraphQLFiles = (
       const sortsTemplatePath = path.resolve(
         __dirname,
         "../templates",
+        "old",
         "sorts.handlebars"
       );
 
@@ -435,7 +438,9 @@ export const toLocalImport = (
 export const toFiltersName = (
   name: string,
   generationOptions: IGenerationOptions
-) => singular(getEntityName(generationOptions.convertCaseEntity, name)) + "Filters";
+) =>
+  singular(getEntityName(generationOptions.convertCaseEntity, name)) +
+  "Filters";
 
 export const toInputsName = (
   name: string,
@@ -448,13 +453,16 @@ export const toInputsUpdateName = (
   name: string,
   generationOptions: IGenerationOptions
 ) => {
-  return getEntityName(generationOptions.convertCaseEntity, name) + "InputsUpdate";
+  return (
+    getEntityName(generationOptions.convertCaseEntity, name) + "InputsUpdate"
+  );
 };
 
 export const toSortsName = (
   name: string,
   generationOptions: IGenerationOptions
-) => singular(getEntityName(generationOptions.convertCaseEntity, name)) + "Sorts";
+) =>
+  singular(getEntityName(generationOptions.convertCaseEntity, name)) + "Sorts";
 
 export const toPropertyName = (
   name: string,
@@ -477,10 +485,10 @@ export const createHandlebarsHelpers = (
   Handlebars.registerHelper("toInputsName", (str) =>
     toInputsName(str, generationOptions)
   );
-  
+
   Handlebars.registerHelper("toInputsUpdateName", (str) =>
     toInputsUpdateName(str, generationOptions)
-  );  
+  );
 
   Handlebars.registerHelper("toFiltersName", (str) =>
     toFiltersName(str, generationOptions)

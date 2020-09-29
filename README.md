@@ -116,7 +116,7 @@ $ npm install -g merlin-gql
 $ merlin-gql COMMAND
 running command...
 $ merlin-gql (-v|--version|version)
-merlin-gql/0.2.21 win32-x64 node-v10.15.0
+merlin-gql/0.2.22 win32-x64 node-v10.15.0
 $ merlin-gql --help [COMMAND]
 USAGE
   $ merlin-gql COMMAND
@@ -137,8 +137,6 @@ USAGE
 <!-- usagestop -->
 <!-- commands -->
 * [`merlin-gql core:local-command`](#merlin-gql-corelocal-command)
-* [`merlin-gql db-reverse`](#merlin-gql-db-reverse)
-* [`merlin-gql generate:crud`](#merlin-gql-generatecrud)
 * [`merlin-gql generate:entity`](#merlin-gql-generateentity)
 * [`merlin-gql help [COMMAND]`](#merlin-gql-help-command)
 * [`merlin-gql list:entities`](#merlin-gql-listentities)
@@ -151,107 +149,7 @@ USAGE
   $ merlin-gql core:local-command
 ```
 
-_See code: [src\commands\core\local-command.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.21/src\commands\core\local-command.ts)_
-
-## `merlin-gql db-reverse`
-
-generate models and graphql resolvers with database reverse engineering.
-
-```
-USAGE
-  $ merlin-gql db-reverse
-
-OPTIONS
-  -d, --database=database                                  Database name(or path for sqlite). You can pass multiple
-                                                           values separated by comma.
-
-  -e, --engine=mssql|postgres|mysql|mariadb|oracle|sqlite  Database engine
-
-  -h, --host=host                                          IP address/Hostname for database server
-
-  -o, --output=output                                      Where to place generated models
-
-  -p, --port=port                                          Port number for database server
-
-  -s, --schema=schema                                      Schema name to create model from. Only for mssql and
-                                                           postgres. You can pass multiple values separated by comma eg.
-                                                           -s scheme1,scheme2,scheme3
-
-  -u, --user=user                                          Username for database server
-
-  -x, --pass=pass                                          Password for database server
-
-  --ce=pascal|camel|none                                   Convert class names to specified case
-
-  --cf=pascal|param|camel|none                             Convert file names to specified case
-
-  --cp=pascal|camel|snake|none                             Convert property names to specified case
-
-  --defaultExport                                          Generate index file
-
-  --disablePluralization                                   Disable pluralization of OneToMany, ManyToMany relation names
-
-  --eol=LF|CRLF                                            Force EOL to be LF or CRLF
-
-  --generateConstructor                                    Generate constructor allowing partial initialization
-
-  --help                                                   show CLI help
-
-  --lazy                                                   Generate lazy relations
-
-  --namingStrategy=namingStrategy                          Use custom naming strategy
-
-  --noConfig                                               Doesn't create tsconfig.json and ormconfig.json
-
-  --pv=public|protected|private|none                       Defines which visibility should have the generated property
-
-  --relationIds                                            Generate RelationId fields
-
-  --secureResolvers                                        Add security to Resolvers with @Secure decorator
-
-  --skipSchema                                             Omits schema identifier in generated entities
-
-  --skipTables=skipTables                                  Skip schema generation for specific tables. You can pass
-                                                           multiple values separated by comma
-
-  --ssl                                                    Use ssl connection
-
-  --strictMode=none|?|!                                    Mark fields as optional(?) or non-null(!)
-
-DESCRIPTION
-  Usage: merlin-gql db-reverse -h <host> -d <database> -p [port] -u <user> -x [password] -e [engine]
-
-     You can also run program without specifying any parameters to launch interactive mode.
-```
-
-_See code: [src\commands\db-reverse.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.21/src\commands\db-reverse.ts)_
-
-## `merlin-gql generate:crud`
-
-Generate input, filter, sort GraphQL models and GraphQL resolvers from entity models.
-
-```
-USAGE
-  $ merlin-gql generate:crud
-
-OPTIONS
-  -a, --all       Generate for all model entities
-  -f, --filter    Generate filter GraphQL model from entity model
-  -i, --input     Generate input GraphQL model from entity model
-  -r, --resolver  Generate GraphQL resolver from entity model
-  -s, --sort      Generate sort GraphQL model from entity model
-  --help          show CLI help
-
-DESCRIPTION
-  Usage: merlin-gql generate:crud -i -f -s -r
-
-       You can also run program without specifying any parameters to launch interactive mode.
-
-EXAMPLE
-  $ merlin-gql generate:crud
-```
-
-_See code: [src\commands\generate\crud.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.21/src\commands\generate\crud.ts)_
+_See code: [src\commands\core\local-command.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.22/src\commands\core\local-command.ts)_
 
 ## `merlin-gql generate:entity`
 
@@ -272,7 +170,7 @@ EXAMPLE
   $ merlin-gql generate:entity
 ```
 
-_See code: [src\commands\generate\entity.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.21/src\commands\generate\entity.ts)_
+_See code: [src\commands\generate\entity.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.22/src\commands\generate\entity.ts)_
 
 ## `merlin-gql help [COMMAND]`
 
@@ -306,7 +204,7 @@ EXAMPLE
   $ merlin-gql list:entities
 ```
 
-_See code: [src\commands\list\entities.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.21/src\commands\list\entities.ts)_
+_See code: [src\commands\list\entities.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.22/src\commands\list\entities.ts)_
 
 ## `merlin-gql new`
 
@@ -338,7 +236,7 @@ ALIASES
   $ merlin-gql new
 ```
 
-_See code: [src\commands\new.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.21/src\commands\new.ts)_
+_See code: [src\commands\new.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.22/src\commands\new.ts)_
 <!-- commandsstop -->
 
 ## `merlin-gql db-reverse`

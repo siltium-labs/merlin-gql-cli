@@ -22,3 +22,4 @@ export * from "./type-graphql/model-decorators/sorts-decorator";
 export * from "./type-graphql/model-decorators/inputs-decorator";
 export * from "./type-graphql/resolver-decorators/secure-decorator";
 export * from "./type-graphql/object-type-decorator/merlin-object-type.decorator";
+export * from "../utils/metadata-storage";

@@ -1,18 +1,31 @@
+import { getTypeormEntityFromSubclass } from "./../core/type-graphql/utils/typeorm";
 import { getMetadataStorage } from "type-graphql";
-import { getTypeormEntityFromSubclass } from "../core/type-graphql/utils/typeorm";
 import { BaseModel } from "./../core/database/base.model";
 export const propertyIsDecoratedWithField = (
   prop: string,
-  targetClass: typeof BaseModel
+  targetClassName: string
 ) => {
   const metadataStorage = getMetadataStorage();
-  return metadataStorage.fields.find(
-    (f) =>
-      f.name === prop &&
-      (getTypeormEntityFromSubclass(f.target as typeof BaseModel) ===
-        targetClass ||
-        f.target === targetClass)
+  const targetClassSubclassMeta = metadataStorage.objectTypes.find(
+    (o) =>
+      getTypeormEntityFromSubclass(o.target as typeof BaseModel).name ===
+      targetClassName
   );
+  const targetClassSubclassBase = Object.getPrototypeOf(
+    Object.getPrototypeOf(targetClassSubclassMeta?.target)
+  );
+  const targetClassSubclassBaseMeta = metadataStorage.objectTypes.find(
+    (o) => o.target === targetClassSubclassBase
+  );
+
+  if (!targetClassSubclassMeta || !targetClassSubclassBaseMeta) {
+    return false;
+  } else {
+    const metaFields = targetClassSubclassMeta.fields ?? [];
+    const baseMetaFields = targetClassSubclassBaseMeta.fields ?? [];
+    const fields = [...metaFields, ...baseMetaFields];
+    return !!(fields.find((f) => f.name === prop) || false);
+  }
 };
 
 export type ObjectTypesMetadataStorage = Array<any>;

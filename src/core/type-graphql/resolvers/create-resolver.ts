@@ -46,10 +46,9 @@ export function CreateResolver<T extends ClassType>(
   const baseModelType = getTypeormEntityFromSubclass(baseModelSubType);
 
   const inputClass: typeof BaseInputFields = Reflect.getMetadata(
-    ModelDecoratorMetadataKeys.Input,
-    baseModelType
-  );
-  console.log("@Input() for ", baseModelType, inputClass);
+    ModelDecoratorMetadataKeys.Create,
+    baseModelSubType
+  );  
 
   const baseModelSingularName = singular(
     baseModelType.name[0].toLowerCase() + baseModelType.name.slice(1)
@@ -57,7 +56,7 @@ export function CreateResolver<T extends ClassType>(
 
   @Resolver({ isAbstract: true })
   abstract class CreateResolver<T> extends AbstractCreateResolver<T> {
-    @Mutation((returns) => baseModelType, {
+    @Mutation((returns) => baseModelSubType, {
       name: `${baseModelSingularName}Create`,
     })
     async create(
@@ -80,7 +79,7 @@ export function CreateResolver<T extends ClassType>(
       ) as Promise<T>;
     }
 
-    @Subscription((returns) => baseModelType, {
+    @Subscription((returns) => baseModelSubType, {
       topics: `${baseModelSingularName}Create`,
       name: `${baseModelSingularName}Create`,
     })

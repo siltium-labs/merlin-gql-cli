@@ -3,6 +3,7 @@ import IGenerationOptions from "../options/generation-options.interface";
 import {
   toEntityFileName,
   toEntityName,
+  toInputsCreateName,
   toInputsName,
   toInputsUpdateName,
   toPropertyName,
@@ -60,7 +61,7 @@ export const InputsTemplate = (
       
       const entityName:string = toEntityName(tscName, generationOptions)
       const entityFileName:string = toEntityFileName(tscName, generationOptions)
-      const inputsName:string = toInputsName(tscName, generationOptions);
+      const inputsCreateName:string = toInputsCreateName(tscName, generationOptions);
       const inputUpdateName:string = toInputsUpdateName(tscName, generationOptions);
 
       return `
@@ -70,7 +71,7 @@ export const InputsTemplate = (
       import { ${entityName} } from "./${entityFileName}";
       
       @InputType()
-      export class ${inputsName} extends BaseInputFields implements Partial<${entityName}> {
+      export class ${inputsCreateName} extends BaseInputFields implements Partial<${entityName}> {
         ${columns.filter(c => !c.generated).map(c => ColumnTemplate(c, generationOptions)).join("\n")}
       }
 

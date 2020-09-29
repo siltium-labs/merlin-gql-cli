@@ -44,11 +44,11 @@ export function ListResolver<T extends ClassType>(
   const baseModelType = getTypeormEntityFromSubclass(baseModelSubType);
   const filterClass: typeof BaseFilterFields = Reflect.getMetadata(
     ModelDecoratorMetadataKeys.Filter,
-    baseModelType
+    baseModelSubType
   );
   const sortClass: typeof BaseSortFields = Reflect.getMetadata(
     ModelDecoratorMetadataKeys.Sort,
-    baseModelType
+    baseModelSubType
   );
   const baseModelSingularName = singular(
     baseModelType.name[0].toLowerCase() + baseModelType.name.slice(1)
@@ -61,7 +61,7 @@ export function ListResolver<T extends ClassType>(
   > {}
 
   @ObjectType(`${baseModelSingularName}Result`)
-  class PaginatedResult extends Paginated(baseModelType)<T> {}
+  class PaginatedResult extends Paginated(baseModelSubType)<T> {}
 
   @Resolver({ isAbstract: true })
   abstract class ListResolver<

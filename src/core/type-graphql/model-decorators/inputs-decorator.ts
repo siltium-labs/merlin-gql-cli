@@ -1,13 +1,24 @@
-import { ModelDecoratorMetadataKeys } from './model-decorator.keys';
-import { BaseInputFields } from '../models/base-input-fields';
+import { ModelDecoratorMetadataKeys } from "./model-decorator.keys";
+import { BaseInputFields } from "../models/base-input-fields";
 
-export const Inputs = (inputsType?: typeof BaseInputFields, updatesType?: typeof BaseInputFields)=> {
-    return function (target: Function) {
-        if(inputsType){
-            Reflect.defineMetadata(ModelDecoratorMetadataKeys.Input, inputsType, target);
-        }
-        if(updatesType){
-            Reflect.defineMetadata(ModelDecoratorMetadataKeys.Update, inputsType, target);
-        }        
-    };
-}
+export const Inputs = (
+  createInputType?: typeof BaseInputFields,
+  updateInputType?: typeof BaseInputFields
+) => {
+  return function (target: Function) {
+    if (createInputType) {
+      Reflect.defineMetadata(
+        ModelDecoratorMetadataKeys.Create,
+        createInputType,
+        target
+      );
+    }
+    if (updateInputType) {
+      Reflect.defineMetadata(
+        ModelDecoratorMetadataKeys.Update,
+        updateInputType,
+        target
+      );
+    }
+  };
+};

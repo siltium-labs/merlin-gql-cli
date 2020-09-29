@@ -20,4 +20,5 @@ export * from "./type-graphql/resolvers/query-resolver";
 export * from "./type-graphql/model-decorators/filters-decorator";
 export * from "./type-graphql/model-decorators/sorts-decorator";
 export * from "./type-graphql/model-decorators/inputs-decorator";
-export * from "./type-graphql/resolver-decorators/secure-decorator"
+export * from "./type-graphql/resolver-decorators/secure-decorator";
+export * from "./type-graphql/object-type-decorator/merlin-object-type.decorator";

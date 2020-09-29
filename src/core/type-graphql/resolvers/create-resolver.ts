@@ -18,6 +18,7 @@ import { GraphQLInfo } from "../../gql/utils";
 import { ModelDecoratorMetadataKeys } from "../model-decorators/model-decorator.keys";
 import { AbstractSecureResolver } from "../models/abstract-secure-resolver";
 import { BaseInputFields } from "../models/base-input-fields";
+import { getTypeormEntityFromSubclass } from "../utils/typeorm";
 import { EntityToGraphResolver } from "./entity-resolver";
 
 export abstract class AbstractCreateResolver<T> extends AbstractSecureResolver {
@@ -40,12 +41,15 @@ export abstract class AbstractCreateResolver<T> extends AbstractSecureResolver {
 }
 
 export function CreateResolver<T extends ClassType>(
-  baseModelType: typeof BaseModel
+  baseModelSubType: typeof BaseModel
 ): typeof AbstractCreateResolver {
+  const baseModelType = getTypeormEntityFromSubclass(baseModelSubType);
+
   const inputClass: typeof BaseInputFields = Reflect.getMetadata(
     ModelDecoratorMetadataKeys.Input,
     baseModelType
   );
+  console.log("@Input() for ", baseModelType, inputClass);
 
   const baseModelSingularName = singular(
     baseModelType.name[0].toLowerCase() + baseModelType.name.slice(1)

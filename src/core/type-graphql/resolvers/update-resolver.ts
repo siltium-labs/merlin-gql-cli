@@ -19,6 +19,7 @@ import { GraphQLInfo } from "../../gql/utils";
 import { ModelDecoratorMetadataKeys } from "../model-decorators/model-decorator.keys";
 import { AbstractSecureResolver } from "../models/abstract-secure-resolver";
 import { BaseInputFields } from "../models/base-input-fields";
+import { getTypeormEntityFromSubclass } from '../utils/typeorm';
 import { EntityToGraphResolver } from "./entity-resolver";
 
 export abstract class AbstractUpdateResolver<T> extends AbstractSecureResolver {
@@ -42,8 +43,9 @@ export abstract class AbstractUpdateResolver<T> extends AbstractSecureResolver {
 }
 
 export function UpdateResolver<T extends ClassType>(
-  baseModelType: typeof BaseModel
+  baseModelSubType: typeof BaseModel
 ): typeof AbstractUpdateResolver {
+  const baseModelType = getTypeormEntityFromSubclass(baseModelSubType);
   const inputUpdateClass: typeof BaseInputFields = Reflect.getMetadata(
     ModelDecoratorMetadataKeys.Update,
     baseModelType

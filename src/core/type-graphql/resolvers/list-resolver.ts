@@ -16,6 +16,7 @@ import { ModelDecoratorMetadataKeys } from "../model-decorators/model-decorator.
 import { AbstractSecureResolver } from "../models/abstract-secure-resolver";
 import { BaseFilterFields } from "../models/base-filter-fields";
 import { BaseSortFields } from "../models/base-sort-fields";
+import { getTypeormEntityFromSubclass } from '../utils/typeorm';
 import { EntityToGraphResolver, IListQueryResult } from "./entity-resolver";
 import Paginated, {
   AbstractPaginatorCriteria,
@@ -38,8 +39,9 @@ export abstract class AbstractListResolver<
 }
 
 export function ListResolver<T extends ClassType>(
-  baseModelType: typeof BaseModel
+  baseModelSubType: typeof BaseModel
 ): typeof AbstractListResolver {
+  const baseModelType = getTypeormEntityFromSubclass(baseModelSubType);
   const filterClass: typeof BaseFilterFields = Reflect.getMetadata(
     ModelDecoratorMetadataKeys.Filter,
     baseModelType

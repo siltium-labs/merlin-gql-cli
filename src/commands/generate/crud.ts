@@ -144,7 +144,7 @@ export default class GenerateCrud extends LocalCommand {
 
         let configOptions = makeDefaultConfigs();
 
-        generator(configOptions.generationOptions, entities, flags);
+        await generator(configOptions.generationOptions, entities, flags);
         cli.action.stop();
       } catch (error) {
         this.log(error);

@@ -1,3 +1,4 @@
+import { generateGraphqlSchema } from "./../../core/schema/schema";
 import { InputsTemplate } from "./../templates/inputs.template";
 import { ResolverTemplate } from "./../templates/resolver.template";
 import * as Handlebars from "handlebars";
@@ -14,6 +15,7 @@ import { Entity } from "../models/entity";
 import { Relation } from "../models/relation";
 import { singular } from "pluralize";
 import { ModelGenerationOptions } from "../../commands/generate/crud";
+import { propertyIsDecoratedWithField } from "../../utils/metadata-storage";
 
 const prettierOptions: Prettier.Options = {
   parser: "typescript",
@@ -46,11 +48,16 @@ const prettierOptions: Prettier.Options = {
 //   generateFiles(databaseModel, generationOptions, entitiesPath);
 // };
 
-export const generator = (
+export const populateTypeGraphQLMetadata = async () => {
+  const _ = await generateGraphqlSchema();
+};
+
+export const generator = async (
   generationOptions: IGenerationOptions,
   databaseModel: Entity[],
   flags?: ModelGenerationOptions
 ) => {
+  await populateTypeGraphQLMetadata();
   createHandlebarsHelpers(generationOptions);
   //TODO: change this to use process.cwd
   const resultPath = generationOptions.resultsPath;
@@ -343,7 +350,9 @@ const generateInput = (
 
   const rendered = InputsTemplate(
     element.tscName,
-    element.columns,
+    element.columns.filter((c) =>
+      propertyIsDecoratedWithField(c.tscName, element.tscName)
+    ),
     generationOptions
   );
   writeFile(rendered, generationOptions, element, filePath);
@@ -453,7 +462,9 @@ export const toInputsCreateName = (
   name: string,
   generationOptions: IGenerationOptions
 ) => {
-  return getEntityName(generationOptions.convertCaseEntity, name) + "InputsCreate";
+  return (
+    getEntityName(generationOptions.convertCaseEntity, name) + "InputsCreate"
+  );
 };
 
 export const toInputsUpdateName = (

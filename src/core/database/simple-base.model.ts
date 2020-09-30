@@ -1,25 +1,19 @@
+import { ID, ObjectType } from "type-graphql";
+import { BeforeUpdate, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Field } from "../type-graphql/extended-decorators/field";
 import { BaseModel } from "./../database/base.model";
-import {
-  getConnection,
-  PrimaryGeneratedColumn,
-  Column,
-  BeforeUpdate,
-  getManager,
-  EntityManager,
-} from "typeorm";
-import { Field, ID, ObjectType } from "type-graphql";
 
-@ObjectType({isAbstract:true})
+@ObjectType({ isAbstract: true })
 export class SimpleBaseModel extends BaseModel {
-  @Field((type) => ID)
+  @Field((type) => ID, undefined, true)
   @PrimaryGeneratedColumn()
   id: number = 0;
 
-  @Field((type) => Date)
+  @Field((type) => Date, undefined, true)
   @Column("datetime")
   created: Date = new Date();
 
-  @Field((type) => Date)
+  @Field((type) => Date, undefined, true)
   @Column("datetime", { nullable: true })
   updated: Date | null = null;
 
@@ -28,7 +22,7 @@ export class SimpleBaseModel extends BaseModel {
     this.updated = new Date();
   }
 
-  @Field((type) => Boolean)
+  @Field((type) => Boolean, undefined, true)
   @Column("boolean", { default: false })
   deleted: boolean = false;
 }

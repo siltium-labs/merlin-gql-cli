@@ -6,6 +6,7 @@ import IGenerationOptions from "../options/generation-options.interface";
 import {
   defaultExport,
   printPropertyVisibility,
+  strictMode,
   toEntityDirectoryName,
   toEntityFileName,
   toEntityName,
@@ -19,15 +20,15 @@ import { RelationId } from "./../models/relation-id";
 
 const defaultValueIfNeeded = (nullable: boolean, tscType: string) => {
   if (nullable) {
-    return "";
+    return "= null;";
   } else if (!nullable && tscType === "string") {
-    return ' = ""';
+    return ' = "";';
   } else if (!nullable && tscType === "number") {
-    return " = 0";
+    return " = 0;";
   } else if (!nullable && tscType === "Date") {
-    return " = new Date()";
+    return " = new Date();";
   } else if (!nullable && tscType === "boolean") {
-    return " = false";
+    return " = false;";
   }
 };
 
@@ -36,7 +37,7 @@ const ImportsTemplate = (fileImport: string, generationOptions: IGenerationOptio
     //Handlebars: import {{localImport (toEntityName .)}} from "../{{toEntityDirectoryName .}}/{{toEntityFileName .}}"
 
     return `
-    import ${toLocalImport(toEntityName(fileImport, generationOptions), generationOptions)} from "../${toEntityDirectoryName(fileImport, generationOptions)}/${toEntityFileName(fileImport, generationOptions)};"
+    import ${toLocalImport(toEntityName(fileImport, generationOptions), generationOptions)} from "../${toEntityDirectoryName(fileImport, generationOptions)}/${toEntityFileName(fileImport, generationOptions)}";
     `;
 };
 
@@ -45,7 +46,7 @@ const IndexTemplate = (index: Index,  generationOptions: IGenerationOptions) => 
     //Handlebars: @Index("{{name}}",[{{#columns}}"{{toPropertyName .}}",{{/columns~}}],{ {{json options}} })    
 
     return `
-    @Index(${index.name}), [${index.columns.map(c => toPropertyName(c, generationOptions)).join(",")} ], ${toJson(index.options)}}
+    @Index("${index.name}", [${index.columns.map(c => `"${toPropertyName(c, generationOptions)}"`).join(",")} ], {${toJson(index.options)}})
     `;
 };
 
@@ -83,7 +84,7 @@ const ColumnTemplate = (
   return `
     ${generated}
     ${deletedAt}
-    ${printPropertyVisibility(generationOptions)} ${propertyName} ${generationOptions.strictMode}:${column.tscType}${column.options.nullable ? " | null" : ""} ${defaultValue}
+    ${printPropertyVisibility(generationOptions)} ${propertyName} ${strictMode(generationOptions)}:${column.tscType}${column.options.nullable ? " | null" : ""} ${defaultValue}
   `;
 };
 
@@ -118,23 +119,24 @@ const RelationTemplate = (
     const relatedTableEntityName = toEntityName(relation.relatedTable, generationOptions);
     const relatedTablePorpertyName = toPropertyName(relation.relatedTable, generationOptions);
     const relatedFieldPropertyName = toPropertyName(relation.relatedField, generationOptions);
-    const relationOptions = relation.relationOptions ? `${toJson(relation.relationOptions)}` : "";
+    const relationOptions = relation.relationOptions ? `,{ ${toJson(relation.relationOptions)} })` : undefined;
     const joinColumnsOptions = relation.joinColumnOptions ? `
     @JoinColumn([${relation.joinColumnOptions.map(jc => JoinColumnOptionsTemplate(jc, generationOptions)).join(",")}])
     ` : "";
-    const joinTableOptions = `@JoinTable({ name:"${relation.joinTableOptions}",
+    const joinTableOptions = relation.joinTableOptions ? `
+    @JoinTable({ name:"${relation.joinTableOptions}",
     joinColumns:[${relation.joinTableOptions?.joinColumns?.map(jc => JoinColumnOptionsTemplate(jc, generationOptions)).join(",")}],
     inverseJoinColumns:[${relation.joinTableOptions?.inverseJoinColumns?.map(jc => JoinColumnOptionsTemplate(jc, generationOptions)).join(",")}],
     ${entity.database ? `database: "${entity.database}",`: ""} 
     ${entity.schema ? `schema: "${entity.schema}"`: ""}
-    `;
+    })` : undefined;
     
     const propertyName = `${printPropertyVisibility(generationOptions)}${toPropertyName(relation.fieldName, generationOptions)}?:${toRelation(relatedTableEntityName, relation.relationType, generationOptions)};`
     return `
-    @${relation.relationType} (() => ${relatedTableEntityName}, ${relatedTablePorpertyName} => ${relatedTablePorpertyName}.${relatedFieldPropertyName})
-    ${relationOptions}
+    @${relation.relationType} (() => ${relatedTableEntityName}, ${relatedTablePorpertyName} => ${relatedTablePorpertyName}.${relatedFieldPropertyName}
+    ${relationOptions ?? ")"}
     ${joinColumnsOptions}
-    ${joinTableOptions}
+    ${joinTableOptions?? ""}
     ${propertyName}
     `;
   };
@@ -192,23 +194,24 @@ export const EntityTemplate = (
     // }
 
   const entityName:string = toEntityName(entity.tscName, generationOptions);  
-  const schema = entity.schema ? `, { schema:"${entity.schema}` : "";
-  const database = entity.database ? `, database: ${entity.database}` : ";"
+  const schema = entity.schema ? `, { schema:"${entity.schema}"` : "";
+  const database = entity.database ? `, database: "${entity.database}"` : "";
   const schemaDatabase = entity.schema ? `${schema}${database} }` : "";
     
   return `
         import {BaseEntity,Column,Entity,Index,JoinColumn,JoinTable,ManyToMany,ManyToOne,OneToMany,OneToOne,PrimaryColumn,PrimaryGeneratedColumn,RelationId,DeleteDateColumn} from "typeorm";        
-        ${entity.fileImports.map(fileImport => ImportsTemplate(fileImport,generationOptions)).join("/n")}
+        import { BaseModel } from "merlin-gql";        
+        ${entity.fileImports.map(fileImport => ImportsTemplate(fileImport,generationOptions)).join("\n")}
 
-        ${entity.indices.map(index => IndexTemplate(index, generationOptions)).join("/n")}
+        ${entity.indices.map(index => IndexTemplate(index, generationOptions)).join("\n")}
         @Entity("${entity.sqlName}" ${schemaDatabase})
         export ${defaultExport(generationOptions)} class ${entityName} extends BaseModel {
           
-          ${entity.columns.map(c => ColumnTemplate(entity, c, generationOptions)).join("/n")}
+          ${entity.columns.map(c => ColumnTemplate(entity, c, generationOptions)).join("\n")}
           
-          ${entity.relations.map(r => RelationTemplate(entity, r, generationOptions)).join("/n")}
+          ${entity.relations.map(r => RelationTemplate(entity, r, generationOptions)).join("\n")}
 
-          ${entity.relationIds.map(ri => RelationIdTemplate(entityName, ri, generationOptions)).join("/n")}
+          ${entity.relationIds.map(ri => RelationIdTemplate(entityName, ri, generationOptions)).join("\n")}
 
           ${entity.generateConstructor ? constructorTemplate(entityName, generationOptions) : ""}
         }

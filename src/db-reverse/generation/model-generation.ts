@@ -51,9 +51,7 @@ const prettierOptions: Prettier.Options = {
 
 //   generateFiles(databaseModel, generationOptions, entitiesPath);
 // };
-const test = () => {
-  require("C:/BackupFinal/node/projects/merlin-gql-playground/dist/resolvers/person.resolver.js");
-};
+
 export const populateTypeGraphQLMetadata = async () => {
   const _ = await loadResolverFiles();
 };
@@ -63,7 +61,6 @@ export const generator = async (
   databaseModel: Entity[],
   flags?: ModelGenerationOptions
 ) => {
-  test();
   await populateTypeGraphQLMetadata();
   createHandlebarsHelpers(generationOptions);
   //TODO: change this to use process.cwd
@@ -302,7 +299,7 @@ const generateEntity = (
   //entityCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
 ) => {
-  const filePath = path.resolve(filesPath, `${baseFileName}.entity.ts`);
+  const filePath = path.resolve(filesPath, `${baseFileName}.model.ts`);
   const rendered = EntityTemplate(element, generationOptions);
   writeFile(rendered, generationOptions, element, filePath);
 };

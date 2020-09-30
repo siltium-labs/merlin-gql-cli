@@ -34,7 +34,7 @@ export const generateGraphqlSchema = async () => {
     const resolversRelativePaths = (
       await getMerlinGqlConfigResolversPath()
     ).map((p) => `${process.cwd()}/dist/${p}`);
-    console.log(resolversRelativePaths);
+    //console.log(resolversRelativePaths);
 
     const schema = await buildSchema({
       resolvers: resolversRelativePaths as any,
@@ -55,7 +55,7 @@ export function findFileNamesFromGlob(globString: string) {
 export function loadResolversFromGlob(globString: string) {
   const filePaths = findFileNamesFromGlob(globString);
   const modules = filePaths.map((fileName) => {
-    console.log(fileName);
+    //console.log(fileName);
     const x = require(fileName);
   });
 }
@@ -65,7 +65,7 @@ export const loadResolverFiles = async () => {
     const resolversRelativePaths = (
       await getMerlinGqlConfigResolversPath()
     ).map((p) => `${process.cwd()}/dist/${p}`);
-    console.log(resolversRelativePaths);
+    //console.log(resolversRelativePaths);
 
     resolversRelativePaths.map((r) => {
       loadResolversFromGlob(r);

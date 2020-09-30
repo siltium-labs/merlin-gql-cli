@@ -1,3 +1,4 @@
+import { EntityTemplate } from "./../templates/entity.template";
 import { generateGraphqlSchema } from "./../../core/schema/schema";
 import { InputsTemplate } from "./../templates/inputs.template";
 import { ResolverTemplate } from "./../templates/resolver.template";
@@ -229,23 +230,7 @@ const generateGraphQLFiles = (
     fs.mkdirSync(filesPathResolvers, { recursive: true });
 
     if (!flags || flags.model) {
-      const entityTemplatePath = path.resolve(
-        __dirname,
-        "../templates",
-        "old",
-        "entity.handlebars"
-      );
-      const entityTemplate = fs.readFileSync(entityTemplatePath, "utf-8");
-      const entityCompliedTemplate = Handlebars.compile(entityTemplate, {
-        noEscape: true,
-      });
-      generateEntity(
-        generationOptions,
-        baseFileName,
-        filesPathModels,
-        entityCompliedTemplate,
-        element
-      );
+      generateEntity(generationOptions, baseFileName, filesPathModels, element);
     }
 
     if (!flags || flags.filter) {
@@ -308,11 +293,11 @@ const generateEntity = (
   generationOptions: IGenerationOptions,
   baseFileName: string,
   filesPath: string,
-  entityCompliedTemplate: HandlebarsTemplateDelegate<any>,
+  //entityCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
 ) => {
-  const filePath = path.resolve(filesPath, `${baseFileName}.model.ts`);
-  const rendered = entityCompliedTemplate(element);
+  const filePath = path.resolve(filesPath, `${baseFileName}.entity.ts`);
+  const rendered = EntityTemplate(element, generationOptions);
   writeFile(rendered, generationOptions, element, filePath);
 };
 
@@ -487,18 +472,112 @@ export const toPropertyName = (
   generationOptions: IGenerationOptions
 ) => getEntityName(generationOptions.convertCaseProperty, name);
 
+export const toJson = (context: any) => {
+  const json = JSON.stringify(context);
+  const withoutQuotes = json.replace(/"([^(")"]+)":/g, "$1:");
+  return withoutQuotes.slice(1, withoutQuotes.length - 1);
+};
+
+export const printPropertyVisibility = (
+  generationOptions: IGenerationOptions
+) => {
+  return generationOptions.propertyVisibility !== "none"
+    ? `${generationOptions.propertyVisibility} `
+    : "";
+};
+
+export const toRelation = (
+  entityType: string,
+  relationType: Relation["relationType"],
+  generationOptions: IGenerationOptions
+) => {
+  let retVal = entityType;
+  if (relationType === "ManyToMany" || relationType === "OneToMany") {
+    retVal = `${retVal}[]`;
+  }
+  if (generationOptions.lazy) {
+    retVal = `Promise<${retVal}>`;
+  }
+  return retVal;
+};
+
+export const toGraphQLModelRelation = (
+  entityType: string,
+  relationType: Relation["relationType"]
+) => {
+  let retVal = entityType;
+  if (relationType === "ManyToMany" || relationType === "OneToMany") {
+    retVal = `[${retVal}]`;
+  } else {
+    retVal = `${retVal}`;
+  }
+  return retVal;
+};
+
+export const toGraphQLSortRelation = (
+  entityType: string,
+  relationType: Relation["relationType"]
+) => {
+  let retVal = entityType;
+  if (relationType === "ManyToMany" || relationType === "OneToMany") {
+    retVal = `[${retVal}Sorts]`;
+  } else {
+    retVal = `${retVal}Sorts`;
+  }
+  return retVal;
+};
+
+export const toGraphQLFilterRelation = (
+  entityType: string,
+  relationType: Relation["relationType"]
+) => {
+  let retVal = entityType;
+  if (relationType === "ManyToMany" || relationType === "OneToMany") {
+    retVal = `[${retVal}Filters]`;
+  } else {
+    retVal = `${retVal}Filters`;
+  }
+  return retVal;
+};
+
+export const toGraphQLFilterRelationType = (
+  entityType: string,
+  relationType: Relation["relationType"]
+) => {
+  let retVal = entityType;
+  if (relationType === "ManyToMany" || relationType === "OneToMany") {
+    retVal = `${retVal}Filters[]`;
+  } else {
+    retVal = `${retVal}Filters`;
+  }
+  return retVal;
+};
+
+export const defaultExport = (generationOptions: IGenerationOptions) => {
+  return generationOptions.exportType === "default" ? "default" : "";
+};
+
+export const strictMode = (generationOptions: IGenerationOptions) => {
+  return generationOptions.strictMode !== "none"
+    ? generationOptions.strictMode
+    : "";
+};
+
+export const toEntityDirectoryName = (
+  str: string,
+  generationOptions: IGenerationOptions
+) => {
+  return singular(getEntityName(generationOptions.convertCaseFile, str));
+};
+
 export const createHandlebarsHelpers = (
   generationOptions: IGenerationOptions
 ) => {
-  Handlebars.registerHelper("json", (context) => {
-    const json = JSON.stringify(context);
-    const withoutQuotes = json.replace(/"([^(")"]+)":/g, "$1:");
-    return withoutQuotes.slice(1, withoutQuotes.length - 1);
-  });
+  Handlebars.registerHelper("json", (context) => toJson(context));
 
-  Handlebars.registerHelper("toEntityName", (str) => {
-    return toEntityName(str, generationOptions);
-  });
+  Handlebars.registerHelper("toEntityName", (str) =>
+    toEntityName(str, generationOptions)
+  );
 
   Handlebars.registerHelper("toInputsName", (str) =>
     toInputsName(str, generationOptions)
@@ -516,105 +595,67 @@ export const createHandlebarsHelpers = (
     toSortsName(str, generationOptions)
   );
 
-  Handlebars.registerHelper("toResolverName", (str) => {
-    return getEntityName(generationOptions.convertCaseEntity, str) + "Resolver";
-  });
+  Handlebars.registerHelper(
+    "toResolverName",
+    (str) =>
+      getEntityName(generationOptions.convertCaseEntity, str) + "Resolver"
+  );
 
-  Handlebars.registerHelper("toFileName", (str) => {
-    return toFileName(str, generationOptions);
-  });
+  Handlebars.registerHelper("toFileName", (str) =>
+    toFileName(str, generationOptions)
+  );
 
-  Handlebars.registerHelper("toEntityDirectoryName", (str) => {
-    return singular(getEntityName(generationOptions.convertCaseFile, str));
-  });
+  Handlebars.registerHelper("toEntityDirectoryName", (str) =>
+    toEntityDirectoryName(str, generationOptions)
+  );
 
-  Handlebars.registerHelper("toEntityFileName", (str) => {
-    return toEntityFileName(str, generationOptions);
-  });
+  Handlebars.registerHelper("toEntityFileName", (str) =>
+    toEntityFileName(str, generationOptions)
+  );
 
   Handlebars.registerHelper("toPropertyName", (str) =>
     toPropertyName(str, generationOptions)
   );
 
   Handlebars.registerHelper("printPropertyVisibility", () =>
-    generationOptions.propertyVisibility !== "none"
-      ? `${generationOptions.propertyVisibility} `
-      : ""
+    printPropertyVisibility(generationOptions)
   );
 
   Handlebars.registerHelper(
     "toRelation",
-    (entityType: string, relationType: Relation["relationType"]) => {
-      let retVal = entityType;
-      if (relationType === "ManyToMany" || relationType === "OneToMany") {
-        retVal = `${retVal}[]`;
-      }
-      if (generationOptions.lazy) {
-        retVal = `Promise<${retVal}>`;
-      }
-      return retVal;
-    }
+    (entityType: string, relationType: Relation["relationType"]) =>
+      toRelation(entityType, relationType, generationOptions)
   );
 
   Handlebars.registerHelper(
     "toGraphQLModelRelation",
-    (entityType: string, relationType: Relation["relationType"]) => {
-      let retVal = entityType;
-      if (relationType === "ManyToMany" || relationType === "OneToMany") {
-        retVal = `[${retVal}]`;
-      } else {
-        retVal = `${retVal}`;
-      }
-      return retVal;
-    }
+    (entityType: string, relationType: Relation["relationType"]) =>
+      toGraphQLModelRelation(entityType, relationType)
   );
 
   Handlebars.registerHelper(
     "toGraphQLSortRelation",
-    (entityType: string, relationType: Relation["relationType"]) => {
-      let retVal = entityType;
-      if (relationType === "ManyToMany" || relationType === "OneToMany") {
-        retVal = `[${retVal}Sorts]`;
-      } else {
-        retVal = `${retVal}Sorts`;
-      }
-      return retVal;
-    }
+    (entityType: string, relationType: Relation["relationType"]) =>
+      toGraphQLSortRelation(entityType, relationType)
   );
 
   Handlebars.registerHelper(
     "toGraphQLFilterRelation",
-    (entityType: string, relationType: Relation["relationType"]) => {
-      let retVal = entityType;
-      if (relationType === "ManyToMany" || relationType === "OneToMany") {
-        retVal = `[${retVal}Filters]`;
-      } else {
-        retVal = `${retVal}Filters`;
-      }
-      return retVal;
-    }
+    (entityType: string, relationType: Relation["relationType"]) =>
+      toGraphQLFilterRelation(entityType, relationType)
   );
   Handlebars.registerHelper(
     "toGraphQLFilterRelationType",
-    (entityType: string, relationType: Relation["relationType"]) => {
-      let retVal = entityType;
-      if (relationType === "ManyToMany" || relationType === "OneToMany") {
-        retVal = `${retVal}Filters[]`;
-      } else {
-        retVal = `${retVal}Filters`;
-      }
-      return retVal;
-    }
+    (entityType: string, relationType: Relation["relationType"]) =>
+      toGraphQLFilterRelationType(entityType, relationType)
   );
   Handlebars.registerHelper("defaultExport", () =>
-    generationOptions.exportType === "default" ? "default" : ""
+    defaultExport(generationOptions)
   );
   Handlebars.registerHelper("localImport", (entityName: string) =>
     toLocalImport(entityName, generationOptions)
   );
-  Handlebars.registerHelper("strictMode", () =>
-    generationOptions.strictMode !== "none" ? generationOptions.strictMode : ""
-  );
+  Handlebars.registerHelper("strictMode", () => strictMode(generationOptions));
   Handlebars.registerHelper({
     and: (v1, v2) => v1 && v2,
     eq: (v1, v2) => v1 === v2,

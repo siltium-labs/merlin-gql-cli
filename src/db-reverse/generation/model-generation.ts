@@ -1,5 +1,4 @@
-import {
-  generateGraphqlSchema,
+import {  
   loadResolverFiles,
 } from "./../../core/schema/schema";
 import { InputsTemplate } from "./../templates/inputs.template";
@@ -50,9 +49,7 @@ const prettierOptions: Prettier.Options = {
 
 //   generateFiles(databaseModel, generationOptions, entitiesPath);
 // };
-const test = () => {
-  require("C:/BackupFinal/node/projects/merlin-gql-playground/dist/resolvers/person.resolver.js");
-};
+
 export const populateTypeGraphQLMetadata = async () => {
   const _ = await loadResolverFiles();
 };
@@ -62,7 +59,6 @@ export const generator = async (
   databaseModel: Entity[],
   flags?: ModelGenerationOptions
 ) => {
-  test();
   await populateTypeGraphQLMetadata();
   createHandlebarsHelpers(generationOptions);
   //TODO: change this to use process.cwd

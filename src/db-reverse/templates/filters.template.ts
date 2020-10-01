@@ -73,7 +73,7 @@ const RelationTemplate = (
   };
 
 // prettier-ignore
-export const Filteremplate = (    
+export const FilterTemplate = (    
     entity: Entity,
     generationOptions: IGenerationOptions
 ): string => {     

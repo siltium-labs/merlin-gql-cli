@@ -20,6 +20,8 @@ import { Relation } from "../models/relation";
 import { singular } from "pluralize";
 import { ModelGenerationOptions } from "../../commands/generate/crud";
 import { propertyIsDecoratedWithField } from "../../utils/metadata-storage";
+import { FilterTemplate } from "../templates/filters.template";
+import { SortTemplate } from "../templates/sorts.template";
 
 const prettierOptions: Prettier.Options = {
   parser: "typescript",
@@ -237,44 +239,16 @@ const generateGraphQLFiles = (
     }
 
     if (!flags || flags.filter) {
-      const filtersTemplatePath = path.resolve(
-        __dirname,
-        "../templates",
-        "old",
-        "filters.handlebars"
-      );
-      const filtersTemplate = fs.readFileSync(filtersTemplatePath, "utf-8");
-      const filtersCompliedTemplate = Handlebars.compile(filtersTemplate, {
-        noEscape: true,
-      });
       generateFilters(
         generationOptions,
         baseFileName,
         filesPathModels,
-        filtersCompliedTemplate,
         element
       );
     }
 
     if (!flags || flags.sort) {
-      const sortsTemplatePath = path.resolve(
-        __dirname,
-        "../templates",
-        "old",
-        "sorts.handlebars"
-      );
-
-      const sortsTemplate = fs.readFileSync(sortsTemplatePath, "utf-8");
-      const sortsCompliedTemplate = Handlebars.compile(sortsTemplate, {
-        noEscape: true,
-      });
-      generateSort(
-        generationOptions,
-        baseFileName,
-        filesPathModels,
-        sortsCompliedTemplate,
-        element
-      );
+      generateSort(generationOptions, baseFileName, filesPathModels, element);
     }
 
     if (!flags || flags.input) {
@@ -308,11 +282,10 @@ const generateFilters = (
   generationOptions: IGenerationOptions,
   baseFileName: string,
   filesPath: string,
-  filtersCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
 ) => {
   const filePath = path.resolve(filesPath, `${baseFileName}.filter.ts`);
-  const rendered = filtersCompliedTemplate(element);
+  const rendered = FilterTemplate(element, generationOptions);
   writeFile(rendered, generationOptions, element, filePath);
 };
 
@@ -320,11 +293,10 @@ const generateSort = (
   generationOptions: IGenerationOptions,
   baseFileName: string,
   filesPath: string,
-  sortCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
 ) => {
   const filePath = path.resolve(filesPath, `${baseFileName}.sort.ts`);
-  const rendered = sortCompliedTemplate(element);
+  const rendered = SortTemplate(element, generationOptions);
   writeFile(rendered, generationOptions, element, filePath);
 };
 

@@ -33,13 +33,10 @@ const defaultValueIfNeeded = (nullable: boolean, tscType: string) => {
 };
 
 // prettier-ignore
-const ImportsTemplate = (fileImport: string, generationOptions: IGenerationOptions) => {
-    return `import ${toLocalImport(toEntityName(fileImport, generationOptions), generationOptions)} from "../${toEntityDirectoryName(fileImport, generationOptions)}/${toEntityFileName(fileImport, generationOptions)}";`;
-};
-
-// prettier-ignore
-const IndexTemplate = (index: Index,  generationOptions: IGenerationOptions) => {
-    return `@Index("${index.name}", [${index.columns.map(c => `"${toPropertyName(c, generationOptions)}"`).join(",")} ], {${toJson(index.options)}})`;
+const ImportsTemplate = (fileImport: string, generationOptions: IGenerationOptions) => {    
+    return `
+    import ${toLocalImport(toEntityName(fileImport, generationOptions), generationOptions)} from "../${toEntityDirectoryName(fileImport, generationOptions)}/${toEntityFileName(fileImport, generationOptions)}";
+    `;
 };
 
 // prettier-ignore
@@ -48,6 +45,7 @@ const ColumnTemplate = (
   column: Column,
   generationOptions: IGenerationOptions
 ) => {
+  
   const propertyName = toPropertyName(column.tscName, generationOptions);  
   const defaultValue = defaultValueIfNeeded(
     !!column.options.nullable,
@@ -69,20 +67,12 @@ const ColumnTemplate = (
 };
 
 // prettier-ignore
-const JoinColumnOptionsTemplate = (
-  joinColumnsOptions: JoinColumnOptions,
-  generationOptions: IGenerationOptions
-) => {
-  const referenceColumnName = toPropertyName(joinColumnsOptions.referencedColumnName!, generationOptions);
-  return `{name: "${joinColumnsOptions.name}",  referencedColumnName: "${referenceColumnName}"}`;
-};
-
-// prettier-ignore
 const RelationTemplate = (
   entity: Entity,
   relation: Relation,
   generationOptions: IGenerationOptions
   ) => {
+
     const relatedTableEntityName = toEntityName(relation.relatedTable, generationOptions);
     const relatedTablePorpertyName = toPropertyName(relation.relatedTable, generationOptions);
     const relatedFieldPropertyName = toPropertyName(relation.relatedField, generationOptions);
@@ -109,37 +99,11 @@ const RelationTemplate = (
   };
 
 // prettier-ignore
-const RelationIdTemplate = (
-  entityName: string,
-  relationId: RelationId,
-  generationOptions: IGenerationOptions
-) => {
-  const inputProperty = `${toPropertyName(entityName, generationOptions)}:${toEntityName(entityName, generationOptions)}`
-  const relationProperty = `${toPropertyName(entityName, generationOptions)}.${toPropertyName(relationId.relationField,generationOptions)}`;
-  const field = `${toPropertyName(relationId.fieldName, generationOptions)}?:${relationId.fieldType}`;
-  return `
-  @RelationId((${inputProperty})=>${relationProperty})
-  ${printPropertyVisibility(generationOptions)} ${field};
-  `;
-};
-
-// prettier-ignore
-const constructorTemplate = (
-  entityName: string,
-  generationOptions: IGenerationOptions
-) => {
-  const entity = toEntityName(entityName,generationOptions);
-  return `${printPropertyVisibility(generationOptions)} constructor(init?: Partial<${entity}>){
-    Object.assign(this, init);
-  }
-  `;
-};
-
-// prettier-ignore
-export const EntityTemplate = (    
+export const Filteremplate = (    
     entity: Entity,
     generationOptions: IGenerationOptions
-): string => {          
+): string => {     
+  
   const entityName:string = toEntityName(entity.tscName, generationOptions);  
   const schema = entity.schema ? `, { schema:"${entity.schema}"` : "";
   const database = entity.database ? `, database: "${entity.database}"` : "";

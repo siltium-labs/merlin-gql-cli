@@ -26,13 +26,23 @@ export function Field(
     const existentMetadataForPrototype =
       merlinGqlMetadataStorage.objectTypes[keyName];
     if (existentMetadataForPrototype) {
-      existentMetadataForPrototype.fields.push(propertyKey.toString());
+      existentMetadataForPrototype.fields.push({
+        name: propertyKey.toString(),
+        ignoreSort: false,
+        ignoreFilter: false,
+      });
     } else {
       merlinGqlMetadataStorage.objectTypes = {
         ...merlinGqlMetadataStorage.objectTypes,
         ...{
           [keyName]: {
-            fields: [propertyKey.toString()],
+            fields: [
+              {
+                name: propertyKey.toString(),
+                ignoreSort: false,
+                ignoreFilter: false,
+              },
+            ],
             extends: null,
           },
         },

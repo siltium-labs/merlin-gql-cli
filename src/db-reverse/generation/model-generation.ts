@@ -1,8 +1,5 @@
 import { EntityTemplate } from "./../templates/entity.template";
-import {
-  generateGraphqlSchema,
-  loadResolverFiles,
-} from "./../../core/schema/schema";
+import { loadResolverFiles } from "./../../core/schema/schema";
 import { InputsTemplate } from "./../templates/inputs.template";
 import { ResolverTemplate } from "./../templates/resolver.template";
 import * as Handlebars from "handlebars";

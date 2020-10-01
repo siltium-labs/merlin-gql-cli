@@ -7,33 +7,52 @@ export const propertyIsDecoratedWithField = (
 ) => {
   const merlinGqlMetadataStorage = getMerlinMetadataStorage();
   const propertyIsDirectField = !!(
-    merlinGqlMetadataStorage.objectTypes[targetClassName]?.fields.indexOf(
-      propertyName
-    ) > -1
+    merlinGqlMetadataStorage.objectTypes[targetClassName]?.fields
+      .map((f) => f.name)
+      .indexOf(propertyName) > -1
   );
   //console.log(JSON.stringify(merlinGqlMetadataStorage));
   const propertyIsInheritedField = !!(
     merlinGqlMetadataStorage.objectTypes[targetClassName]?.extends &&
     merlinGqlMetadataStorage.objectTypes[
       merlinGqlMetadataStorage.objectTypes[targetClassName]?.extends as string
-    ].fields.indexOf(propertyName) > -1
+    ].fields
+      .map((f) => f.name)
+      .indexOf(propertyName) > -1
   );
   return propertyIsDirectField || propertyIsInheritedField;
 };
 
+export type FieldDefinitionMetadata = {
+  name: string;
+  ignoreFilter: boolean;
+  ignoreSort: boolean;
+};
+
+export type CrudOperations =
+  | "ALL"
+  | "CREATE"
+  | "UPDATE"
+  | "DELETE"
+  | "LIST"
+  | "FIND";
+
 export type ObjectTypesMetadataStorage = {
   [key: string]: {
-    fields: string[];
+    operations: CrudOperations[];
+    fields: FieldDefinitionMetadata[];
     extends: string | null;
   };
 };
-const MERLIN_METADATA_STORAGE: {
+
+export type MerlinMetadataStorage = {
   objectTypes: ObjectTypesMetadataStorage;
-} = {
+};
+const MERLIN_METADATA_STORAGE: MerlinMetadataStorage = {
   objectTypes: {},
 };
 
-export const getMerlinMetadataStorage = () => {
+export const getMerlinMetadataStorage = (): MerlinMetadataStorage => {
   return (
     (global as any).MerlinMetadataStorage ||
     ((global as any).MerlinMetadataStorage = MERLIN_METADATA_STORAGE)

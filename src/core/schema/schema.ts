@@ -29,25 +29,6 @@ export const getMerlinGqlConfigResolversPath = (): Promise<string[]> =>
     }
   });
 
-export const generateGraphqlSchema = async () => {
-  try {
-    const resolversRelativePaths = (
-      await getMerlinGqlConfigResolversPath()
-    ).map((p) => `${process.cwd()}/dist/${p}`);
-    //console.log(resolversRelativePaths);
-
-    const schema = await buildSchema({
-      resolvers: resolversRelativePaths as any,
-    });
-    return schema;
-  } catch (e) {
-    console.log(e);
-    throw new Error(
-      "Error when reading the path for resolvers, please check your merlin-gql.json file"
-    );
-  }
-};
-
 export function findFileNamesFromGlob(globString: string) {
   return glob.sync(globString);
 }

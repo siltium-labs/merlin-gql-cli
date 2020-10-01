@@ -310,9 +310,10 @@ const generateInput = (
 
   const rendered = InputsTemplate(
     element.tscName,
-    element.columns.filter((c) =>
-      propertyIsDecoratedWithField(c.tscName, element.tscName)
-    ),
+    element.columns,
+    // .filter((c) =>
+    //   propertyIsDecoratedWithField(c.tscName, element.tscName)
+    // ),
     generationOptions
   );
   writeFile(rendered, generationOptions, element, filePath);

@@ -49,9 +49,7 @@ joinColumns:[{{#joinColumns}}{{> JoinColumnOptions}}{{/joinColumns}}],inverseJoi
 {{/inline}}
 
 {{#*inline "Constructor"}}
-{{printPropertyVisibility}}constructor(init?: Partial<{{toEntityName entityName}}>) {
-    Object.assign(this, init);
-    }
+{{printPropertyVisibility}}constructor(init?: Partial<{{toEntityName entityName}}>) {Object.assign(this, init);}
     {{/inline}}
 
     {{#*inline "Entity"}}
@@ -77,8 +75,8 @@ joinColumns:[{{#joinColumns}}{{> JoinColumnOptions}}{{/joinColumns}}],inverseJoi
     from "typeorm";
     import {Field, ID, ObjectType, Int, Float} from "type-graphql";
     import { Inputs, Sorts, Filters, BaseModel} from "merlin-gql";
-    import {{localImport (toInputsName tscName)}} from "./{{toFileName tscName}}.input";    
-    import {{localImport (toInputsUpdateName tscName)}} from "./{{toFileName tscName}}.input";    
+    import {{localImport (toInputsName tscName)}} from "./{{toFileName tscName}}.input";
+    import {{localImport (toInputsUpdateName tscName)}} from "./{{toFileName tscName}}.input";
     import {{localImport (toFiltersName tscName)}} from "./{{toFileName tscName}}.filter";
     import {{localImport (toSortsName tscName)}} from "./{{toFileName tscName}}.sort";
     {{#fileImports}}{{> Import}}{{/fileImports}}

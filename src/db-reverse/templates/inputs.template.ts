@@ -46,7 +46,7 @@ const ColumnUpdateTemplate = (
 ) => {
   const fieldNullable = `{ nullable: true }`;
   const propertyName = toPropertyName(column.tscName, generationOptions);
-  const questionMarkNullable = "?";  
+  const questionMarkNullable = "?";
   return `
         @Field(${fieldNullable})
         ${propertyName}${questionMarkNullable}:${column.tscType};

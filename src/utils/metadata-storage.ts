@@ -11,7 +11,7 @@ export const propertyIsDecoratedWithField = (
       .map((f) => f.name)
       .indexOf(propertyName) > -1
   );
-  console.log(JSON.stringify(merlinGqlMetadataStorage));
+  //console.log(JSON.stringify(merlinGqlMetadataStorage));
   const propertyIsInheritedField = !!(
     merlinGqlMetadataStorage.objectTypes[targetClassName]?.extends &&
     merlinGqlMetadataStorage.objectTypes[

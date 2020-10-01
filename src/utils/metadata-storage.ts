@@ -29,8 +29,17 @@ export type FieldDefinitionMetadata = {
   ignoreSort: boolean;
 };
 
+export type CrudOperations =
+  | "ALL"
+  | "CREATE"
+  | "UPDATE"
+  | "DELETE"
+  | "LIST"
+  | "FIND";
+
 export type ObjectTypesMetadataStorage = {
   [key: string]: {
+    operations: CrudOperations[];
     fields: FieldDefinitionMetadata[];
     extends: string | null;
   };

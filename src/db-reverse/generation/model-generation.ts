@@ -423,7 +423,7 @@ export const toInputsCreateName = (
   generationOptions: IGenerationOptions
 ) => {
   return (
-    getEntityName(generationOptions.convertCaseEntity, name) + "InputsCreate"
+    getEntityName(generationOptions.convertCaseEntity, name) + "CreateInput"
   );
 };
 
@@ -432,7 +432,7 @@ export const toInputsUpdateName = (
   generationOptions: IGenerationOptions
 ) => {
   return (
-    getEntityName(generationOptions.convertCaseEntity, name) + "InputsUpdate"
+    getEntityName(generationOptions.convertCaseEntity, name) + "UpdateInput"
   );
 };
 

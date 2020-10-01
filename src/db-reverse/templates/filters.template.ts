@@ -88,11 +88,11 @@ export const FilterTemplate = (
         @InputType()
         export ${defaultExport(generationOptions)} class ${filterName} extends BaseFilterFields {
         
-          @Field((type) => [{{toFiltersName tscName}}], { nullable: true })
-          or?: {{toFiltersName tscName}}[];
+          @Field((type) => [${filterName}], { nullable: true })
+          or?: ${filterName}[];
 
-          @Field((type) => [{{toFiltersName tscName}}], { nullable: true })
-          and?: {{toFiltersName tscName}}[];
+          @Field((type) => [${filterName}], { nullable: true })
+          and?: ${filterName}[];
 
           ${entity.columns.map(c => ColumnTemplate(c, generationOptions)).join("\n")}
           

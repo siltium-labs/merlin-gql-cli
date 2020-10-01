@@ -4,6 +4,7 @@ import IGenerationOptions from "../options/generation-options.interface";
 import {
   defaultExport,
   toEntityDirectoryName,
+  toEntityName,
   toFileName,
   toGraphQLSortRelation,
   toLocalImport,
@@ -37,8 +38,9 @@ const RelationTemplate = (
   relation: Relation,
   generationOptions: IGenerationOptions
   ) => {     
-    const relatedTableEntityName = toSortsName(relation.relatedTable, generationOptions);
-    const propertyName = `${toSortsName(relation.fieldName, generationOptions)}?:${toRelation(relatedTableEntityName, relation.relationType, generationOptions)};`
+    const relatedTableEntityName = toEntityName(relation.relatedTable,generationOptions);
+    const relatedTableSortName = toSortsName(relation.relatedTable, generationOptions);
+    const propertyName = `${toSortsName(relation.fieldName, generationOptions)}?:${toRelation(relatedTableSortName, relation.relationType, generationOptions)};`
     return `
     @Field((type) => ${toGraphQLSortRelation(relatedTableEntityName, relation.relationType)}, { nullable: true })
     ${propertyName}

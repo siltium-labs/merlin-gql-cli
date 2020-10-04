@@ -1,34 +1,9 @@
-import { getMerlinMetadataStorage } from "../../../utils/metadata-storage";
+import { addNoSortMetadata } from "./../../../utils/metadata-storage";
 
-export const NoSort = () => {
-  return (prototype: any, propertyKey: any, descriptor: any) => {
-    const merlinGqlMetadataStorage = getMerlinMetadataStorage();
+export const NoSort = (): MethodDecorator | PropertyDecorator => {
+  return (prototype, propertyKey, descriptor) => {
     const keyName = Object.getPrototypeOf(prototype).constructor.name;
-    const existentMetadataForPrototype =
-      merlinGqlMetadataStorage.objectTypes[keyName];
-    if (existentMetadataForPrototype) {
-      existentMetadataForPrototype.fields.push({
-        name: propertyKey.toString(),
-        ignoreSort: false,
-        ignoreFilter: true,
-      });
-    } else {
-      merlinGqlMetadataStorage.objectTypes = {
-        ...merlinGqlMetadataStorage.objectTypes,
-        ...{
-          [keyName]: {
-            fields: [
-              {
-                name: propertyKey.toString(),
-                ignoreSort: false,
-                ignoreFilter: true,
-              },
-            ],
-            extends: null,
-          },
-        },
-      };
-    }
+    addNoSortMetadata(keyName, propertyKey.toString());
     //Wrap typegraphql field decorator
   };
 };

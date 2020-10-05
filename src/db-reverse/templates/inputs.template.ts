@@ -1,3 +1,4 @@
+import { propertyIsDecoratedWithField } from "../../utils/metadata-storage";
 import { Column } from "../models/column";
 import IGenerationOptions from "../options/generation-options.interface";
 import {
@@ -72,12 +73,12 @@ export const InputsTemplate = (
       
       @InputType()
       export class ${inputsCreateName} extends BaseInputFields implements Partial<${entityName}> {
-        ${columns.filter(c => !c.generated).map(c => ColumnTemplate(c, generationOptions)).join("\n")}
+        ${columns.filter(c => propertyIsDecoratedWithField(c.tscName, tscName)).filter(c => !c.generated).map(c => ColumnTemplate(c, generationOptions)).join("\n")}
       }
 
       @InputType()
       export class ${inputUpdateName} extends BaseInputFields implements Partial<${entityName}> {
-        ${columns.filter(c => !c.generated).map(c => ColumnUpdateTemplate(c, generationOptions)).join("\n")}
+        ${columns.filter(c => propertyIsDecoratedWithField(c.tscName, tscName)).filter(c => !c.generated).map(c => ColumnUpdateTemplate(c, generationOptions)).join("\n")}
       }
       `
   }

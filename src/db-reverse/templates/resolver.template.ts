@@ -75,12 +75,6 @@ export const ResolverTemplate = (
     import ${toLocalImport(sortsName, generationOptions)} from "../models/${fileName}/${fileName}.sort";
     import { CreateResolver, DeleteResolver, FindResolver, ListResolver, ${secureImport} UpdateResolver } from "merlin-gql";
     
-    
-    
-    
-    
-    
-    
     ${listResolver}    
     
     ${findResolver}    

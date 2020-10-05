@@ -1,4 +1,5 @@
 import { JoinColumnOptions } from "typeorm";
+import { propertyIsDecoratedWithField } from "../../utils/metadata-storage";
 import { Index } from "../models";
 import { Column } from "../models/column";
 import { Relation } from "../models/relation";
@@ -94,9 +95,9 @@ export const FilterTemplate = (
           @Field((type) => [${filterName}], { nullable: true })
           and?: ${filterName}[];
 
-          ${entity.columns.map(c => ColumnTemplate(c, generationOptions)).join("\n")}
+          ${entity.columns.filter(c => propertyIsDecoratedWithField(c.tscName, entity.tscName)).map(c => ColumnTemplate(c, generationOptions)).join("\n")}
           
-          ${entity.relations.map(r => RelationTemplate(r, generationOptions)).join("\n")}         
+          ${entity.relations.filter(c => propertyIsDecoratedWithField(c.fieldName, entity.tscName)).map(r => RelationTemplate(r, generationOptions)).join("\n")}         
         }
       `
   }

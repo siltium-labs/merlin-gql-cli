@@ -23,6 +23,28 @@ export const propertyIsDecoratedWithField = (
   return propertyIsDirectField || propertyIsInheritedField;
 };
 
+export const propertyIsFilterIgnored = (
+  propertyName: string,
+  targetClassName: string
+) => {
+  const merlinGqlMetadataStorage = getMerlinMetadataStorage();
+  const propertyIsIgnored = !!merlinGqlMetadataStorage.objectTypes[
+    targetClassName
+  ]?.fields.find((f) => f.name === propertyName && f.ignoreFilter === true);
+  return propertyIsIgnored;
+};
+
+export const propertyIsSortIgnored = (
+  propertyName: string,
+  targetClassName: string
+) => {
+  const merlinGqlMetadataStorage = getMerlinMetadataStorage();
+  const propertyIsIgnored = !!merlinGqlMetadataStorage.objectTypes[
+    targetClassName
+  ]?.fields.find((f) => f.name === propertyName && f.ignoreSort === true);
+  return propertyIsIgnored;
+};
+
 export type FieldDefinitionMetadata = {
   name: string;
   ignoreFilter: boolean;

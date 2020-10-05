@@ -45,23 +45,30 @@ export const propertyIsSortIgnored = (
   return propertyIsIgnored;
 };
 
+export const resolverIncludesOperation = (
+  targetClassName: string,
+  operation: CrudOperations
+) => {
+  const merlinGqlMetadataStorage = getMerlinMetadataStorage();
+  const propertyIsIgnored = !!merlinGqlMetadataStorage.objectTypes[
+    targetClassName
+  ].operations.find((o) => o === "ALL" || o === operation);
+  return propertyIsIgnored;
+};
+
 export type FieldDefinitionMetadata = {
   name: string;
   ignoreFilter: boolean;
   ignoreSort: boolean;
 };
 
-export type CrudOperations =
-  | "ALL"
-  | "CREATE"
-  | "UPDATE"
-  | "DELETE"
-  | "LIST"
-  | "FIND";
+export type CrudOperations = "CREATE" | "UPDATE" | "DELETE" | "LIST" | "FIND";
+
+export type CrudOperationsAndAll = "ALL" | CrudOperations;
 
 export type ObjectTypesMetadataStorage = {
   [key: string]: {
-    operations: CrudOperations[];
+    operations: CrudOperationsAndAll[];
     fields: FieldDefinitionMetadata[];
     extends: string | null;
   };
@@ -82,7 +89,7 @@ export const getMerlinMetadataStorage = (): MerlinMetadataStorage => {
 };
 export const addOperationMetadata = (
   entityName: string,
-  operation: CrudOperations
+  operation: CrudOperationsAndAll
 ) => {
   const merlinGqlMetadataStorage = getMerlinMetadataStorage();
   const existentMetadataForPrototype =

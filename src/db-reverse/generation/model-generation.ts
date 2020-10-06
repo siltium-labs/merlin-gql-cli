@@ -2,7 +2,6 @@ import { EntityTemplate } from "./../templates/entity.template";
 import { loadResolverFiles } from "./../../core/schema/schema";
 import { InputsTemplate } from "./../templates/inputs.template";
 import { ResolverTemplate } from "./../templates/resolver.template";
-import * as Handlebars from "handlebars";
 import * as Prettier from "prettier";
 import * as changeCase from "change-case";
 import * as fs from "fs";
@@ -61,7 +60,6 @@ export const generator = async (
   flags?: ModelGenerationOptions
 ) => {
   await populateTypeGraphQLMetadata();
-  createHandlebarsHelpers(generationOptions);
   //TODO: change this to use process.cwd
   const resultPath = generationOptions.resultsPath;
   if (!fs.existsSync(resultPath)) {
@@ -76,127 +74,6 @@ export const generator = async (
   }
   generateGraphQLFiles(databaseModel, generationOptions, entitiesPath, flags);
 };
-
-// const generateFiles = (
-//   databaseModel: Entity[],
-//   generationOptions: IGenerationOptions,
-//   entitiesPath: string
-// ) => {
-//   const entityTemplatePath = path.resolve(
-//     __dirname,
-//     "../templates",
-//     "entity.handlebars"
-//   );
-//   const filtersTemplatePath = path.resolve(
-//     __dirname,
-//     "../templates",
-//     "filters.handlebars"
-//   );
-//   const sortsTemplatePath = path.resolve(
-//     __dirname,
-//     "../templates",
-//     "sorts.handlebars"
-//   );
-//   const inputsTemplatePath = path.resolve(
-//     __dirname,
-//     "../templates",
-//     "inputs.handlebars"
-//   );
-//   const resolverTemplatePath = path.resolve(
-//     __dirname,
-//     "../templates",
-//     "resolver.handlebars"
-//   );
-
-//   const entityTemplate = fs.readFileSync(entityTemplatePath, "utf-8");
-//   const entityCompliedTemplate = Handlebars.compile(entityTemplate, {
-//     noEscape: true,
-//   });
-
-//   const filtersTemplate = fs.readFileSync(filtersTemplatePath, "utf-8");
-//   const filtersCompliedTemplate = Handlebars.compile(filtersTemplate, {
-//     noEscape: true,
-//   });
-
-//   const sortsTemplate = fs.readFileSync(sortsTemplatePath, "utf-8");
-//   const sortsCompliedTemplate = Handlebars.compile(sortsTemplate, {
-//     noEscape: true,
-//   });
-
-//   const inputsTemplate = fs.readFileSync(inputsTemplatePath, "utf-8");
-//   const inputsCompliedTemplate = Handlebars.compile(inputsTemplate, {
-//     noEscape: true,
-//   });
-
-//   const resolverTemplate = fs.readFileSync(resolverTemplatePath, "utf-8");
-//   const resolverCompliedTemplate = Handlebars.compile(resolverTemplate, {
-//     noEscape: true,
-//   });
-
-//   databaseModel.forEach((element) => {
-//     let casedFileName = "";
-//     switch (generationOptions.convertCaseFile) {
-//       case "camel":
-//         casedFileName = changeCase.camelCase(element.tscName);
-//         break;
-//       case "param":
-//         casedFileName = changeCase.paramCase(element.tscName);
-//         break;
-//       case "pascal":
-//         casedFileName = changeCase.pascalCase(element.tscName);
-//         break;
-//       case "none":
-//         casedFileName = element.tscName;
-//         break;
-//       default:
-//         throw new Error("Unknown case style 1");
-//     }
-
-//     element.tscName = singular(element.tscName);
-//     let baseFileName = singular(casedFileName);
-//     let filesPathModels = path.join(entitiesPath, "models", baseFileName);
-//     let filesPathResolvers = path.join(entitiesPath, "resolvers");
-
-//     fs.mkdirSync(filesPathModels, { recursive: true });
-//     fs.mkdirSync(filesPathResolvers, { recursive: true });
-
-//     generateEntity(
-//       generationOptions,
-//       baseFileName,
-//       filesPathModels,
-//       entityCompliedTemplate,
-//       element
-//     );
-//     generateFilters(
-//       generationOptions,
-//       baseFileName,
-//       filesPathModels,
-//       filtersCompliedTemplate,
-//       element
-//     );
-//     generateSort(
-//       generationOptions,
-//       baseFileName,
-//       filesPathModels,
-//       sortsCompliedTemplate,
-//       element
-//     );
-//     generateInput(
-//       generationOptions,
-//       baseFileName,
-//       filesPathModels,
-//       inputsCompliedTemplate,
-//       element
-//     );
-//     generateResolver(
-//       generationOptions,
-//       baseFileName,
-//       filesPathResolvers,
-//       resolverCompliedTemplate,
-//       element
-//     );
-//   });
-// };
 
 const generateGraphQLFiles = (
   databaseModel: Entity[],
@@ -538,104 +415,6 @@ export const toEntityDirectoryName = (
   generationOptions: IGenerationOptions
 ) => {
   return singular(getEntityName(generationOptions.convertCaseFile, str));
-};
-
-export const createHandlebarsHelpers = (
-  generationOptions: IGenerationOptions
-) => {
-  Handlebars.registerHelper("json", (context) => toJson(context));
-
-  Handlebars.registerHelper("toEntityName", (str) =>
-    toEntityName(str, generationOptions)
-  );
-
-  Handlebars.registerHelper("toInputsName", (str) =>
-    toInputsName(str, generationOptions)
-  );
-
-  Handlebars.registerHelper("toInputsUpdateName", (str) =>
-    toInputsUpdateName(str, generationOptions)
-  );
-
-  Handlebars.registerHelper("toFiltersName", (str) =>
-    toFiltersName(str, generationOptions)
-  );
-
-  Handlebars.registerHelper("toSortsName", (str) =>
-    toSortsName(str, generationOptions)
-  );
-
-  Handlebars.registerHelper(
-    "toResolverName",
-    (str) =>
-      getEntityName(generationOptions.convertCaseEntity, str) + "Resolver"
-  );
-
-  Handlebars.registerHelper("toFileName", (str) =>
-    toFileName(str, generationOptions)
-  );
-
-  Handlebars.registerHelper("toEntityDirectoryName", (str) =>
-    toEntityDirectoryName(str, generationOptions)
-  );
-
-  Handlebars.registerHelper("toEntityFileName", (str) =>
-    toEntityFileName(str, generationOptions)
-  );
-
-  Handlebars.registerHelper("toPropertyName", (str) =>
-    toPropertyName(str, generationOptions)
-  );
-
-  Handlebars.registerHelper("printPropertyVisibility", () =>
-    printPropertyVisibility(generationOptions)
-  );
-
-  Handlebars.registerHelper(
-    "toRelation",
-    (entityType: string, relationType: Relation["relationType"]) =>
-      toRelation(entityType, relationType, generationOptions)
-  );
-
-  Handlebars.registerHelper(
-    "toGraphQLModelRelation",
-    (entityType: string, relationType: Relation["relationType"]) =>
-      toGraphQLModelRelation(entityType, relationType)
-  );
-
-  Handlebars.registerHelper(
-    "toGraphQLSortRelation",
-    (entityType: string, relationType: Relation["relationType"]) =>
-      toGraphQLSortRelation(entityType, relationType)
-  );
-
-  Handlebars.registerHelper(
-    "toGraphQLFilterRelation",
-    (entityType: string, relationType: Relation["relationType"]) =>
-      toGraphQLFilterRelation(entityType, relationType)
-  );
-  Handlebars.registerHelper(
-    "toGraphQLFilterRelationType",
-    (entityType: string, relationType: Relation["relationType"]) =>
-      toGraphQLFilterRelationType(entityType, relationType)
-  );
-  Handlebars.registerHelper("defaultExport", () =>
-    defaultExport(generationOptions)
-  );
-  Handlebars.registerHelper("localImport", (entityName: string) =>
-    toLocalImport(entityName, generationOptions)
-  );
-  Handlebars.registerHelper("strictMode", () => strictMode(generationOptions));
-  Handlebars.registerHelper({
-    and: (v1, v2) => v1 && v2,
-    eq: (v1, v2) => v1 === v2,
-    gt: (v1, v2) => v1 > v2,
-    gte: (v1, v2) => v1 >= v2,
-    lt: (v1, v2) => v1 < v2,
-    lte: (v1, v2) => v1 <= v2,
-    ne: (v1, v2) => v1 !== v2,
-    or: (v1, v2) => v1 || v2,
-  });
 };
 
 const getEntityName = (convertCase: string, str: string) => {

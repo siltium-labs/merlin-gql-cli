@@ -1,3 +1,6 @@
+import { ConfigFileTemplate } from "./templates/example/templates/config.development.json";
+import { OrmConfigTemplate } from "./templates/example/templates/ormconfig.json";
+import { READMEmdTemplate } from "./templates/global/templates/README.md";
 import fs from "fs";
 import Listr from "listr";
 import { emoji } from "node-emoji";
@@ -10,7 +13,7 @@ import {
   TemplateArgsDictionary,
 } from "./new.config";
 import { ncp } from "ncp";
-import handlebars from "handlebars";
+import * as Prettier from "prettier";
 
 export const kebabCase = (str: string) =>
   str
@@ -280,16 +283,12 @@ const generateReadmeFile = async (
         __dirname,
         "templates",
         "global",
-        "handlebars",
-        "README.md.handlebars"
+        "templates",
+        "README.md.ts"
       );
-      const readmeSource = fs.readFileSync(readmeTemplatePath, "utf-8");
-      const readme = handlebars.compile<ReadmeTemplateParams>(readmeSource);
-      const readmeFileContent = readme({
-        appName,
-      });
+      const rendered = READMEmdTemplate(appName);
       const readmeDestinationPath = path.join(appPath, "README.md");
-      fs.writeFileSync(readmeDestinationPath, readmeFileContent);
+      writeFile(rendered, readmeDestinationPath);
       return resolve();
     } catch (e) {
       return reject(e);
@@ -308,16 +307,12 @@ const generateOrmConfigFile = async (
         __dirname,
         "templates",
         template,
-        "handlebars",
-        "ormconfig.json.handlebars"
+        "templates",
+        "ormconfig.json.ts"
       );
-      const ormConfigSource = fs.readFileSync(ormConfigTemplatPath, "utf-8");
-      const ormConfig = handlebars.compile<OrmConfigTemplateParams>(
-        ormConfigSource
-      );
-      const ormConfigFileContent = ormConfig(configParams);
+      const rendered = OrmConfigTemplate(configParams);
       const ormConfigDestinationPath = path.join(appPath, "ormconfig.json");
-      fs.writeFileSync(ormConfigDestinationPath, ormConfigFileContent);
+      writeFile(rendered, ormConfigDestinationPath);
       return resolve();
     } catch (e) {
       return reject(e);
@@ -340,17 +335,37 @@ const generateConfigFile = async (
         "handlebars",
         "config.development.json.handlebars"
       );
-      const configSource = fs.readFileSync(configTemplatPath, "utf-8");
-      const config = handlebars.compile<ConfigTemplateParams>(configSource);
-      const configFileContent = config({ ...configParams, ...templateArgs });
+      const rendered = ConfigFileTemplate(configParams.jwtSecret);
       const configDestinationPath = path.join(
         appPath,
         "config.development.json"
       );
-      fs.writeFileSync(configDestinationPath, configFileContent);
+      writeFile(rendered, configDestinationPath);
       return resolve();
     } catch (e) {
       return reject(e);
     }
+  });
+};
+
+const prettierOptions: Prettier.Options = {
+  parser: "typescript",
+  endOfLine: "auto",
+  tabWidth: 4,
+  printWidth: 200,
+};
+
+const writeFile = (rendered: any, filePath: string) => {
+  let formatted = "";
+  try {
+    formatted = Prettier.format(rendered, prettierOptions);
+  } catch (error) {
+    console.error("There were some problems with model generation");
+    console.error(error);
+    formatted = rendered;
+  }
+  fs.writeFileSync(filePath, formatted, {
+    encoding: "utf-8",
+    flag: "w",
   });
 };

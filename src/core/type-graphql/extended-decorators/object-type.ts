@@ -4,18 +4,10 @@ import {
 } from "type-graphql";
 import { getMerlinMetadataStorage } from "./../../../utils/metadata-storage";
 
-export function ObjectType(): ClassDecorator;
-export function ObjectType(options: ObjectTypeOptions): ClassDecorator;
-export function ObjectType(
-  name: string,
-  options?: ObjectTypeOptions
-): ClassDecorator;
-export function ObjectType(
-  nameOrOptions?: string | ObjectTypeOptions,
-  maybeOptions?: ObjectTypeOptions
-): ClassDecorator {
+export function ObjectType(filePath: string): ClassDecorator {
   return (target) => {
-    console.log("Creating OT factory");
+    console.log("path: ", filePath);
+    console.log("Creating OT factory no crud");
     const merlinGqlMetadataStorage = getMerlinMetadataStorage();
     const superClass = Object.getPrototypeOf(target).name;
     const baseSuperClass = Object.getPrototypeOf(Object.getPrototypeOf(target))
@@ -23,17 +15,21 @@ export function ObjectType(
     const metadataEntry = merlinGqlMetadataStorage.objectTypes[superClass];
     if (metadataEntry) {
       metadataEntry.extends = baseSuperClass;
+      metadataEntry.filePath = filePath;
+      metadataEntry.operations = ["ALL"];
     } else {
       merlinGqlMetadataStorage.objectTypes = {
         ...merlinGqlMetadataStorage.objectTypes,
         ...{
           [superClass]: {
+            filePath: filePath,
             fields: [],
             extends: baseSuperClass,
+            operations: "ALL",
           },
         },
       };
     }
-    return TypeGraphQLObjectType(nameOrOptions as any, maybeOptions)(target);
+    return TypeGraphQLObjectType()(target);
   };
 }

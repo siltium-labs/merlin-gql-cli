@@ -15,7 +15,7 @@ export function Crud(
   maybeOptions?: ObjectTypeOptions
 ): ClassDecorator {
   return (target) => {
-    console.log("Creating OT factory");
+    console.log("Creating OT factory crud");
     const merlinGqlMetadataStorage = getMerlinMetadataStorage();
     const superClass = Object.getPrototypeOf(target).name;
     const baseSuperClass = Object.getPrototypeOf(Object.getPrototypeOf(target))

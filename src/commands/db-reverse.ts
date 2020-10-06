@@ -16,7 +16,6 @@ import {
   createDriver,
   createModelFromDatabase,
 } from "../db-reverse/generation/engine";
-import { IConnectionOptions } from "../db-reverse/library";
 import chalk from "chalk";
 import { emoji } from "node-emoji";
 import LocalCommand from "./core/local-command";

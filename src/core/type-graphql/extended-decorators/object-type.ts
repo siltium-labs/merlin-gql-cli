@@ -2,12 +2,34 @@ import {
   ObjectType as TypeGraphQLObjectType,
   ObjectTypeOptions,
 } from "type-graphql";
-import { getMerlinMetadataStorage } from "./../../../utils/metadata-storage";
+import {
+  CrudOperationsAndAll,
+  getMerlinMetadataStorage,
+} from "./../../../utils/metadata-storage";
 
-export function ObjectType(filePath: string): ClassDecorator {
+export function ObjectType(
+  filePath: string,
+  operations: CrudOperationsAndAll[]
+): ClassDecorator;
+export function ObjectType(
+  filePath: string,
+  operations: CrudOperationsAndAll[],
+  options: ObjectTypeOptions
+): ClassDecorator;
+export function ObjectType(
+  filePath: string,
+  operations: CrudOperationsAndAll[],
+  name: string,
+  options?: ObjectTypeOptions
+): ClassDecorator;
+export function ObjectType(
+  filePath: string,
+  operations: CrudOperationsAndAll[],
+  nameOrOptions?: string | ObjectTypeOptions,
+  maybeOptions?: ObjectTypeOptions
+): ClassDecorator {
   return (target) => {
-    console.log("path: ", filePath);
-    console.log("Creating OT factory no crud");
+    console.log("Creating OT factory");
     const merlinGqlMetadataStorage = getMerlinMetadataStorage();
     const superClass = Object.getPrototypeOf(target).name;
     const baseSuperClass = Object.getPrototypeOf(Object.getPrototypeOf(target))
@@ -16,7 +38,7 @@ export function ObjectType(filePath: string): ClassDecorator {
     if (metadataEntry) {
       metadataEntry.extends = baseSuperClass;
       metadataEntry.filePath = filePath;
-      metadataEntry.operations = ["ALL"];
+      metadataEntry.operations = operations;
     } else {
       merlinGqlMetadataStorage.objectTypes = {
         ...merlinGqlMetadataStorage.objectTypes,
@@ -25,11 +47,11 @@ export function ObjectType(filePath: string): ClassDecorator {
             filePath: filePath,
             fields: [],
             extends: baseSuperClass,
-            operations: "ALL",
+            operations: operations,
           },
         },
       };
     }
-    return TypeGraphQLObjectType()(target);
+    return TypeGraphQLObjectType(nameOrOptions as any, maybeOptions)(target);
   };
 }

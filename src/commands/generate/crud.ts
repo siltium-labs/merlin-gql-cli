@@ -157,7 +157,7 @@ export default class GenerateCrud extends LocalCommand {
   }
 }
 
-const getConnection = async () => {
+export const getConnection = async () => {
   const connectionOptionsReader = new ConnectionOptionsReader({
     root: process.cwd(),
     configName: "ormconfig",
@@ -187,7 +187,7 @@ const getAllTables = async (connection: Connection) => {
   return tables;
 };
 
-const gatherModelsInfo = async (connection: Connection) => {
+export const gatherModelsInfo = async (connection: Connection) => {
   const entitiesMetadata = connection.entityMetadatas;
   const entities = generateModelEntities(entitiesMetadata);
   return entities;

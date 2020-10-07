@@ -16,7 +16,7 @@ import { ModelDecoratorMetadataKeys } from "../model-decorators/model-decorator.
 import { AbstractSecureResolver } from "../models/abstract-secure-resolver";
 import { BaseFilterFields } from "../models/base-filter-fields";
 import { BaseSortFields } from "../models/base-sort-fields";
-import { getTypeormEntityFromSubclass } from '../utils/typeorm';
+import { getTypeormEntityFromSubclass } from "../utils/typeorm";
 import { EntityToGraphResolver, IListQueryResult } from "./entity-resolver";
 import Paginated, {
   AbstractPaginatorCriteria,
@@ -53,7 +53,7 @@ export function ListResolver<T extends ClassType>(
   const baseModelSingularName = singular(
     baseModelType.name[0].toLowerCase() + baseModelType.name.slice(1)
   );
-
+  console.log(filterClass, sortClass, baseModelSubType);
   @InputType(`${baseModelSingularName}Criteria`)
   class CriteriaQuery extends createPaginationCriteria(filterClass, sortClass)<
     BaseFilterFields,

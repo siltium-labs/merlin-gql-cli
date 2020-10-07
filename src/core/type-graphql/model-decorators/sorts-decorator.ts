@@ -1,15 +1,12 @@
-import { BaseModel } from './../../database/base.model';
 import { ModelDecoratorMetadataKeys } from "./model-decorator.keys";
 import { BaseInputFields } from "../models/base-input-fields";
-import { InputType as TypeGraphQLInputType } from "type-graphql";
 
-export const Sorts = (of: typeof BaseModel) => {
-  return function (target: typeof BaseInputFields) {
+export const Sort = (sortsType: typeof BaseInputFields) => {
+  return function (target: Function) {
     Reflect.defineMetadata(
       ModelDecoratorMetadataKeys.Sort,
-      target,
-      of 
+      sortsType,
+      target 
     );
-    TypeGraphQLInputType()(target);
   };
 };

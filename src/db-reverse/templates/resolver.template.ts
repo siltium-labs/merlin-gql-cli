@@ -15,12 +15,14 @@ export const ResolverTemplate = (
   generationOptions: IGenerationOptions
 ): string => {
     const secureResolverDecorator = generationOptions.secureResolvers ? "@Secure()" : "";
-    const secureImport = generationOptions.secureResolvers ? "Secure, " : "";
+    const secureImport = generationOptions.secureResolvers ? "Secure " : undefined;
     const entityName:string = toEntityName(tscName, generationOptions)
     const fileName:string = toFileName(tscName, generationOptions)
     const filtersName:string = toFiltersName(tscName, generationOptions);
     const sortsName:string = toSortsName(tscName, generationOptions);
+    
 
+    const resolverImports:string[] =secureImport  ? [secureImport]:[]
     //list resolver based on metadata
     const shouldGenerateListResolver = resolverIncludesOperation(entityName,"LIST")
     const listResolver:string = shouldGenerateListResolver ? `
@@ -29,6 +31,9 @@ export const ResolverTemplate = (
     ${secureResolverDecorator}
     export class ${entityName}ListResolver extends BaseListResolver<${entityName}, ${filtersName}, ${sortsName}> {}
     ` : ""
+    if(shouldGenerateListResolver){
+      resolverImports.push("ListResolver")
+    }
 
     //find resolver based on metadata
     const shouldGenerateFindResolver = resolverIncludesOperation(entityName,"FIND")
@@ -38,6 +43,9 @@ export const ResolverTemplate = (
     ${secureResolverDecorator}
     export class ${entityName}FindResolver extends BaseFindResolver<${entityName}> {}
     ` : ""
+    if(shouldGenerateFindResolver){
+      resolverImports.push("FindResolver")
+    }
 
     //update resolver based on metadata
     const shouldGenerateUpdateResolver = resolverIncludesOperation(entityName,"UPDATE")
@@ -47,6 +55,9 @@ export const ResolverTemplate = (
     ${secureResolverDecorator}
     export class ${entityName}UpdateResolver extends BaseUpdateResolver<${entityName}> {}
     ` : ""   
+    if(shouldGenerateUpdateResolver){
+      resolverImports.push("UpdateResolver")
+    }
 
     //create resolver based on metadata
     const shouldGenerateCreateResolver = resolverIncludesOperation(entityName,"CREATE")
@@ -55,7 +66,10 @@ export const ResolverTemplate = (
     @Resolver()
     ${secureResolverDecorator}
     export class ${entityName}CreateResolver extends BaseCreateResolver<${entityName}> {}
-    ` : ""   
+    ` : ""
+    if(shouldGenerateCreateResolver){
+      resolverImports.push("CreateResolver")
+    }   
 
     //create resolver based on metadata
     const shouldGenerateDeleteResolver = resolverIncludesOperation(entityName,"DELETE")
@@ -64,8 +78,12 @@ export const ResolverTemplate = (
     @Resolver()
     ${secureResolverDecorator}
     export class ${entityName}DeleteResolver extends BaseDeleteResolver<${entityName}> {}
-    ` : ""   
+    ` : ""  
+    if(shouldGenerateDeleteResolver){
+      resolverImports.push("DeleteResolver")
+    }    
 
+    
 
     return `
     
@@ -73,7 +91,7 @@ export const ResolverTemplate = (
     import { ${entityName} } from "../models/${fileName}/${toEntityFileName(tscName, generationOptions)}";
     import ${toLocalImport(filtersName, generationOptions)} from "../models/${fileName}/${fileName}.filter";
     import ${toLocalImport(sortsName, generationOptions)} from "../models/${fileName}/${fileName}.sort";
-    import { CreateResolver, DeleteResolver, FindResolver, ListResolver, ${secureImport} UpdateResolver } from "merlin-gql";
+    import { ${resolverImports.join(", ")} } from "merlin-gql";
     
     ${listResolver}    
     

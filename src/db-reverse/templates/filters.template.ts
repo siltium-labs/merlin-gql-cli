@@ -1,24 +1,17 @@
-import { JoinColumnOptions } from "typeorm";
 import { propertyIsDecoratedWithField } from "../../utils/metadata-storage";
-import { Index } from "../models";
 import { Column } from "../models/column";
 import { Relation } from "../models/relation";
 import IGenerationOptions from "../options/generation-options.interface";
 import {
   defaultExport,
-  printPropertyVisibility,
-  strictMode,
   toEntityDirectoryName,
-  toEntityFileName,
   toEntityName,
   toFileName,
   toFiltersName,
   toGraphQLFilterRelation,
   toGraphQLFilterRelationType,
-  toJson,
   toLocalImport,
   toPropertyName,
-  toRelation,
 } from "./../generation/model-generation";
 import { Entity } from "./../models/entity";
 

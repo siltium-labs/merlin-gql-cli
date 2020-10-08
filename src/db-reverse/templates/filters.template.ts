@@ -84,7 +84,7 @@ export const FilterTemplate = (
   return `
         import {InputType,Field} from "type-graphql";
         import { BaseFilterFields, FilteredID, FilteredInt, FilteredFloat, FilteredBoolean, FilteredDate, FilteredString } from "merlin-gql";
-        ${entity.fileImports.map(fileImport => ImportsTemplate(fileImport,generationOptions)).join("\n")}
+        ${entity.relations.filter(r => propertyIsDecoratedWithField(r.fieldName, entity.tscName)).map(r => r.relatedTable).map(fileImport => ImportsTemplate(fileImport,generationOptions)).join("\n")}
         
         @InputType()
         export ${defaultExport(generationOptions)} class ${filterName} extends BaseFilterFields {

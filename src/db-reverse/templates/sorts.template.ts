@@ -57,7 +57,7 @@ export const SortTemplate = (
   return `
         import {InputType, Field} from "type-graphql";
         import { BaseSortFields, SortField } from "merlin-gql";
-        ${entity.fileImports.map(fileImport => ImportsTemplate(fileImport,generationOptions)).join("\n")}
+        ${entity.relations.filter(r => propertyIsDecoratedWithField(r.fieldName, entity.tscName)).map(r => r.relatedTable).map(fileImport => ImportsTemplate(fileImport,generationOptions)).join("\n")}
 
         @InputType()
         export ${defaultExport(generationOptions)} class ${sortsName} extends BaseSortFields {

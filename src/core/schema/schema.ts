@@ -23,7 +23,10 @@ export const getMerlinGqlConfigResolversPath = (): Promise<string[]> =>
       const merlinGqlConfig = JSON.parse(
         merlinGqlJsonFileContent
       ) as MerlinGQLConfig;
-      return resolve(merlinGqlConfig.resolvers);
+      return resolve([
+        ...merlinGqlConfig.resolvers,
+        "_generated/*.resolver.{ts,js}",
+      ]);
     } catch (e) {
       return reject(e);
     }
@@ -43,9 +46,11 @@ export function loadResolversFromGlob(globString: string) {
 
 export const loadResolverFiles = async () => {
   try {
-    const resolversRelativePaths = (
-      await getMerlinGqlConfigResolversPath()
-    ).map((p) => `${process.cwd()}/dist/${p}`);
+    const resolversRelativePaths = [
+      ...(await getMerlinGqlConfigResolversPath()).map(
+        (p) => `${process.cwd()}/dist/${p}`
+      ),
+    ];
     //console.log(resolversRelativePaths);
 
     resolversRelativePaths.map((r) => {

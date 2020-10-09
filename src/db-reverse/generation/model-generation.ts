@@ -19,6 +19,8 @@ import { propertyIsDecoratedWithField } from "../../utils/metadata-storage";
 import { FilterTemplate } from "../templates/filters.template";
 import { SortTemplate } from "../templates/sorts.template";
 
+const GENERATED_DIRECTORY_NAME = "_generated";
+
 const prettierOptions: Prettier.Options = {
   parser: "typescript",
   endOfLine: "auto",
@@ -158,7 +160,13 @@ const generateFilters = (
   filesPath: string,
   element: Entity
 ) => {
-  const filePath = path.resolve(filesPath, `${baseFileName}.filter.ts`);
+  //const filePath = path.resolve(filesPath, `${baseFileName}.filter.ts`);
+  const filePath = path.resolve(
+    filesPath,
+    "..",
+    GENERATED_DIRECTORY_NAME,
+    `${baseFileName}.filter.ts`
+  );
   const rendered = FilterTemplate(element, generationOptions);
   writeFile(rendered, generationOptions, element, filePath);
 };
@@ -169,7 +177,12 @@ const generateSort = (
   filesPath: string,
   element: Entity
 ) => {
-  const filePath = path.resolve(filesPath, `${baseFileName}.sort.ts`);
+  const filePath = path.resolve(
+    filesPath,
+    "..",
+    GENERATED_DIRECTORY_NAME,
+    `${baseFileName}.sort.ts`
+  );
   const rendered = SortTemplate(element, generationOptions);
   writeFile(rendered, generationOptions, element, filePath);
 };
@@ -180,7 +193,12 @@ const generateInput = (
   filesPath: string,
   element: Entity
 ) => {
-  const filePath = path.resolve(filesPath, `${baseFileName}.input.ts`);
+  const filePath = path.resolve(
+    filesPath,
+    "..",
+    GENERATED_DIRECTORY_NAME,
+    `${baseFileName}.input.ts`
+  );
 
   const rendered = InputsTemplate(
     element.tscName,
@@ -196,7 +214,12 @@ const generateResolver = (
   filesPath: string,
   element: Entity
 ) => {
-  const filePath = path.resolve(filesPath, `${baseFileName}.resolver.ts`);
+  const filePath = path.resolve(
+    filesPath,
+    "..",
+    GENERATED_DIRECTORY_NAME,
+    `${baseFileName}.resolver.ts`
+  );
 
   const rendered = ResolverTemplate(element.tscName, generationOptions);
   writeFile(rendered, generationOptions, element, filePath);
@@ -261,7 +284,7 @@ export const toEntityName = (
 export const toEntityOTName = (
   name: string,
   generationOptions: IGenerationOptions
-) => singular(getEntityName(generationOptions.convertCaseEntity, name)+"OT");
+) => singular(getEntityName(generationOptions.convertCaseEntity, name) + "OT");
 
 export const toFileName = (
   name: string,
@@ -273,8 +296,7 @@ export const toFileName = (
 export const toEntityOTFileName = (
   name: string,
   generationOptions: IGenerationOptions
-) =>
-  singular(getEntityName(generationOptions.convertCaseFile, name)) + ".ot";
+) => singular(getEntityName(generationOptions.convertCaseFile, name)) + ".ot";
 
 export const toEntityFileName = (
   name: string,

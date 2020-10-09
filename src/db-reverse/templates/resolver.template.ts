@@ -2,6 +2,8 @@ import { resolverIncludesOperation } from "./../../utils/metadata-storage";
 import {
   toEntityFileName,
   toEntityName,
+  toEntityOTFileName,
+  toEntityOTName,
   toFileName,
   toFiltersName,
   toLocalImport,
@@ -17,7 +19,9 @@ export const ResolverTemplate = (
     const secureResolverDecorator = generationOptions.secureResolvers ? "@Secure()" : "";
     const secureImport = generationOptions.secureResolvers ? "Secure " : undefined;
     const entityName:string = toEntityName(tscName, generationOptions)
+    const entityOTName:string = toEntityOTName(tscName, generationOptions)
     const fileName:string = toFileName(tscName, generationOptions)
+    const otFileName:string = toEntityOTFileName(tscName, generationOptions)
     const filtersName:string = toFiltersName(tscName, generationOptions);
     const sortsName:string = toSortsName(tscName, generationOptions);
     
@@ -26,10 +30,10 @@ export const ResolverTemplate = (
     //list resolver based on metadata
     const shouldGenerateListResolver = resolverIncludesOperation(entityName,"LIST")
     const listResolver:string = shouldGenerateListResolver ? `
-    const BaseListResolver = ListResolver(${entityName});
+    const BaseListResolver = ListResolver(${entityOTName});
     @Resolver()
     ${secureResolverDecorator}
-    export class ${entityName}ListResolver extends BaseListResolver<${entityName}, ${filtersName}, ${sortsName}> {}
+    export class ${entityName}ListResolver extends BaseListResolver<${entityOTName}, ${filtersName}, ${sortsName}> {}
     ` : ""
     if(shouldGenerateListResolver){
       resolverImports.push("ListResolver")
@@ -38,10 +42,10 @@ export const ResolverTemplate = (
     //find resolver based on metadata
     const shouldGenerateFindResolver = resolverIncludesOperation(entityName,"FIND")
     const findResolver:string = shouldGenerateFindResolver ? `
-    const BaseFindResolver = FindResolver(${entityName});
+    const BaseFindResolver = FindResolver(${entityOTName});
     @Resolver()
     ${secureResolverDecorator}
-    export class ${entityName}FindResolver extends BaseFindResolver<${entityName}> {}
+    export class ${entityName}FindResolver extends BaseFindResolver<${entityOTName}> {}
     ` : ""
     if(shouldGenerateFindResolver){
       resolverImports.push("FindResolver")
@@ -50,10 +54,10 @@ export const ResolverTemplate = (
     //update resolver based on metadata
     const shouldGenerateUpdateResolver = resolverIncludesOperation(entityName,"UPDATE")
     const updateResolver:string = shouldGenerateUpdateResolver ? `
-    const BaseUpdateResolver = UpdateResolver(${entityName});
+    const BaseUpdateResolver = UpdateResolver(${entityOTName});
     @Resolver()
     ${secureResolverDecorator}
-    export class ${entityName}UpdateResolver extends BaseUpdateResolver<${entityName}> {}
+    export class ${entityName}UpdateResolver extends BaseUpdateResolver<${entityOTName}> {}
     ` : ""   
     if(shouldGenerateUpdateResolver){
       resolverImports.push("UpdateResolver")
@@ -62,10 +66,10 @@ export const ResolverTemplate = (
     //create resolver based on metadata
     const shouldGenerateCreateResolver = resolverIncludesOperation(entityName,"CREATE")
     const createResolver:string = shouldGenerateCreateResolver ? `
-    const BaseCreateResolver = CreateResolver(${entityName});
+    const BaseCreateResolver = CreateResolver(${entityOTName});
     @Resolver()
     ${secureResolverDecorator}
-    export class ${entityName}CreateResolver extends BaseCreateResolver<${entityName}> {}
+    export class ${entityName}CreateResolver extends BaseCreateResolver<${entityOTName}> {}
     ` : ""
     if(shouldGenerateCreateResolver){
       resolverImports.push("CreateResolver")
@@ -74,10 +78,10 @@ export const ResolverTemplate = (
     //create resolver based on metadata
     const shouldGenerateDeleteResolver = resolverIncludesOperation(entityName,"DELETE")
     const deleteResolver:string = shouldGenerateDeleteResolver ? `
-    const BaseDeleteResolver = DeleteResolver(${entityName});
+    const BaseDeleteResolver = DeleteResolver(${entityOTName});
     @Resolver()
     ${secureResolverDecorator}
-    export class ${entityName}DeleteResolver extends BaseDeleteResolver<${entityName}> {}
+    export class ${entityName}DeleteResolver extends BaseDeleteResolver<${entityOTName}> {}
     ` : ""  
     if(shouldGenerateDeleteResolver){
       resolverImports.push("DeleteResolver")
@@ -88,7 +92,7 @@ export const ResolverTemplate = (
     return `
     
     import { Resolver } from "type-graphql";
-    import { ${entityName} } from "../models/${fileName}/${toEntityFileName(tscName, generationOptions)}";
+    import { ${entityOTName} } from "../models/${fileName}/${toEntityOTFileName(tscName, generationOptions)}";
     import ${toLocalImport(filtersName, generationOptions)} from "../models/${fileName}/${fileName}.filter";
     import ${toLocalImport(sortsName, generationOptions)} from "../models/${fileName}/${fileName}.sort";
     import { ${resolverImports.join(", ")} } from "merlin-gql";

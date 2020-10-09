@@ -258,12 +258,23 @@ export const toEntityName = (
   generationOptions: IGenerationOptions
 ) => singular(getEntityName(generationOptions.convertCaseEntity, name));
 
+export const toEntityOTName = (
+  name: string,
+  generationOptions: IGenerationOptions
+) => singular(getEntityName(generationOptions.convertCaseEntity, name)+"OT");
+
 export const toFileName = (
   name: string,
   generationOptions: IGenerationOptions
 ) => {
   return singular(getEntityName(generationOptions.convertCaseFile, name));
 };
+
+export const toEntityOTFileName = (
+  name: string,
+  generationOptions: IGenerationOptions
+) =>
+  singular(getEntityName(generationOptions.convertCaseFile, name)) + ".ot";
 
 export const toEntityFileName = (
   name: string,

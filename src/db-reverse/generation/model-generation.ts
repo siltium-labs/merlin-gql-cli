@@ -53,7 +53,11 @@ const prettierOptions: Prettier.Options = {
 // };
 
 export const populateTypeGraphQLMetadata = async () => {
-  const _ = await loadResolverFiles();
+  try {
+    const _ = await loadResolverFiles();
+  } catch (e) {
+    throw e;
+  }
 };
 
 export const generator = async (
@@ -61,20 +65,24 @@ export const generator = async (
   databaseModel: Entity[],
   flags?: ModelGenerationOptions
 ) => {
-  await populateTypeGraphQLMetadata();
-  //TODO: change this to use process.cwd
-  const resultPath = generationOptions.resultsPath;
-  if (!fs.existsSync(resultPath)) {
-    fs.mkdirSync(resultPath);
-  }
-  let entitiesPath = resultPath;
-  if (!generationOptions.noConfigs) {
-    entitiesPath = path.resolve(resultPath, "./entities");
-    if (!fs.existsSync(entitiesPath)) {
-      fs.mkdirSync(entitiesPath);
+  try {
+    await populateTypeGraphQLMetadata();
+    //TODO: change this to use process.cwd
+    const resultPath = generationOptions.resultsPath;
+    if (!fs.existsSync(resultPath)) {
+      fs.mkdirSync(resultPath);
     }
+    let entitiesPath = resultPath;
+    if (!generationOptions.noConfigs) {
+      entitiesPath = path.resolve(resultPath, "./entities");
+      if (!fs.existsSync(entitiesPath)) {
+        fs.mkdirSync(entitiesPath);
+      }
+    }
+    generateGraphQLFiles(databaseModel, generationOptions, entitiesPath, flags);
+  } catch (e) {
+    throw e;
   }
-  generateGraphQLFiles(databaseModel, generationOptions, entitiesPath, flags);
 };
 
 const generateGraphQLFiles = (

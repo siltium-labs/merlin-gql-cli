@@ -15,7 +15,10 @@ export const getMerlinGqlConfigResolversPath = (): Promise<string[]> =>
         process.cwd(),
         "merlin-gql-config.json"
       );
-
+      const fileExists = fs.existsSync(merlinGqlJsonFilePath);
+      if (!fileExists) {
+        throw new Error("There is no merlin-gql.json file, please create it.");
+      }
       const merlinGqlJsonFileContent = fs.readFileSync(
         merlinGqlJsonFilePath,
         "utf-8"
@@ -23,6 +26,14 @@ export const getMerlinGqlConfigResolversPath = (): Promise<string[]> =>
       const merlinGqlConfig = JSON.parse(
         merlinGqlJsonFileContent
       ) as MerlinGQLConfig;
+      if (
+        !merlinGqlConfig.resolvers ||
+        merlinGqlConfig.resolvers.length === 0
+      ) {
+        throw new Error(
+          "There must be at least one resolver expression in the merlin-gql.json file"
+        );
+      }
       return resolve([
         ...merlinGqlConfig.resolvers,
         "_generated/*.resolver.{ts,js}",
@@ -57,10 +68,7 @@ export const loadResolverFiles = async () => {
       loadResolversFromGlob(r);
     });
   } catch (e) {
-    console.log(e);
-    throw new Error(
-      "Error when reading the path for resolvers, please check your merlin-gql.json file"
-    );
+    throw e;
   }
 };
 

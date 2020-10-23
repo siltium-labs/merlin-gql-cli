@@ -1,0 +1,5 @@
+{
+  "ots": [
+    "models/*.ot.{ts,js}"
+  ]
+}

@@ -1,4 +1,4 @@
-import { propertyIsDecoratedWithField } from "../../utils/metadata-storage";
+import { propertyIsDecoratedWithField, propertyIsFilterIgnored } from "../../utils/metadata-storage";
 import { Column } from "../models/column";
 import { Relation } from "../models/relation";
 import IGenerationOptions from "../options/generation-options.interface";
@@ -28,21 +28,21 @@ const defaultFilterType = (tscType: string) => {
 };
 
 // prettier-ignore
-const ImportsTemplate = (fileImport: string, generationOptions: IGenerationOptions) => {    
-    return `
+const ImportsTemplate = (fileImport: string, generationOptions: IGenerationOptions) => {
+  return `
     import ${toLocalImport(toFiltersName(fileImport, generationOptions), generationOptions)} from "../${toEntityDirectoryName(fileImport, generationOptions)}/${toFileName(fileImport, generationOptions)}.filter";
     `;
 };
 
 // prettier-ignore
-const ColumnTemplate = (  
+const ColumnTemplate = (
   column: Column,
   generationOptions: IGenerationOptions
-) => {  
-  const propertyName = toPropertyName(column.tscName, generationOptions);  
-  const defaultValue = defaultFilterType(column.tscType);  
-  const graphqlDecorator = column.generated ? 
-    `@Field((type)=> FilteredID, {nullable: true})` : 
+) => {
+  const propertyName = toPropertyName(column.tscName, generationOptions);
+  const defaultValue = defaultFilterType(column.tscType);
+  const graphqlDecorator = column.generated ?
+    `@Field((type)=> FilteredID, {nullable: true})` :
     `@Field((type)=> ${defaultValue}, { nullable: true })`;
 
   return `
@@ -52,32 +52,32 @@ const ColumnTemplate = (
 };
 
 // prettier-ignore
-const RelationTemplate = (  
+const RelationTemplate = (
   relation: Relation,
   generationOptions: IGenerationOptions
-  ) => {
-    //@Field((type) => {{toGraphQLFilterRelation (toEntityName relatedTable) relationType}}, { nullable: true })
-   //{{printPropertyVisibility}}{{toPropertyName fieldName}}?:{{toGraphQLFilterRelationType (toEntityName relatedTable) relationType}};
-    const relatedTableEntityName = toEntityName(relation.relatedTable, generationOptions);    
-    const propertyName = `${toPropertyName(relation.fieldName, generationOptions)}?:${toGraphQLFilterRelationType(relatedTableEntityName, relation.relationType)};`
-    return `
+) => {
+  //@Field((type) => {{toGraphQLFilterRelation (toEntityName relatedTable) relationType}}, { nullable: true })
+  //{{printPropertyVisibility}}{{toPropertyName fieldName}}?:{{toGraphQLFilterRelationType (toEntityName relatedTable) relationType}};
+  const relatedTableEntityName = toEntityName(relation.relatedTable, generationOptions);
+  const propertyName = `${toPropertyName(relation.fieldName, generationOptions)}?:${toGraphQLFilterRelationType(relatedTableEntityName, relation.relationType)};`
+  return `
     @Field((type) =>  ${toGraphQLFilterRelation(relatedTableEntityName, relation.relationType)}, { nullable: true })    
     ${propertyName}
     `;
-  };
+};
 
 // prettier-ignore
-export const FilterTemplate = (    
-    entity: Entity,
-    generationOptions: IGenerationOptions
-): string => {     
-  
-  const filterName:string = toFiltersName(entity.tscName, generationOptions);    ;
-    
+export const FilterTemplate = (
+  entity: Entity,
+  generationOptions: IGenerationOptions
+): string => {
+
+  const filterName: string = toFiltersName(entity.tscName, generationOptions);;
+
   return `
         import {InputType,Field} from "type-graphql";
         import { BaseFilterFields, FilteredID, FilteredInt, FilteredFloat, FilteredBoolean, FilteredDate, FilteredString } from "merlin-gql";
-        ${entity.relations.filter(r => propertyIsDecoratedWithField(r.fieldName, entity.tscName)).map(r => r.relatedTable).map(fileImport => ImportsTemplate(fileImport,generationOptions)).join("\n")}
+        ${entity.relations.filter(r => propertyIsDecoratedWithField(r.fieldName, entity.tscName) && !propertyIsFilterIgnored(r.fieldName, entity.tscName)).map(r => r.relatedTable).map(fileImport => ImportsTemplate(fileImport, generationOptions)).join("\n")}
         
         @InputType()
         export ${defaultExport(generationOptions)} class ${filterName} extends BaseFilterFields {
@@ -88,9 +88,9 @@ export const FilterTemplate = (
           @Field((type) => [${filterName}], { nullable: true })
           and?: ${filterName}[];
 
-          ${entity.columns.filter(c => propertyIsDecoratedWithField(c.tscName, entity.tscName)).map(c => ColumnTemplate(c, generationOptions)).join("\n")}
+          ${entity.columns.filter(c => propertyIsDecoratedWithField(c.tscName, entity.tscName) && !propertyIsFilterIgnored(c.tscName, entity.tscName)).map(c => ColumnTemplate(c, generationOptions)).join("\n")}
           
-          ${entity.relations.filter(c => propertyIsDecoratedWithField(c.fieldName, entity.tscName)).map(r => RelationTemplate(r, generationOptions)).join("\n")}         
+          ${entity.relations.filter(c => propertyIsDecoratedWithField(c.fieldName, entity.tscName) && !propertyIsFilterIgnored(c.fieldName, entity.tscName)).map(r => RelationTemplate(r, generationOptions)).join("\n")}         
         }
       `
-  }
+}

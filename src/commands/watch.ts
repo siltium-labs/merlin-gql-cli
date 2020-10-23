@@ -2,7 +2,7 @@ import {
   getMerlinMetadataStorage,
   getWatchedFiles,
 } from "./../utils/metadata-storage";
-import { loadResolverFiles } from "./../core/schema/schema";
+import { loadOtFiles } from "./../core/schema/schema";
 import LocalCommand from "./core/local-command";
 import fs from "fs";
 import cli from "cli-ux";
@@ -66,7 +66,7 @@ export default class DBReverse extends LocalCommand {
       this.checks();
       const { args, flags } = this.parse(DBReverse);
       //loadMetadata
-      await loadResolverFiles();
+      await loadOtFiles();
 
       const watchedFiles = getWatchedFiles();
 

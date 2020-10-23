@@ -26,17 +26,12 @@ export const getMerlinGqlConfigResolversPath = (): Promise<string[]> =>
       const merlinGqlConfig = JSON.parse(
         merlinGqlJsonFileContent
       ) as MerlinGQLConfig;
-      if (
-        !merlinGqlConfig.ots ||
-        merlinGqlConfig.ots.length === 0
-      ) {
+      if (!merlinGqlConfig.ots || merlinGqlConfig.ots.length === 0) {
         throw new Error(
-          "There must be at least one ot expression in the merlin-gql.json file"
+          "There must be at least one ot expression in the merlin-gql-config.json file"
         );
       }
-      return resolve([
-        ...merlinGqlConfig.ots
-      ]);
+      return resolve([...merlinGqlConfig.ots]);
     } catch (e) {
       return reject(e);
     }

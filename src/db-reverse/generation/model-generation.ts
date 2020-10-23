@@ -74,12 +74,12 @@ export const generator = async (
     }
     let entitiesPath = resultPath;
     if (!generationOptions.noConfigs) {
-      entitiesPath = path.resolve(resultPath, "./entities");
+      entitiesPath = path.resolve(resultPath, "./models");
       if (!fs.existsSync(entitiesPath)) {
         fs.mkdirSync(entitiesPath);
       }
     }
-    generateGraphQLFiles(databaseModel, generationOptions, entitiesPath, flags);
+    generateGraphQLFiles(databaseModel, generationOptions, resultPath, flags);
   } catch (e) {
     throw e;
   }
@@ -113,39 +113,29 @@ const generateGraphQLFiles = (
     element.tscName = singular(element.tscName);
     let baseFileName = singular(casedFileName);
     let filesPathModels = path.join(entitiesPath, "models", baseFileName);
-    let filesPathResolvers = path.join(entitiesPath, "resolvers");
+    //let filesPathResolvers = path.join(entitiesPath, "resolvers");
 
     fs.mkdirSync(filesPathModels, { recursive: true });
-    fs.mkdirSync(filesPathResolvers, { recursive: true });
+    //fs.mkdirSync(filesPathResolvers, { recursive: true });
 
     if (!flags || flags.model) {
       generateEntity(generationOptions, baseFileName, filesPathModels, element);
     }
 
     if (!flags || flags.filter) {
-      generateFilters(
-        generationOptions,
-        baseFileName,
-        filesPathModels,
-        element
-      );
+      generateFilters(generationOptions, baseFileName, entitiesPath, element);
     }
 
     if (!flags || flags.sort) {
-      generateSort(generationOptions, baseFileName, filesPathModels, element);
+      generateSort(generationOptions, baseFileName, entitiesPath, element);
     }
 
     if (!flags || flags.input) {
-      generateInput(generationOptions, baseFileName, filesPathModels, element);
+      generateInput(generationOptions, baseFileName, entitiesPath, element);
     }
 
     if (!flags || flags.resolver) {
-      generateResolver(
-        generationOptions,
-        baseFileName,
-        filesPathResolvers,
-        element
-      );
+      generateResolver(generationOptions, baseFileName, entitiesPath, element);
     }
   });
 };
@@ -171,7 +161,6 @@ const generateFilters = (
   //const filePath = path.resolve(filesPath, `${baseFileName}.filter.ts`);
   const filePath = path.resolve(
     filesPath,
-    "..",
     GENERATED_DIRECTORY_NAME,
     `${baseFileName}.filter.ts`
   );
@@ -187,7 +176,6 @@ const generateSort = (
 ) => {
   const filePath = path.resolve(
     filesPath,
-    "..",
     GENERATED_DIRECTORY_NAME,
     `${baseFileName}.sort.ts`
   );
@@ -203,7 +191,6 @@ const generateInput = (
 ) => {
   const filePath = path.resolve(
     filesPath,
-    "..",
     GENERATED_DIRECTORY_NAME,
     `${baseFileName}.input.ts`
   );
@@ -224,7 +211,6 @@ const generateResolver = (
 ) => {
   const filePath = path.resolve(
     filesPath,
-    "..",
     GENERATED_DIRECTORY_NAME,
     `${baseFileName}.resolver.ts`
   );

@@ -1,5 +1,5 @@
 import { EntityTemplate } from "./../templates/entity.template";
-import { loadResolverFiles } from "./../../core/schema/schema";
+import { loadOtFiles } from "./../../core/schema/schema";
 import { InputsTemplate } from "./../templates/inputs.template";
 import { ResolverTemplate } from "./../templates/resolver.template";
 import * as Prettier from "prettier";
@@ -54,7 +54,7 @@ const prettierOptions: Prettier.Options = {
 
 export const populateTypeGraphQLMetadata = async () => {
   try {
-    const _ = await loadResolverFiles();
+    const _ = await loadOtFiles();
   } catch (e) {
     throw e;
   }

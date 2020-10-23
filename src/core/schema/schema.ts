@@ -5,7 +5,7 @@ import path from "path";
 import * as glob from "glob";
 
 export type MerlinGQLConfig = {
-  resolvers: string[];
+  ots: string[];
 };
 
 export const getMerlinGqlConfigResolversPath = (): Promise<string[]> =>
@@ -27,16 +27,15 @@ export const getMerlinGqlConfigResolversPath = (): Promise<string[]> =>
         merlinGqlJsonFileContent
       ) as MerlinGQLConfig;
       if (
-        !merlinGqlConfig.resolvers ||
-        merlinGqlConfig.resolvers.length === 0
+        !merlinGqlConfig.ots ||
+        merlinGqlConfig.ots.length === 0
       ) {
         throw new Error(
-          "There must be at least one resolver expression in the merlin-gql.json file"
+          "There must be at least one ot expression in the merlin-gql.json file"
         );
       }
       return resolve([
-        ...merlinGqlConfig.resolvers,
-        "_generated/*.resolver.{ts,js}",
+        ...merlinGqlConfig.ots
       ]);
     } catch (e) {
       return reject(e);
@@ -47,7 +46,7 @@ export function findFileNamesFromGlob(globString: string) {
   return glob.sync(globString);
 }
 
-export function loadResolversFromGlob(globString: string) {
+export function loadOtsFromGlob(globString: string) {
   const filePaths = findFileNamesFromGlob(globString);
   const modules = filePaths.map((fileName) => {
     //console.log(fileName);
@@ -55,7 +54,7 @@ export function loadResolversFromGlob(globString: string) {
   });
 }
 
-export const loadResolverFiles = async () => {
+export const loadOtFiles = async () => {
   try {
     const resolversRelativePaths = [
       ...(await getMerlinGqlConfigResolversPath()).map(
@@ -65,7 +64,7 @@ export const loadResolverFiles = async () => {
     //console.log(resolversRelativePaths);
 
     resolversRelativePaths.map((r) => {
-      loadResolversFromGlob(r);
+      loadOtsFromGlob(r);
     });
   } catch (e) {
     throw e;

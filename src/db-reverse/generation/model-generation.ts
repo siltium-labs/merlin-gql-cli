@@ -235,7 +235,9 @@ const writeFile = (
   );*/
   let formatted = "";
   try {
-    formatted = Prettier.format(rendered, prettierOptions);
+    formatted = !isJsonFile(filePath)
+      ? Prettier.format(rendered, prettierOptions)
+      : rendered;
   } catch (error) {
     console.error(
       "There were some problems with model generation for table: ",
@@ -248,6 +250,10 @@ const writeFile = (
     encoding: "utf-8",
     flag: "w",
   });
+};
+
+const isJsonFile = (filename: string) => {
+  return /\.json$/i.test(filename);
 };
 
 const removeUnusedImports = (rendered: string) => {

@@ -1,4 +1,7 @@
-import { propertyIsDecoratedWithField, propertyIsFilterIgnored } from "../../utils/metadata-storage";
+import {
+  propertyIsDecoratedWithField,
+  propertyIsFilterIgnored,
+} from "../../utils/metadata-storage";
 import { Column } from "../models/column";
 import { Relation } from "../models/relation";
 import IGenerationOptions from "../options/generation-options.interface";
@@ -55,9 +58,7 @@ const ColumnTemplate = (
 const RelationTemplate = (
   relation: Relation,
   generationOptions: IGenerationOptions
-) => {
-  //@Field((type) => {{toGraphQLFilterRelation (toEntityName relatedTable) relationType}}, { nullable: true })
-  //{{printPropertyVisibility}}{{toPropertyName fieldName}}?:{{toGraphQLFilterRelationType (toEntityName relatedTable) relationType}};
+) => {  
   const relatedTableEntityName = toEntityName(relation.relatedTable, generationOptions);
   const propertyName = `${toPropertyName(relation.fieldName, generationOptions)}?:${toGraphQLFilterRelationType(relatedTableEntityName, relation.relationType)};`
   return `

@@ -15,12 +15,12 @@ import path = require("path");
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 //CliLogic();
 
-export type DBReverseoptions = {
+export type DBReverseOptions = {
   connectionOptions: IConnectionOptions;
   generationOptions: IGenerationOptions;
 };
 
-async function CliLogic() {  
+async function CliLogic() {
   let options = makeDefaultConfigs();
   const TOMLConfig = readTOMLConfig(options);
   options = TOMLConfig.options;
@@ -46,8 +46,7 @@ async function CliLogic() {
   );
 }
 
-
-export function validateConfig(options: DBReverseoptions): DBReverseoptions {
+export function validateConfig(options: DBReverseOptions): DBReverseOptions {
   if (options.generationOptions.lazy && options.generationOptions.relationIds) {
     TomgUtils.LogError(
       "Merlin GQL doesn't support RelationId fields for lazy relations.",
@@ -67,8 +66,8 @@ export function makeDefaultConfigs() {
   };
 }
 export function readTOMLConfig(
-  options: DBReverseoptions
-): { options: DBReverseoptions; fullConfigFile: boolean } {
+  options: DBReverseOptions
+): { options: DBReverseOptions; fullConfigFile: boolean } {
   if (!fs.existsSync(path.resolve(process.cwd(), ".tomg-config"))) {
     return { options, fullConfigFile: false };
   }
@@ -87,7 +86,8 @@ export function readTOMLConfig(
       if (
         Object.prototype.hasOwnProperty.call(options.connectionOptions, key)
       ) {
-        (options.connectionOptions as {[key:string]:any})[key] = loadedConnectionOptions[key];
+        (options.connectionOptions as { [key: string]: any })[key] =
+          loadedConnectionOptions[key];
       } else {
         console.error(`Unknown connection option ${key}.`);
         hasUnknownProperties = true;
@@ -99,7 +99,8 @@ export function readTOMLConfig(
       if (
         Object.prototype.hasOwnProperty.call(options.generationOptions, key)
       ) {
-        (options.connectionOptions as {[key:string]:any})[key] = loadedGenerationOptions[key];
+        (options.connectionOptions as { [key: string]: any })[key] =
+          loadedGenerationOptions[key];
       } else {
         console.error(`Unknown generation option ${key}.`);
         hasUnknownProperties = true;
@@ -121,7 +122,7 @@ export function readTOMLConfig(
     fullConfigFile,
   };
 }
-function checkYargsParameters(options: DBReverseoptions): DBReverseoptions {
+function checkYargsParameters(options: DBReverseOptions): DBReverseOptions {
   const { argv } = Yargs.usage(
     "Usage: merlin-gql-db-scaffold -h <host> -d <database> -p [port] -u <user> -x [password] -e [engine]\nYou can also run program without specifying any parameters."
   ).options({
@@ -307,7 +308,9 @@ function checkYargsParameters(options: DBReverseoptions): DBReverseoptions {
   return options;
 }
 
-export async function useInquirer(options: DBReverseoptions): Promise<DBReverseoptions> {
+export async function useInquirer(
+  options: DBReverseOptions
+): Promise<DBReverseOptions> {
   const oldDatabaseType = options.connectionOptions.databaseType;
   options.connectionOptions.databaseType = (
     await inquirer.prompt([
@@ -632,16 +635,44 @@ export async function useInquirer(options: DBReverseoptions): Promise<DBReverseo
     }
   }
 
-  options.generationOptions.secureResolvers = (
+  options.generationOptions.graphqlObjectType = (
     await inquirer.prompt([
       {
         default: false,
-        message: "Do you want to secure resolvers with @Secure decorator",
-        name: "secureResolvers",
+        message:
+          "Do you want to generate GraphQL Object Types for entity files?",
+        name: "graphqlObjectType",
         type: "confirm",
       },
     ])
-  ).secureResolvers;
+  ).graphqlObjectType;
+
+  if (options.generationOptions.graphqlObjectType) {
+    options.generationOptions.graphqlFiles = (
+      await inquirer.prompt([
+        {
+          default: false,
+          message:
+            "Do you want to generate API files (inputs, sort, filter and resolver) for GraphQL? ",
+          name: "graphqlFiles",
+          type: "confirm",
+        },
+      ])
+    ).graphqlFiles;
+
+    if (options.generationOptions.graphqlFiles) {
+      options.generationOptions.secureResolvers = (
+        await inquirer.prompt([
+          {
+            default: false,
+            message: "Do you want to secure resolvers with @Secure decorator",
+            name: "secureResolvers",
+            type: "confirm",
+          },
+        ])
+      ).secureResolvers;
+    }
+  }
 
   const { saveConfig } = await inquirer.prompt([
     {

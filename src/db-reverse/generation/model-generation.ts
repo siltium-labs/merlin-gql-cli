@@ -18,6 +18,7 @@ import { ModelGenerationOptions } from "../../commands/generate/crud";
 import { propertyIsDecoratedWithField } from "../../utils/metadata-storage";
 import { FilterTemplate } from "../templates/filters.template";
 import { SortTemplate } from "../templates/sorts.template";
+import { ObjectTypeTemplate } from "../templates/object-type.template";
 
 const GENERATED_DIRECTORY_NAME = "_generated";
 
@@ -122,6 +123,15 @@ const generateGraphQLFiles = (
       generateEntity(generationOptions, baseFileName, filesPathModels, element);
     }
 
+    if (!flags || flags.objectType) {
+      generateObjectType(
+        generationOptions,
+        baseFileName,
+        filesPathModels,
+        element
+      );
+    }
+
     if (!flags || flags.filter) {
       generateFilters(generationOptions, baseFileName, entitiesPath, element);
     }
@@ -149,6 +159,18 @@ const generateEntity = (
 ) => {
   const filePath = path.resolve(filesPath, `${baseFileName}.model.ts`);
   const rendered = EntityTemplate(element, generationOptions);
+  writeFile(rendered, generationOptions, element, filePath);
+};
+
+const generateObjectType = (
+  generationOptions: IGenerationOptions,
+  baseFileName: string,
+  filesPath: string,
+  //entityCompliedTemplate: HandlebarsTemplateDelegate<any>,
+  element: Entity
+) => {
+  const filePath = path.resolve(filesPath, `${baseFileName}.ot.ts`);
+  const rendered = ObjectTypeTemplate(element, generationOptions);
   writeFile(rendered, generationOptions, element, filePath);
 };
 

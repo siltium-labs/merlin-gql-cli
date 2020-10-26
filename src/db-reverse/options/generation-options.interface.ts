@@ -17,7 +17,9 @@ export default interface IGenerationOptions {
   strictMode: "none" | "?" | "!";
   skipSchema: boolean;
   exportType: "named" | "default";
-  secureResolvers: boolean;
+  graphqlObjectType?: boolean;
+  graphqlFiles?: boolean;
+  secureResolvers?: boolean;
 }
 
 export const eolConverter = {
@@ -43,6 +45,8 @@ export function getDefaultGenerationOptions(): IGenerationOptions {
     strictMode: "none",
     skipSchema: false,
     exportType: "named",
+    graphqlObjectType: false,
+    graphqlFiles: false,
     secureResolvers: false,
   };
   return generationOptions;

@@ -11,6 +11,7 @@ import SqliteDriver from "../drivers/sqlite.driver";
 import modelCustomizationPhase from "./model-customization";
 import generator from "./model-generation";
 import { Entity } from "../models/entity";
+import { ModelGenerationOptions } from "../../commands/generate/crud";
 
 export function createDriver(driverName: string): AbstractDriver {
   switch (driverName) {
@@ -54,7 +55,16 @@ export async function createModelFromDatabase(
     generationOptions,
     driver.defaultValues
   );
-  generator(generationOptions, dbModel);
+
+  const flags: ModelGenerationOptions = {
+    model: true,
+    objectType: generationOptions.graphqlObjectType,
+    input: generationOptions.graphqlFiles,
+    filter: generationOptions.graphqlFiles,
+    sort: generationOptions.graphqlFiles,
+    resolver: generationOptions.graphqlFiles,
+  };
+  generator(generationOptions, dbModel, flags);
 }
 
 export async function dataCollectionPhase(

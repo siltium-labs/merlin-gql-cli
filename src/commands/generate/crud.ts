@@ -21,10 +21,11 @@ import LocalCommand from "../core/local-command";
 
 export type ModelGenerationOptions = {
   model?: boolean;
-  input: boolean;
-  filter: boolean;
-  sort: boolean;
-  resolver: boolean;
+  objectType?: boolean;
+  input?: boolean;
+  filter?: boolean;
+  sort?: boolean;
+  resolver?: boolean;
 };
 
 export default class GenerateCrud extends LocalCommand {
@@ -208,10 +209,10 @@ const generateModelEntities = (entityMetadata: EntityMetadata[]) => {
 
     const columns = generateColumns(metadata.columns);
     const relations = generateRelations(metadata.relations);
-    
+
     entity.columns = columns;
     entity.relations = relations;
-    entity.fileImports = relations.map(relation => relation.relatedTable);
+    entity.fileImports = relations.map((relation) => relation.relatedTable);
     entities.push(entity);
   }
   return entities;

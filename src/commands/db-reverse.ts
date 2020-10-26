@@ -8,7 +8,7 @@ import IGenerationOptions, {
 import {
   makeDefaultConfigs,
   readTOMLConfig,
-  DBReverseoptions,
+  DBReverseOptions,
   useInquirer,
   validateConfig,
 } from "../db-reverse";
@@ -46,6 +46,8 @@ export interface IDBReverseFlags {
   skipTables: string;
   strictMode: string;
   defaultExport: boolean;
+  graphqlObjectType: boolean;
+  graphqlFiles: boolean;
   secureResolvers: boolean;
 }
 
@@ -60,129 +62,117 @@ export default class DBReverse extends LocalCommand {
     host: flags.string({
       char: "h",
       description: "IP address/Hostname for database server",
-      //default: connectionOptions.host,
     }),
     database: flags.string({
       char: "d",
       description:
         "Database name(or path for sqlite). You can pass multiple values separated by comma.",
-      //default: connectionOptions.databaseName,
     }),
     user: flags.string({
       char: "u",
       description: "Username for database server",
-      //default: connectionOptions.user,
     }),
     pass: flags.string({
       char: "x",
       description: "Password for database server",
-      //default: connectionOptions.password,
     }),
     port: flags.integer({
       char: "p",
       description: "Port number for database server",
-      //default: connectionOptions.port,
     }),
     engine: flags.string({
       char: "e",
       options: ["mssql", "postgres", "mysql", "mariadb", "oracle", "sqlite"],
       description: "Database engine",
-      //default: connectionOptions.databaseType,
     }),
     output: flags.string({
       char: "o",
       description: "Where to place generated models",
-      //default: generationOptions.resultsPath,
     }),
     schema: flags.string({
       char: "s",
       description:
         "Schema name to create model from. Only for mssql and postgres. You can pass multiple values separated by comma eg. -s scheme1,scheme2,scheme3",
-      //default: connectionOptions.schemaName,
     }),
+    graphqlObjectType: flags.boolean({
+      char: "g",
+      description: "Generate object types models for entity models",
+    }),
+
+    graphqlFiles: flags.boolean({
+      char: "f",
+      description:
+        "Generate graphQL files models (inputs, filter, sort, resolver)",
+    }),
+
+    secureResolvers: flags.boolean({
+      char: "z",
+      description: "Add security to Resolvers with @Secure decorator",
+    }),
+
     ssl: flags.boolean({
       description: "Use ssl connection",
-      //default: connectionOptions.ssl,
     }),
     noConfig: flags.boolean({
       description: `Doesn't create tsconfig.json and ormconfig.json`,
-      //default: generationOptions.noConfigs,
     }),
     cf: flags.string({
       options: ["pascal", "param", "camel", "none"],
       description: "Convert file names to specified case",
-      //default: generationOptions.convertCaseFile,
     }),
     ce: flags.string({
       options: ["pascal", "camel", "none"],
       description: "Convert class names to specified case",
-      //default: generationOptions.convertCaseEntity,
     }),
     cp: flags.string({
       options: ["pascal", "camel", "snake", "none"],
       description: "Convert property names to specified case",
-      //default: generationOptions.convertCaseProperty,
     }),
     eol: flags.string({
       options: ["LF", "CRLF"],
       description: "Force EOL to be LF or CRLF",
-      //default: generationOptions.convertEol,
     }),
     pv: flags.string({
       options: ["public", "protected", "private", "none"],
       description:
         "Defines which visibility should have the generated property",
-      //default: generationOptions.propertyVisibility,
     }),
     lazy: flags.boolean({
       description: "Generate lazy relations",
-      //default: generationOptions.lazy,
     }),
     namingStrategy: flags.string({
       description: "Use custom naming strategy",
-      //default: generationOptions.customNamingStrategyPath,
     }),
     relationIds: flags.boolean({
       description: "Generate RelationId fields",
-      //default: generationOptions.relationIds,
     }),
     skipSchema: flags.boolean({
       description: "Omits schema identifier in generated entities",
-      //default: generationOptions.skipSchema,
     }),
     generateConstructor: flags.boolean({
       description: "Generate constructor allowing partial initialization",
-      //default: generationOptions.generateConstructor,
     }),
     disablePluralization: flags.boolean({
       description:
         "Disable pluralization of OneToMany, ManyToMany relation names",
-      //default: !generationOptions.pluralizeNames,
     }),
     skipTables: flags.string({
       description:
         "Skip schema generation for specific tables. You can pass multiple values separated by comma",
-      //default: connectionOptions.skipTables.join(","),
     }),
     strictMode: flags.string({
       options: ["none", "?", "!"],
       description: "Mark fields as optional(?) or non-null(!)",
-      //default: generationOptions.strictMode,
     }),
     defaultExport: flags.boolean({
       description: "Generate index file",
-      //default: generationOptions.exportType === "default",
-    }),
-    secureResolvers: flags.boolean({
-      description: "Add security to Resolvers with @Secure decorator",
-      //default: generationOptions.secureResolvers,
     }),
   };
 
   async run() {
     try {
       this.checks();
-      const { args, flags } = this.parse(DBReverse);
+      const { flags } = this.parse(DBReverse);
 
       let options = makeDefaultConfigs();
 
@@ -225,9 +215,9 @@ export default class DBReverse extends LocalCommand {
   }
 
   checkFlagsParameters(
-    options: DBReverseoptions,
+    options: DBReverseOptions,
     flags: IDBReverseFlags
-  ): DBReverseoptions {
+  ): DBReverseOptions {
     options.connectionOptions.databaseName =
       flags.database ?? options.connectionOptions.databaseName;
     options.connectionOptions.databaseType =
@@ -292,6 +282,10 @@ export default class DBReverse extends LocalCommand {
     options.generationOptions.exportType = flags.defaultExport
       ? "default"
       : "named";
+    options.generationOptions.graphqlObjectType =
+      flags.graphqlObjectType ?? options.generationOptions.graphqlObjectType;
+    options.generationOptions.graphqlFiles =
+      flags.graphqlFiles ?? options.generationOptions.graphqlFiles;
     options.generationOptions.secureResolvers =
       flags.secureResolvers ?? options.generationOptions.secureResolvers;
     return options;

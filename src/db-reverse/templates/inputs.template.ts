@@ -83,7 +83,7 @@ export const InputsTemplate = (
 
       return `
       
-      import {InputType,Field} from "type-graphql";
+      import {InputType, Field, Float, ID} from "type-graphql";
       import { BaseInputFields } from 'merlin-gql';
       import { ${entityName} } from "../../models/${toFileName(tscName, generationOptions)}/${entityFileName}";
       

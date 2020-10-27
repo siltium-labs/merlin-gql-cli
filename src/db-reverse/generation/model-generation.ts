@@ -343,6 +343,11 @@ export const toLocalImport = (
   generationOptions: IGenerationOptions
 ) => (generationOptions.exportType === "default" ? name : `{ ${name} }`);
 
+export const toLocalOTImport = (
+  name: string,
+  generationOptions: IGenerationOptions
+) => (generationOptions.exportType === "default" ? name : `{ ${name}OT }`);
+
 export const toFiltersName = (
   name: string,
   generationOptions: IGenerationOptions
@@ -419,7 +424,7 @@ export const toGraphQLModelRelation = (
   entityType: string,
   relationType: Relation["relationType"]
 ) => {
-  let retVal = entityType;
+  let retVal = `${entityType}OT`;
   if (relationType === "ManyToMany" || relationType === "OneToMany") {
     retVal = `[${retVal}]`;
   } else {

@@ -11,6 +11,18 @@ import {
   toPropertyName,
 } from "./../generation/model-generation";
 
+const defaultFilterType = (tscType: string) => {
+  if (tscType === "string") {
+    return "String";
+  } else if (tscType === "number") {
+    return "Float";
+  } else if (tscType === "Date") {
+    return "Date";
+  } else if (tscType === "boolean") {
+    return "Boolean";
+  }
+};
+
 const defaultValueIfNeeded = (nullable: boolean, tscType: string) => {
   if (nullable) {
     return "";
@@ -29,15 +41,16 @@ const ColumnTemplate = (
   column: Column,
   generationOptions: IGenerationOptions
 ) => {
-  const fieldNullable = column.options.nullable ? `{ nullable: true }` : "";
+  const fieldNullable = column.options.nullable ? `,{ nullable: true }` : "";
   const propertyName = toPropertyName(column.tscName, generationOptions);
   const questionMarkIfNullable = column.options.nullable ? "?" : "";
+  const defaultType = defaultFilterType(column.tscType);
   const defaultValue = defaultValueIfNeeded(
     !!column.options.nullable,
     column.tscType
   );
   return `
-        @Field(${fieldNullable})
+        @Field((type)=> ${defaultType}${fieldNullable})
         ${propertyName}${questionMarkIfNullable}:${column.tscType}${defaultValue};
         `;
 };
@@ -46,11 +59,12 @@ const ColumnUpdateTemplate = (
   column: Column,
   generationOptions: IGenerationOptions
 ) => {
-  const fieldNullable = `{ nullable: true }`;
+  const defaultType = defaultFilterType(column.tscType);
+  const fieldNullable = `,{ nullable: true }`;
   const propertyName = toPropertyName(column.tscName, generationOptions);
   const questionMarkNullable = "?";
   return `
-        @Field(${fieldNullable})
+        @Field((type)=> ${defaultType}${fieldNullable})
         ${propertyName}${questionMarkNullable}:${column.tscType};
         `;
 };

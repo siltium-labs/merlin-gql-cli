@@ -420,6 +420,21 @@ export const toRelation = (
   return retVal;
 };
 
+export const toGraphQLRelation = (
+  entityType: string,
+  relationType: Relation["relationType"],
+  generationOptions: IGenerationOptions
+) => {
+  let retVal = entityType;
+  if (relationType === "ManyToMany" || relationType === "OneToMany") {
+    retVal = `${retVal}OT[]`;
+  }
+  if (generationOptions.lazy) {
+    retVal = `Promise<${retVal}OT>`;
+  }
+  return retVal;
+};
+
 export const toGraphQLModelRelation = (
   entityType: string,
   relationType: Relation["relationType"]

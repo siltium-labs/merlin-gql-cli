@@ -1,6 +1,7 @@
 import {
   toFileName,
   toGraphQLModelRelation,
+  toGraphQLRelation,
   toInputsName,
   toLocalOTImport,
 } from "./../generation/model-generation";
@@ -67,7 +68,7 @@ const RelationTemplate = (
   generationOptions: IGenerationOptions
   ) => {
     const relatedTableEntityName = toEntityName(relation.relatedTable, generationOptions);
-    const propertyName = `${toPropertyName(relation.fieldName, generationOptions)}!:${toRelation(relatedTableEntityName, relation.relationType, generationOptions)}OT;`
+    const propertyName = `${toPropertyName(relation.fieldName, generationOptions)}!:${toGraphQLRelation(relatedTableEntityName, relation.relationType, generationOptions)};`
     return `
     @Field((type) =>  ${toGraphQLModelRelation(relatedTableEntityName, relation.relationType)}, { nullable: true })    
     ${propertyName}

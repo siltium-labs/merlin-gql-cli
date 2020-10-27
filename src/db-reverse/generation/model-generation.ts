@@ -425,12 +425,12 @@ export const toGraphQLRelation = (
   relationType: Relation["relationType"],
   generationOptions: IGenerationOptions
 ) => {
-  let retVal = entityType;
+  let retVal = `${entityType}OT`;
   if (relationType === "ManyToMany" || relationType === "OneToMany") {
-    retVal = `${retVal}OT[]`;
+    retVal = `${retVal}[]`;
   }
   if (generationOptions.lazy) {
-    retVal = `Promise<${retVal}OT>`;
+    retVal = `Promise<${retVal}>`;
   }
   return retVal;
 };

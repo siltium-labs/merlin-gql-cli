@@ -4,6 +4,7 @@ import { IGqlContext } from "../../context";
 import { BaseModel } from "../../database/base.model";
 import { GraphQLInfo } from "../../gql/utils";
 import { AbstractSecureResolver } from "../models/abstract-secure-resolver";
+import { getTypeormEntityFromSubclass } from "../utils/typeorm";
 import { EntityToGraphResolver } from "./entity-resolver";
 
 export abstract class AbstractFindResolver<T> extends AbstractSecureResolver {
@@ -17,15 +18,16 @@ export abstract class AbstractFindResolver<T> extends AbstractSecureResolver {
 }
 
 export function FindResolver<T extends ClassType>(
-  baseModelType: typeof BaseModel
+  baseModelSubType: typeof BaseModel
 ): typeof AbstractFindResolver {
+  const baseModelType = getTypeormEntityFromSubclass(baseModelSubType);
   const baseModelSingularName = singular(
     baseModelType.name[0].toLowerCase() + baseModelType.name.slice(1)
   );
 
   @Resolver({ isAbstract: true })
   abstract class FindResolver<T> extends AbstractFindResolver<T> {
-    @Query((returns) => baseModelType, {
+    @Query((returns) => baseModelSubType, {
       name: `${baseModelSingularName}ById`,
       nullable: true,
     })

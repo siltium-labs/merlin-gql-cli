@@ -19,7 +19,7 @@ import { GraphQLInfo } from "../../gql/utils";
 import { ModelDecoratorMetadataKeys } from "../model-decorators/model-decorator.keys";
 import { AbstractSecureResolver } from "../models/abstract-secure-resolver";
 import { BaseInputFields } from "../models/base-input-fields";
-import { getTypeormEntityFromSubclass } from '../utils/typeorm';
+import { getTypeormEntityFromSubclass } from "../utils/typeorm";
 import { EntityToGraphResolver } from "./entity-resolver";
 
 export abstract class AbstractUpdateResolver<T> extends AbstractSecureResolver {
@@ -48,7 +48,7 @@ export function UpdateResolver<T extends ClassType>(
   const baseModelType = getTypeormEntityFromSubclass(baseModelSubType);
   const inputUpdateClass: typeof BaseInputFields = Reflect.getMetadata(
     ModelDecoratorMetadataKeys.Update,
-    baseModelType
+    baseModelSubType
   );
 
   const baseModelSingularName = singular(
@@ -57,7 +57,7 @@ export function UpdateResolver<T extends ClassType>(
 
   @Resolver({ isAbstract: true })
   abstract class UpdateResolver<T> extends AbstractUpdateResolver<T> {
-    @Mutation((returns) => baseModelType, {
+    @Mutation((returns) => baseModelSubType, {
       name: `${baseModelSingularName}Update`,
     })
     async update(
@@ -93,7 +93,7 @@ export function UpdateResolver<T extends ClassType>(
       ) as Promise<T>;
     }
 
-    @Subscription((returns) => baseModelType, {
+    @Subscription((returns) => baseModelSubType, {
       topics: `${baseModelSingularName}Update`,
       name: `${baseModelSingularName}Update`,
     })

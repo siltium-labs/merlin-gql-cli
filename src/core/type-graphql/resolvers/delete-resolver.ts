@@ -17,7 +17,7 @@ import { IGqlContext } from "../../context";
 import { BaseModel } from "../../database/base.model";
 import { GraphQLInfo } from "../../gql/utils";
 import { AbstractSecureResolver } from "../models/abstract-secure-resolver";
-import { getTypeormEntityFromSubclass } from '../utils/typeorm';
+import { getTypeormEntityFromSubclass } from "../utils/typeorm";
 import { EntityToGraphResolver } from "./entity-resolver";
 
 export abstract class AbstractDeleteResolver<T> extends AbstractSecureResolver {
@@ -53,7 +53,7 @@ export function DeleteResolver<T extends ClassType>(
     BaseFilterFields,
     BaseSortFields
   > extends AbstractDeleteResolver<T> {
-    @Mutation((returns) => baseModelType, {
+    @Mutation((returns) => baseModelSubType, {
       name: `${baseModelSingularName}Delete`,
     })
     async delete(
@@ -103,7 +103,7 @@ export function DeleteResolver<T extends ClassType>(
       return toReturn;
     }
 
-    @Subscription((returns) => baseModelType, {
+    @Subscription((returns) => baseModelSubType, {
       topics: `${baseModelSingularName}Delete`,
       name: `${baseModelSingularName}Delete`,
     })

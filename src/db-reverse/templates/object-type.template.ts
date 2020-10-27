@@ -1,4 +1,8 @@
-import { toGraphQLModelRelation } from "./../generation/model-generation";
+import {
+  toFileName,
+  toGraphQLModelRelation,
+  toInputsName,
+} from "./../generation/model-generation";
 import { Column } from "../models/column";
 import { Relation } from "../models/relation";
 import IGenerationOptions from "../options/generation-options.interface";
@@ -51,7 +55,7 @@ const ColumnTemplate = (
 
   return `
     ${fieldType}  
-    ${propertyName} ${column.options.nullable ? "?" : "!"}:${column.tscType}${column.options.nullable ? " | null" : ""}; 
+    ${propertyName}!:${column.tscType}; 
   `;
 };
 
@@ -62,7 +66,7 @@ const RelationTemplate = (
   generationOptions: IGenerationOptions
   ) => {
     const relatedTableEntityName = toEntityName(relation.relatedTable, generationOptions);
-    const propertyName = `${toPropertyName(relation.fieldName, generationOptions)}?:${toRelation(relatedTableEntityName, relation.relationType, generationOptions)};`
+    const propertyName = `${toPropertyName(relation.fieldName, generationOptions)}!:${toRelation(relatedTableEntityName, relation.relationType, generationOptions)};`
     return `
     @Field((type) =>  ${toGraphQLModelRelation(relatedTableEntityName, relation.relationType)}, { nullable: true })    
     ${propertyName}
@@ -75,6 +79,7 @@ export const ObjectTypeTemplate = (
     generationOptions: IGenerationOptions
 ): string => {          
   const entityName:string = toEntityName(entity.tscName, generationOptions);  
+  const fileName:string = toFileName(entity.tscName, generationOptions)
   const inputsCreateName:string = toInputsCreateName(entity.tscName, generationOptions);
   const inputUpdateName:string = toInputsUpdateName(entity.tscName, generationOptions);
   const sortName:string = toSortsName(entity.tscName, generationOptions);
@@ -83,13 +88,10 @@ export const ObjectTypeTemplate = (
   return `
         import { Field, Filter, Inputs, ObjectType, Sort } from "merlin-gql";   
         import { Int, Float, ID } from "type-graphql";
-        import { ${entityName} } from "./${toEntityFileName(entityName, generationOptions)}";
-        import {
-            ${inputsCreateName},
-            ${inputUpdateName},
-            ${sortName},
-            ${filterName},
-          } from "../../_generated";
+        import { ${entityName} } from "./${toEntityFileName(entityName, generationOptions)}";        
+        import { ${inputsCreateName},  ${inputUpdateName} } from "../../_generated/${fileName}/${fileName}.input";        
+        import { ${sortName} } from "../../_generated/${fileName}/${fileName}.sort";
+        import { ${filterName} } from "../../_generated/${fileName}/${fileName}.filter";
         
         ${entity.fileImports.map(fileImport => ImportsTemplate(fileImport, generationOptions)).join("\n")}
         

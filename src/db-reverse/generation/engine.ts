@@ -56,14 +56,15 @@ export async function createModelFromDatabase(
     driver.defaultValues
   );
 
-  const flags: ModelGenerationOptions = {
+  let flags: ModelGenerationOptions = {
     model: true,
-    objectType: generationOptions.graphqlObjectType,
+    objectType: generationOptions.graphqlFiles,
     input: generationOptions.graphqlFiles,
     filter: generationOptions.graphqlFiles,
     sort: generationOptions.graphqlFiles,
     resolver: generationOptions.graphqlFiles,
   };
+
   generator(generationOptions, dbModel, flags);
 }
 

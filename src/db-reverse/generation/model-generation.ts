@@ -68,18 +68,27 @@ export const generator = async (
 ) => {
   try {
     await populateTypeGraphQLMetadata();
-    //TODO: change this to use process.cwd
+
     const resultPath = generationOptions.resultsPath;
     if (!fs.existsSync(resultPath)) {
       fs.mkdirSync(resultPath);
     }
+
     let entitiesPath = resultPath;
+    let generatedPath = resultPath;
+
     if (!generationOptions.noConfigs) {
       entitiesPath = path.resolve(resultPath, "./models");
       if (!fs.existsSync(entitiesPath)) {
         fs.mkdirSync(entitiesPath);
       }
     }
+
+    generatedPath = path.resolve(resultPath, `./${GENERATED_DIRECTORY_NAME}`);
+    if (!fs.existsSync(generatedPath)) {
+      fs.mkdirSync(generatedPath);
+    }
+
     generateGraphQLFiles(databaseModel, generationOptions, resultPath, flags);
   } catch (e) {
     throw e;
@@ -89,7 +98,7 @@ export const generator = async (
 const generateGraphQLFiles = (
   databaseModel: Entity[],
   generationOptions: IGenerationOptions,
-  entitiesPath: string,
+  generationPath: string,
   flags?: ModelGenerationOptions
 ) => {
   databaseModel.forEach((element) => {
@@ -113,10 +122,16 @@ const generateGraphQLFiles = (
 
     element.tscName = singular(element.tscName);
     let baseFileName = singular(casedFileName);
-    let filesPathModels = path.join(entitiesPath, "models", baseFileName);
+    let filesPathModels = path.join(generationPath, "models", baseFileName);
+    let generatedPathModel = path.join(
+      generationPath,
+      GENERATED_DIRECTORY_NAME,
+      baseFileName
+    );
     //let filesPathResolvers = path.join(entitiesPath, "resolvers");
 
     fs.mkdirSync(filesPathModels, { recursive: true });
+    fs.mkdirSync(generatedPathModel, { recursive: true });
     //fs.mkdirSync(filesPathResolvers, { recursive: true });
 
     if (!flags || flags.model) {
@@ -133,19 +148,39 @@ const generateGraphQLFiles = (
     }
 
     if (!flags || flags.filter) {
-      generateFilters(generationOptions, baseFileName, entitiesPath, element);
+      generateFilters(
+        generationOptions,
+        baseFileName,
+        generatedPathModel,
+        element
+      );
     }
 
     if (!flags || flags.sort) {
-      generateSort(generationOptions, baseFileName, entitiesPath, element);
+      generateSort(
+        generationOptions,
+        baseFileName,
+        generatedPathModel,
+        element
+      );
     }
 
     if (!flags || flags.input) {
-      generateInput(generationOptions, baseFileName, entitiesPath, element);
+      generateInput(
+        generationOptions,
+        baseFileName,
+        generatedPathModel,
+        element
+      );
     }
 
     if (!flags || flags.resolver) {
-      generateResolver(generationOptions, baseFileName, entitiesPath, element);
+      generateResolver(
+        generationOptions,
+        baseFileName,
+        generatedPathModel,
+        element
+      );
     }
   });
 };
@@ -181,11 +216,7 @@ const generateFilters = (
   element: Entity
 ) => {
   //const filePath = path.resolve(filesPath, `${baseFileName}.filter.ts`);
-  const filePath = path.resolve(
-    filesPath,
-    GENERATED_DIRECTORY_NAME,
-    `${baseFileName}.filter.ts`
-  );
+  const filePath = path.resolve(filesPath, `${baseFileName}.filter.ts`);
   const rendered = FilterTemplate(element, generationOptions);
   writeFile(rendered, generationOptions, element, filePath);
 };
@@ -196,11 +227,7 @@ const generateSort = (
   filesPath: string,
   element: Entity
 ) => {
-  const filePath = path.resolve(
-    filesPath,
-    GENERATED_DIRECTORY_NAME,
-    `${baseFileName}.sort.ts`
-  );
+  const filePath = path.resolve(filesPath, `${baseFileName}.sort.ts`);
   const rendered = SortTemplate(element, generationOptions);
   writeFile(rendered, generationOptions, element, filePath);
 };
@@ -211,11 +238,7 @@ const generateInput = (
   filesPath: string,
   element: Entity
 ) => {
-  const filePath = path.resolve(
-    filesPath,
-    GENERATED_DIRECTORY_NAME,
-    `${baseFileName}.input.ts`
-  );
+  const filePath = path.resolve(filesPath, `${baseFileName}.input.ts`);
 
   const rendered = InputsTemplate(
     element.tscName,
@@ -231,11 +254,7 @@ const generateResolver = (
   filesPath: string,
   element: Entity
 ) => {
-  const filePath = path.resolve(
-    filesPath,
-    GENERATED_DIRECTORY_NAME,
-    `${baseFileName}.resolver.ts`
-  );
+  const filePath = path.resolve(filesPath, `${baseFileName}.resolver.ts`);
 
   const rendered = ResolverTemplate(element.tscName, generationOptions);
   writeFile(rendered, generationOptions, element, filePath);
@@ -325,6 +344,23 @@ export const toEntityFileName = (
   generationOptions: IGenerationOptions
 ) =>
   singular(getEntityName(generationOptions.convertCaseFile, name)) + ".model";
+
+export const toInputFileName = (
+  name: string,
+  generationOptions: IGenerationOptions
+) =>
+  singular(getEntityName(generationOptions.convertCaseFile, name)) + ".input";
+
+export const toFilterFileName = (
+  name: string,
+  generationOptions: IGenerationOptions
+) =>
+  singular(getEntityName(generationOptions.convertCaseFile, name)) + ".filter";
+
+export const toSortFileName = (
+  name: string,
+  generationOptions: IGenerationOptions
+) => singular(getEntityName(generationOptions.convertCaseFile, name)) + ".sort";
 
 export const toLocalImport = (
   name: string,

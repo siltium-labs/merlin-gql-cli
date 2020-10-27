@@ -635,43 +635,29 @@ export async function useInquirer(
     }
   }
 
-  options.generationOptions.graphqlObjectType = (
+  options.generationOptions.graphqlFiles = (
     await inquirer.prompt([
       {
         default: false,
         message:
-          "Do you want to generate GraphQL Object Types for entity files?",
-        name: "graphqlObjectType",
+          "Do you want to generate GraphQL API (object types, inputs, filter, sort, resolver) for entity files? ",
+        name: "graphqlFiles",
         type: "confirm",
       },
     ])
-  ).graphqlObjectType;
+  ).graphqlFiles;
 
-  if (options.generationOptions.graphqlObjectType) {
-    options.generationOptions.graphqlFiles = (
+  if (options.generationOptions.graphqlFiles) {
+    options.generationOptions.secureResolvers = (
       await inquirer.prompt([
         {
           default: false,
-          message:
-            "Do you want to generate API files (inputs, sort, filter and resolver) for GraphQL? ",
-          name: "graphqlFiles",
+          message: "Do you want to secure resolvers with @Secure decorator",
+          name: "secureResolvers",
           type: "confirm",
         },
       ])
-    ).graphqlFiles;
-
-    if (options.generationOptions.graphqlFiles) {
-      options.generationOptions.secureResolvers = (
-        await inquirer.prompt([
-          {
-            default: false,
-            message: "Do you want to secure resolvers with @Secure decorator",
-            name: "secureResolvers",
-            type: "confirm",
-          },
-        ])
-      ).secureResolvers;
-    }
+    ).secureResolvers;
   }
 
   const { saveConfig } = await inquirer.prompt([

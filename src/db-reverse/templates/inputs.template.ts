@@ -64,21 +64,22 @@ export const InputsTemplate = (
       const entityFileName:string = toEntityFileName(tscName, generationOptions)
       const inputsCreateName:string = toInputsCreateName(tscName, generationOptions);
       const inputUpdateName:string = toInputsUpdateName(tscName, generationOptions);
+      const ignoreMetadata = generationOptions.graphqlFiles ?? false;
 
       return `
       
       import {InputType,Field} from "type-graphql";
       import { BaseInputFields } from 'merlin-gql';
-      import { ${entityName} } from "./${entityFileName}";
+      import { ${entityName} } from "../../models/${entityName}/${entityFileName}";
       
       @InputType()
       export class ${inputsCreateName} extends BaseInputFields implements Partial<${entityName}> {
-        ${columns.filter(c => propertyIsDecoratedWithField(c.tscName, tscName)).filter(c => !c.generated).map(c => ColumnTemplate(c, generationOptions)).join("\n")}
+        ${columns.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.tscName, tscName,))).filter(c => !c.generated).map(c => ColumnTemplate(c, generationOptions)).join("\n")}
       }
 
       @InputType()
       export class ${inputUpdateName} extends BaseInputFields implements Partial<${entityName}> {
-        ${columns.filter(c => propertyIsDecoratedWithField(c.tscName, tscName)).filter(c => !c.generated).map(c => ColumnUpdateTemplate(c, generationOptions)).join("\n")}
+        ${columns.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.tscName, tscName))).filter(c => !c.generated).map(c => ColumnUpdateTemplate(c, generationOptions)).join("\n")}
       }
       `
   }

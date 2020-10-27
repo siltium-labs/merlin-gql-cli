@@ -17,7 +17,6 @@ export default interface IGenerationOptions {
   strictMode: "none" | "?" | "!";
   skipSchema: boolean;
   exportType: "named" | "default";
-  graphqlObjectType?: boolean;
   graphqlFiles?: boolean;
   secureResolvers?: boolean;
 }
@@ -45,7 +44,6 @@ export function getDefaultGenerationOptions(): IGenerationOptions {
     strictMode: "none",
     skipSchema: false,
     exportType: "named",
-    graphqlObjectType: false,
     graphqlFiles: false,
     secureResolvers: false,
   };

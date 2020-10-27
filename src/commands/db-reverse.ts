@@ -94,15 +94,10 @@ export default class DBReverse extends LocalCommand {
       description:
         "Schema name to create model from. Only for mssql and postgres. You can pass multiple values separated by comma eg. -s scheme1,scheme2,scheme3",
     }),
-    graphqlObjectType: flags.boolean({
-      char: "g",
-      description: "Generate object types models for entity models",
-    }),
-
     graphqlFiles: flags.boolean({
-      char: "f",
+      char: "g",
       description:
-        "Generate graphQL files models (inputs, filter, sort, resolver)",
+        "Generate GraphQL API (inputs, filter, sort, resolver) for entity files",
     }),
 
     secureResolvers: flags.boolean({
@@ -282,8 +277,6 @@ export default class DBReverse extends LocalCommand {
     options.generationOptions.exportType = flags.defaultExport
       ? "default"
       : "named";
-    options.generationOptions.graphqlObjectType =
-      flags.graphqlObjectType ?? options.generationOptions.graphqlObjectType;
     options.generationOptions.graphqlFiles =
       flags.graphqlFiles ?? options.generationOptions.graphqlFiles;
     options.generationOptions.secureResolvers =

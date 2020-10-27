@@ -24,11 +24,12 @@ export const ResolverTemplate = (
     const otFileName:string = toEntityOTFileName(tscName, generationOptions)
     const filtersName:string = toFiltersName(tscName, generationOptions);
     const sortsName:string = toSortsName(tscName, generationOptions);
+    const ignoreMetadata = generationOptions.graphqlFiles ?? false;
     
 
     const resolverImports:string[] =secureImport  ? [secureImport]:[]
     //list resolver based on metadata
-    const shouldGenerateListResolver = resolverIncludesOperation(entityName,"LIST")
+    const shouldGenerateListResolver = ignoreMetadata || resolverIncludesOperation(entityName,"LIST")
     const listResolver:string = shouldGenerateListResolver ? `
     const BaseListResolver = ListResolver(${entityOTName});
     @Resolver()
@@ -40,7 +41,7 @@ export const ResolverTemplate = (
     }
 
     //find resolver based on metadata
-    const shouldGenerateFindResolver = resolverIncludesOperation(entityName,"FIND")
+    const shouldGenerateFindResolver = ignoreMetadata || resolverIncludesOperation(entityName,"FIND");
     const findResolver:string = shouldGenerateFindResolver ? `
     const BaseFindResolver = FindResolver(${entityOTName});
     @Resolver()
@@ -52,7 +53,7 @@ export const ResolverTemplate = (
     }
 
     //update resolver based on metadata
-    const shouldGenerateUpdateResolver = resolverIncludesOperation(entityName,"UPDATE")
+    const shouldGenerateUpdateResolver = ignoreMetadata || resolverIncludesOperation(entityName,"UPDATE")
     const updateResolver:string = shouldGenerateUpdateResolver ? `
     const BaseUpdateResolver = UpdateResolver(${entityOTName});
     @Resolver()
@@ -64,7 +65,7 @@ export const ResolverTemplate = (
     }
 
     //create resolver based on metadata
-    const shouldGenerateCreateResolver = resolverIncludesOperation(entityName,"CREATE")
+    const shouldGenerateCreateResolver = ignoreMetadata || resolverIncludesOperation(entityName,"CREATE")
     const createResolver:string = shouldGenerateCreateResolver ? `
     const BaseCreateResolver = CreateResolver(${entityOTName});
     @Resolver()
@@ -76,7 +77,7 @@ export const ResolverTemplate = (
     }   
 
     //create resolver based on metadata
-    const shouldGenerateDeleteResolver = resolverIncludesOperation(entityName,"DELETE")
+    const shouldGenerateDeleteResolver = ignoreMetadata || resolverIncludesOperation(entityName,"DELETE")
     const deleteResolver:string = shouldGenerateDeleteResolver ? `
     const BaseDeleteResolver = DeleteResolver(${entityOTName});
     @Resolver()
@@ -92,9 +93,9 @@ export const ResolverTemplate = (
     return `
     
     import { Resolver } from "type-graphql";
-    import { ${entityOTName} } from "../models/${fileName}/${toEntityOTFileName(tscName, generationOptions)}";
-    import ${toLocalImport(filtersName, generationOptions)} from "../models/${fileName}/${fileName}.filter";
-    import ${toLocalImport(sortsName, generationOptions)} from "../models/${fileName}/${fileName}.sort";
+    import { ${entityOTName} } from "../../models/${fileName}/${toEntityOTFileName(tscName, generationOptions)}";
+    import ${toLocalImport(filtersName, generationOptions)} from "./${fileName}.filter";
+    import ${toLocalImport(sortsName, generationOptions)} from "./${fileName}.sort";
     import { ${resolverImports.join(", ")} } from "merlin-gql";
     
     ${listResolver}    

@@ -4,6 +4,7 @@ import IGenerationOptions from "../options/generation-options.interface";
 import {
   toEntityFileName,
   toEntityName,
+  toFileName,
   toInputsCreateName,
   toInputsName,
   toInputsUpdateName,
@@ -70,7 +71,7 @@ export const InputsTemplate = (
       
       import {InputType,Field} from "type-graphql";
       import { BaseInputFields } from 'merlin-gql';
-      import { ${entityName} } from "../../models/${entityName}/${entityFileName}";
+      import { ${entityName} } from "../../models/${toFileName(tscName, generationOptions)}/${entityFileName}";
       
       @InputType()
       export class ${inputsCreateName} extends BaseInputFields implements Partial<${entityName}> {

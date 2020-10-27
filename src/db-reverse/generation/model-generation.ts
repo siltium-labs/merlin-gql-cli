@@ -29,30 +29,6 @@ const prettierOptions: Prettier.Options = {
   printWidth: 200,
 };
 
-// const modelGenerationPhase = (
-//   generationOptions: IGenerationOptions,
-//   databaseModel: Entity[]
-// ): void => {
-//   createHandlebarsHelpers(generationOptions);
-
-//   const resultPath = generationOptions.resultsPath;
-
-//   if (!fs.existsSync(resultPath)) {
-//     fs.mkdirSync(resultPath);
-//   }
-
-//   let entitiesPath = resultPath;
-
-//   if (!generationOptions.noConfigs) {
-//     entitiesPath = path.resolve(resultPath, "./entities");
-//     if (!fs.existsSync(entitiesPath)) {
-//       fs.mkdirSync(entitiesPath);
-//     }
-//   }
-
-//   generateFiles(databaseModel, generationOptions, entitiesPath);
-// };
-
 export const populateTypeGraphQLMetadata = async () => {
   try {
     const _ = await loadOtFiles();

@@ -39,21 +39,20 @@ export abstract class AbstractListResolver<
 }
 
 export function ListResolver<T extends ClassType>(
-  baseModelSubType: typeof BaseModel
+  baseModelType: typeof BaseModel
 ): typeof AbstractListResolver {
-  const baseModelType = getTypeormEntityFromSubclass(baseModelSubType);
   const filterClass: typeof BaseFilterFields = Reflect.getMetadata(
     ModelDecoratorMetadataKeys.Filter,
-    baseModelSubType
+    baseModelType
   );
   const sortClass: typeof BaseSortFields = Reflect.getMetadata(
     ModelDecoratorMetadataKeys.Sort,
-    baseModelSubType
+    baseModelType
   );
   const baseModelSingularName = singular(
     baseModelType.name[0].toLowerCase() + baseModelType.name.slice(1)
   );
-  console.log(filterClass, sortClass, baseModelSubType);
+  //console.log(filterClass, sortClass, baseModelType);
   @InputType(`${baseModelSingularName}Criteria`)
   class CriteriaQuery extends createPaginationCriteria(filterClass, sortClass)<
     BaseFilterFields,
@@ -61,7 +60,7 @@ export function ListResolver<T extends ClassType>(
   > {}
 
   @ObjectType(`${baseModelSingularName}Result`)
-  class PaginatedResult extends Paginated(baseModelSubType)<T> {}
+  class PaginatedResult extends Paginated(baseModelType)<T> {}
 
   @Resolver({ isAbstract: true })
   abstract class ListResolver<

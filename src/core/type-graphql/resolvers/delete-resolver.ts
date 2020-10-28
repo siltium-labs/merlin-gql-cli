@@ -40,9 +40,8 @@ export abstract class AbstractDeleteResolver<T> extends AbstractSecureResolver {
 }
 
 export function DeleteResolver<T extends ClassType>(
-  baseModelSubType: typeof BaseModel
+  baseModelType: typeof BaseModel
 ): typeof AbstractDeleteResolver {
-  const baseModelType = getTypeormEntityFromSubclass(baseModelSubType);
   const baseModelSingularName = singular(
     baseModelType.name[0].toLowerCase() + baseModelType.name.slice(1)
   );
@@ -53,7 +52,7 @@ export function DeleteResolver<T extends ClassType>(
     BaseFilterFields,
     BaseSortFields
   > extends AbstractDeleteResolver<T> {
-    @Mutation((returns) => baseModelSubType, {
+    @Mutation((returns) => baseModelType, {
       name: `${baseModelSingularName}Delete`,
     })
     async delete(
@@ -103,7 +102,7 @@ export function DeleteResolver<T extends ClassType>(
       return toReturn;
     }
 
-    @Subscription((returns) => baseModelSubType, {
+    @Subscription((returns) => baseModelType, {
       topics: `${baseModelSingularName}Delete`,
       name: `${baseModelSingularName}Delete`,
     })

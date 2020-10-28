@@ -71,7 +71,7 @@ export const generateGraphqlSchema = async () => {
     const resolversRelativePaths = (
       await getMerlinGqlConfigResolversPath()
     ).map((p) => `${process.cwd()}/dist/${p}`);
-    console.log(resolversRelativePaths);
+    //console.log(resolversRelativePaths);
 
     const schema = await buildSchema({
       resolvers: resolversRelativePaths as any,

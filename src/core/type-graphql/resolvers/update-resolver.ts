@@ -43,12 +43,11 @@ export abstract class AbstractUpdateResolver<T> extends AbstractSecureResolver {
 }
 
 export function UpdateResolver<T extends ClassType>(
-  baseModelSubType: typeof BaseModel
+  baseModelType: typeof BaseModel
 ): typeof AbstractUpdateResolver {
-  const baseModelType = getTypeormEntityFromSubclass(baseModelSubType);
   const inputUpdateClass: typeof BaseInputFields = Reflect.getMetadata(
     ModelDecoratorMetadataKeys.Update,
-    baseModelSubType
+    baseModelType
   );
 
   const baseModelSingularName = singular(
@@ -57,7 +56,7 @@ export function UpdateResolver<T extends ClassType>(
 
   @Resolver({ isAbstract: true })
   abstract class UpdateResolver<T> extends AbstractUpdateResolver<T> {
-    @Mutation((returns) => baseModelSubType, {
+    @Mutation((returns) => baseModelType, {
       name: `${baseModelSingularName}Update`,
     })
     async update(
@@ -93,7 +92,7 @@ export function UpdateResolver<T extends ClassType>(
       ) as Promise<T>;
     }
 
-    @Subscription((returns) => baseModelSubType, {
+    @Subscription((returns) => baseModelType, {
       topics: `${baseModelSingularName}Update`,
       name: `${baseModelSingularName}Update`,
     })

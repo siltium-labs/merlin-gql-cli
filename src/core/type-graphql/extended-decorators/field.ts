@@ -23,12 +23,14 @@ export function Field(
   isNotInheritance?: boolean
 ): MethodDecorator | PropertyDecorator {
   return (prototype, propertyKey, descriptor) => {
+    //Field with applied decorator
+    const superClass = Object.getPrototypeOf(prototype);
     const keyName = getEntityNameFromSublass(prototype, !!isNotInheritance);
     addFieldMetadata(keyName, propertyKey.toString());
     //Wrap typegraphql field decorator
     return TypeGraphQLField(
       returnTypeFuncOrOptions as ReturnTypeFunc,
       maybeOptions
-    )(prototype, propertyKey, descriptor);
+    )(superClass, propertyKey, descriptor);
   };
 }

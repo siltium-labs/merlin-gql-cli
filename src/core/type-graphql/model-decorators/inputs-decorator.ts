@@ -6,18 +6,19 @@ export const Inputs = (
   updateInputType?: typeof BaseInputFields
 ) => {
   return function (target: Function) {
+    const superClass = Object.getPrototypeOf(target);
     if (createInputType) {
       Reflect.defineMetadata(
         ModelDecoratorMetadataKeys.Create,
         createInputType,
-        target
+        superClass
       );
     }
     if (updateInputType) {
       Reflect.defineMetadata(
         ModelDecoratorMetadataKeys.Update,
         updateInputType,
-        target
+        superClass
       );
     }
   };

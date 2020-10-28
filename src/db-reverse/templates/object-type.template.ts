@@ -2,7 +2,6 @@ import {
   toEntityOTFileName,
   toFileName,
   toGraphQLModelRelation,
-  toGraphQLRelation,
   toInputsName,
   toLocalOTImport,
 } from "./../generation/model-generation";
@@ -42,7 +41,7 @@ const defaultFieldType = (tscType: string) => {
 
 // prettier-ignore
 const ImportsTemplate = (fileImport: string, generationOptions: IGenerationOptions) => {
-    return `import ${toLocalOTImport(toEntityName(fileImport, generationOptions), generationOptions)} from "../${toEntityDirectoryName(fileImport, generationOptions)}/${toEntityOTFileName(fileImport, generationOptions)}";`;
+    return `import ${toLocalImport(toEntityName(fileImport, generationOptions), generationOptions)} from "../${toEntityDirectoryName(fileImport, generationOptions)}/${toEntityFileName(fileImport, generationOptions)}";`;
 };
 
 // prettier-ignore
@@ -69,7 +68,7 @@ const RelationTemplate = (
   generationOptions: IGenerationOptions
   ) => {
     const relatedTableEntityName = toEntityName(relation.relatedTable, generationOptions);
-    const propertyName = `${toPropertyName(relation.fieldName, generationOptions)}?:${toGraphQLRelation(relatedTableEntityName, relation.relationType, generationOptions)};`
+    const propertyName = `${toPropertyName(relation.fieldName, generationOptions)}?:${toRelation(relatedTableEntityName, relation.relationType, generationOptions)};`
     return `
     @Field((type) =>  ${toGraphQLModelRelation(relatedTableEntityName, relation.relationType)}, { nullable: true })    
     ${propertyName}

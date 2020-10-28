@@ -29,29 +29,34 @@ export function ObjectType(
   maybeOptions?: ObjectTypeOptions
 ): ClassDecorator {
   return (target) => {
-    console.log("Creating OT factory");
     const merlinGqlMetadataStorage = getMerlinMetadataStorage();
-    const superClass = Object.getPrototypeOf(target).name;
-    const baseSuperClass = Object.getPrototypeOf(Object.getPrototypeOf(target))
-      .name;
-    const metadataEntry = merlinGqlMetadataStorage.objectTypes[superClass];
+    //Class with applied decorator
+    const superClass = Object.getPrototypeOf(target);
+    const superClassName = superClass.name;
+    //Get BaseModel Class
+    const baseSuperClassName = Object.getPrototypeOf(superClass).name;
+
+    const metadataEntry = merlinGqlMetadataStorage.objectTypes[superClassName];
     if (metadataEntry) {
-      metadataEntry.extends = baseSuperClass;
+      metadataEntry.extends = baseSuperClassName;
       metadataEntry.filePath = filePath;
       metadataEntry.operations = operations;
     } else {
       merlinGqlMetadataStorage.objectTypes = {
         ...merlinGqlMetadataStorage.objectTypes,
         ...{
-          [superClass]: {
+          [superClassName]: {
             filePath: filePath,
             fields: [],
-            extends: baseSuperClass,
+            extends: baseSuperClassName,
             operations: operations,
           },
         },
       };
     }
-    return TypeGraphQLObjectType(nameOrOptions as any, maybeOptions)(target);
+    return TypeGraphQLObjectType(
+      nameOrOptions as any,
+      maybeOptions
+    )(superClass);
   };
 }

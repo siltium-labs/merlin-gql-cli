@@ -31,10 +31,10 @@ export const ResolverTemplate = (
     //list resolver based on metadata
     const shouldGenerateListResolver = ignoreMetadata || resolverIncludesOperation(entityName,"LIST")
     const listResolver:string = shouldGenerateListResolver ? `
-    const BaseListResolver = ListResolver(${entityOTName});
+    const BaseListResolver = ListResolver(${entityName});
     @Resolver()
     ${secureResolverDecorator}
-    export class ${entityName}ListResolver extends BaseListResolver<${entityOTName}, ${filtersName}, ${sortsName}> {}
+    export class ${entityName}ListResolver extends BaseListResolver<${entityName}, ${filtersName}, ${sortsName}> {}
     ` : ""
     if(shouldGenerateListResolver){
       resolverImports.push("ListResolver")
@@ -43,11 +43,12 @@ export const ResolverTemplate = (
     //find resolver based on metadata
     const shouldGenerateFindResolver = ignoreMetadata || resolverIncludesOperation(entityName,"FIND");
     const findResolver:string = shouldGenerateFindResolver ? `
-    const BaseFindResolver = FindResolver(${entityOTName});
+    const BaseFindResolver = FindResolver(${entityName});
     @Resolver()
     ${secureResolverDecorator}
-    export class ${entityName}FindResolver extends BaseFindResolver<${entityOTName}> {}
-    ` : ""
+    export class ${entityName}FindResolver extends BaseFindResolver<${entityName}> {}
+    ` : "";
+
     if(shouldGenerateFindResolver){
       resolverImports.push("FindResolver")
     }
@@ -55,11 +56,12 @@ export const ResolverTemplate = (
     //update resolver based on metadata
     const shouldGenerateUpdateResolver = ignoreMetadata || resolverIncludesOperation(entityName,"UPDATE")
     const updateResolver:string = shouldGenerateUpdateResolver ? `
-    const BaseUpdateResolver = UpdateResolver(${entityOTName});
+    const BaseUpdateResolver = UpdateResolver(${entityName});
     @Resolver()
     ${secureResolverDecorator}
-    export class ${entityName}UpdateResolver extends BaseUpdateResolver<${entityOTName}> {}
-    ` : ""   
+    export class ${entityName}UpdateResolver extends BaseUpdateResolver<${entityName}> {}
+    ` : "";   
+
     if(shouldGenerateUpdateResolver){
       resolverImports.push("UpdateResolver")
     }
@@ -67,11 +69,12 @@ export const ResolverTemplate = (
     //create resolver based on metadata
     const shouldGenerateCreateResolver = ignoreMetadata || resolverIncludesOperation(entityName,"CREATE")
     const createResolver:string = shouldGenerateCreateResolver ? `
-    const BaseCreateResolver = CreateResolver(${entityOTName});
+    const BaseCreateResolver = CreateResolver(${entityName});
     @Resolver()
     ${secureResolverDecorator}
-    export class ${entityName}CreateResolver extends BaseCreateResolver<${entityOTName}> {}
-    ` : ""
+    export class ${entityName}CreateResolver extends BaseCreateResolver<${entityName}> {}
+    ` : "";
+
     if(shouldGenerateCreateResolver){
       resolverImports.push("CreateResolver")
     }   
@@ -79,21 +82,20 @@ export const ResolverTemplate = (
     //create resolver based on metadata
     const shouldGenerateDeleteResolver = ignoreMetadata || resolverIncludesOperation(entityName,"DELETE")
     const deleteResolver:string = shouldGenerateDeleteResolver ? `
-    const BaseDeleteResolver = DeleteResolver(${entityOTName});
+    const BaseDeleteResolver = DeleteResolver(${entityName});
     @Resolver()
     ${secureResolverDecorator}
-    export class ${entityName}DeleteResolver extends BaseDeleteResolver<${entityOTName}> {}
-    ` : ""  
+    export class ${entityName}DeleteResolver extends BaseDeleteResolver<${entityName}> {}
+    ` : "";
+
     if(shouldGenerateDeleteResolver){
       resolverImports.push("DeleteResolver")
     }    
 
-    
-
     return `
     
     import { Resolver } from "type-graphql";
-    import { ${entityOTName} } from "../../models/${fileName}/${toEntityOTFileName(tscName, generationOptions)}";
+    import { ${entityName} } from "../../models/${fileName}/${toEntityFileName(tscName, generationOptions)}";
     import ${toLocalImport(filtersName, generationOptions)} from "./${fileName}.filter";
     import ${toLocalImport(sortsName, generationOptions)} from "./${fileName}.sort";
     import { ${resolverImports.join(", ")} } from "merlin-gql";

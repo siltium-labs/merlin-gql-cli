@@ -18,16 +18,15 @@ export abstract class AbstractFindResolver<T> extends AbstractSecureResolver {
 }
 
 export function FindResolver<T extends ClassType>(
-  baseModelSubType: typeof BaseModel
+  baseModelType: typeof BaseModel
 ): typeof AbstractFindResolver {
-  const baseModelType = getTypeormEntityFromSubclass(baseModelSubType);
   const baseModelSingularName = singular(
     baseModelType.name[0].toLowerCase() + baseModelType.name.slice(1)
   );
 
   @Resolver({ isAbstract: true })
   abstract class FindResolver<T> extends AbstractFindResolver<T> {
-    @Query((returns) => baseModelSubType, {
+    @Query((returns) => baseModelType, {
       name: `${baseModelSingularName}ById`,
       nullable: true,
     })

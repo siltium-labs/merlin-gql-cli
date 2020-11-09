@@ -7,3 +7,4 @@
 /yarn.lock
 node_modules
 ormconfig.json
+merlin-gql-config.json

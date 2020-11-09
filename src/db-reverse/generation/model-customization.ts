@@ -78,7 +78,7 @@ export default function modelCustomizationPhase(
   }
   namingStrategy.enablePluralization(generationOptions.pluralizeNames);
   let retVal = removeIndicesGeneratedByTypeorm(dbModel);
-  retVal = removeColumnsInRelation(dbModel);
+  //retVal = removeColumnsInRelation(dbModel); Remove from now because we want attribute and relation for crud operations
   retVal = applyNamingStrategy(namingStrategy, dbModel);
   retVal = addImportsAndGenerationOptions(retVal, generationOptions);
   retVal = removeColumnDefaultProperties(retVal, defaultValues);

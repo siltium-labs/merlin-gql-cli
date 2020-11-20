@@ -236,7 +236,7 @@ export default class New extends Command {
         {
           name: "databasePassword",
           message: `Enter the database password`,
-          type: "input",
+          type: "password",
         },
       ]);
       flags.databasePassword = databasePassword;
@@ -278,6 +278,7 @@ export default class New extends Command {
       },
     };
     const templateArgs: TemplateArgsDictionary = {};
+
     if (flags.template === NewProjectTemplatesEnum.Example) {
       templateArgs["ngrok"] = flags.ngrok;
     }

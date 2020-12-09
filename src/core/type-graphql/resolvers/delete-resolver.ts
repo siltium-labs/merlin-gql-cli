@@ -74,11 +74,16 @@ export function DeleteResolver<T extends ClassType>(
       if (!toDelete) {
         throw "No entity for such id";
       }
-      const toReturn = EntityToGraphResolver.find<T>(
+      const toReturn = await EntityToGraphResolver.find<T>(
         id,
         baseModelType,
         info
-      ) as Promise<T>;
+      );
+
+      if (!toReturn) {
+        throw "No entity for such id";
+      }
+
       //Try soft delete, if not possible then bye bye record
       try {
         await getManager()

@@ -21,15 +21,15 @@ export class FilteredBoolean extends FilterField(Boolean) {}
 export class FilteredDate extends FilterField(Date) {}
 
 export default function FilterField<TField>(
-  TFieldClass: ClassType<TField> | GraphQLScalarType
+  TFieldClass: ClassType<TField> | ClassType<TField[]> | GraphQLScalarType
 ): any {
   // `isAbstract` decorator option is mandatory to prevent registering in schema
   @InputType({ isAbstract: true })
   abstract class FilterFieldClass {
     // here we use the runtime argument
-    @Field((type) => TFieldClass)
+    @Field((type) => [TFieldClass])
     // and here the generic type
-    value: TField | null = null;
+    value: TField | null = null;  
 
     @Field((type) => FilterTypesEnum, {
       nullable: true,

@@ -70,6 +70,10 @@ export const criteriaToQbWhere = (
           expression = `${propName} IN (:...${propUID})`;
           values = { [propUID]: criterion.value };
           break;
+        case FilterTypesEnum.NOT_IN:
+            expression = `${propName} NOT IN (:...${propUID})`;
+            values = { [propUID]: criterion.value };
+            break;
         case FilterTypesEnum.LIKE:
           expression = `${propName} like :${propUID}`;
           values = { [propUID]: "%" + criterion.value + "%" };
@@ -216,6 +220,7 @@ export enum FilterTypesEnum {
   LOWER_THAN_EQUALS = "lte",
   NOT_EQUALS = "neq",
   IN = "in",
+  NOT_IN = "not_in",
   LIKE = "like",
 }
 

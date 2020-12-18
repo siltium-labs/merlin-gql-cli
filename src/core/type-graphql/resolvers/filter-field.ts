@@ -21,7 +21,7 @@ export class FilteredBoolean extends FilterField(Boolean) {}
 export class FilteredDate extends FilterField(Date) {}
 
 export default function FilterField<TField>(
-  TFieldClass: ClassType<TField> | ClassType<TField[]> | GraphQLScalarType
+  TFieldClass: ClassType<TField> | GraphQLScalarType
 ): any {
   // `isAbstract` decorator option is mandatory to prevent registering in schema
   @InputType({ isAbstract: true })

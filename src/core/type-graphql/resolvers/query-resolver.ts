@@ -22,7 +22,7 @@ export const criteriaToQbWhere = (
   type: "and" | "or" = "and"
 ): WhereExpression => {
   if (!filter) return qb;
-  if (!isQueryAnd(filter) && !isQueryOr(filter)) {
+  if (!isQueryAnd(filter) && !isQueryOr(filter) && !isFilterRelation(filter)) {
     const criteria = <IPropertyFilterCriteria>filter;
     const formattedCriteria = Object.keys(criteria).map((property) => ({
       property,
@@ -54,6 +54,7 @@ export const criteriaToQbWhere = (
         case FilterTypesEnum.GREATHER_THAN:
           expression = `${propName} > :${propUID}`;
           values = { [propUID]: criterion.value };
+          break;
         case FilterTypesEnum.GREATHER_THAN_EQUALS:
           expression = `${propName} >= :${propUID}`;
           values = { [propUID]: criterion.value };
@@ -71,9 +72,9 @@ export const criteriaToQbWhere = (
           values = { [propUID]: criterion.value };
           break;
         case FilterTypesEnum.NOT_IN:
-            expression = `${propName} NOT IN (:...${propUID})`;
-            values = { [propUID]: criterion.value };
-            break;
+          expression = `${propName} NOT IN (:...${propUID})`;
+          values = { [propUID]: criterion.value };
+          break;
         case FilterTypesEnum.LIKE:
           expression = `${propName} like :${propUID}`;
           values = { [propUID]: "%" + criterion.value + "%" };
@@ -90,6 +91,15 @@ export const criteriaToQbWhere = (
     });
 
     return qb;
+  } else if (isFilterRelation(filter)) {
+    const andCriteria = <IAndFilterCriteria>filter;
+    return qb.andWhere(
+      new Brackets((bqb) => {
+        andCriteria.and.map((criterion) =>
+          criteriaToQbWhere(prefix, bqb, criterion)
+        );
+      })
+    );
   } else if (isQueryOr(filter)) {
     const orCriteria = <IOrFilterCriteria>filter;
     if (type === "and") {
@@ -234,6 +244,17 @@ export const isQueryOr = (criteria: IFilterCriteria) =>
 
 export const isQueryAnd = (criteria: IFilterCriteria) =>
   (<IAndFilterCriteria>criteria).and;
+
+export const isFilterRelation = (criteria: IFilterCriteria) => {
+  /*{request:{category:{id:{type: "", value: ""}}}}*/
+  /*{category:{id:{type: "", value: ""}}}*/
+  /*{id:{type: "", value: ""}}*/
+  /*{type:{type: "", value: ""}}}, value*/
+  return (
+    !(criteria as IPropertyFilterCriteria)["type"] ||
+    typeof (criteria as IPropertyFilterCriteria)["type"] !== "string"
+  );
+};
 
 export enum SortDirectionsEnum {
   ASC = "asc",

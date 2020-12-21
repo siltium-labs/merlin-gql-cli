@@ -456,7 +456,7 @@ export const toGraphQLSortRelationType = (
   // if (relationType === "ManyToMany" || relationType === "OneToMany") {
   //   retVal = `${retVal}Filters[]`;
   // } else {
-  retVal = `${retVal}Sorts`;
+  retVal = `${retVal}`;
   //}
   return retVal;
 };

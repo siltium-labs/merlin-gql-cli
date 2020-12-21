@@ -23,7 +23,7 @@ export const criteriaToQbWhere = (
 ): WhereExpression => {
   if (!filter) return qb;
 
-  const relations = isFilterRelation(filter as IPropertyFilterCriteria);
+  let relations = isFilterRelation(filter as IPropertyFilterCriteria);
 
   relations.map((relation) => {
     const criteria = (filter as any)[relation];
@@ -32,8 +32,9 @@ export const criteriaToQbWhere = (
       return qb.andWhere(
         new Brackets((bqb) => {
           //criteria[attribute].map((criterion) => exports.criteriaToQbWhere(attribute, bqb, criterion));
-          delete (filter as any)[relation];
           criteriaToQbWhere(prefix + relation, bqb, criteria);
+          delete (filter as any)[relation];
+          relations = [];
         })
       );
     });

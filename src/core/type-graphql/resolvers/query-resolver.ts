@@ -22,6 +22,25 @@ export const criteriaToQbWhere = (
   type: "and" | "or" = "and"
 ): WhereExpression => {
   if (!filter) return qb;
+
+  const relations = exports.isFilterRelation(filter);
+
+  relations.map((relation: any) => {
+    const criteria = filter[relation];
+    const keysAttr = Object.keys(criteria);
+    return Object.keys(criteria).map((attribute) => {
+      return qb.andWhere(
+        new typeorm_1.Brackets((bqb) => {
+          //criteria[attribute].map((criterion) => exports.criteriaToQbWhere(attribute, bqb, criterion));
+          exports.criteriaToQbWhere(prefix + relation, bqb, criteria);
+          delete filter[relation];
+        })
+      );
+    });
+  });
+
+  if (!filter) return qb;
+
   if (!isQueryAnd(filter) && !isQueryOr(filter) && !isFilterRelation(filter)) {
     const criteria = <IPropertyFilterCriteria>filter;
     const formattedCriteria = Object.keys(criteria).map((property) => ({
@@ -91,15 +110,6 @@ export const criteriaToQbWhere = (
     });
 
     return qb;
-  } else if (isFilterRelation(filter)) {
-    const andCriteria = <IAndFilterCriteria>filter;
-    return qb.andWhere(
-      new Brackets((bqb) => {
-        andCriteria.and.map((criterion) =>
-          criteriaToQbWhere(prefix, bqb, criterion)
-        );
-      })
-    );
   } else if (isQueryOr(filter)) {
     const orCriteria = <IOrFilterCriteria>filter;
     if (type === "and") {
@@ -250,10 +260,17 @@ export const isFilterRelation = (criteria: IFilterCriteria) => {
   /*{category:{id:{type: "", value: ""}}}*/
   /*{id:{type: "", value: ""}}*/
   /*{type:{type: "", value: ""}}}, value*/
-  return (
-    !(criteria as IPropertyFilterCriteria)["type"] ||
-    typeof (criteria as IPropertyFilterCriteria)["type"] !== "string"
-  );
+  const relations = Object.keys(criteria)
+    .map((property) => ({
+      property,
+      type: criteria[property].type,
+      value: criteria[property].value,
+    }))
+    .filter((item) => item.type === undefined || typeof item.type !== "string")
+    .map((item) => item.property);
+  return relations;
+  // return (!criteria["type"] ||
+  //     typeof criteria["type"] !== "string");
 };
 
 export enum SortDirectionsEnum {

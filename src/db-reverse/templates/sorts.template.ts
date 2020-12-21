@@ -11,6 +11,7 @@ import {
   toEntityName,
   toFileName,
   toGraphQLSortRelation,
+  toGraphQLSortRelationType,
   toLocalImport,
   toPropertyName,
   toRelation,
@@ -45,7 +46,7 @@ const RelationTemplate = (
 ) => {
   const relatedTableEntityName = toEntityName(relation.relatedTable, generationOptions);
   const relatedTableSortName = toSortsName(relation.relatedTable, generationOptions);
-  const propertyName = `${toSortsName(relation.fieldName, generationOptions)}?:${toRelation(relatedTableSortName, relation.relationType, generationOptions)};`
+  const propertyName = `${toSortsName(relation.fieldName, generationOptions)}?:${toGraphQLSortRelationType(relatedTableSortName, relation.relationType)};`
   return `
     @Field((type) => ${toGraphQLSortRelation(relatedTableEntityName, relation.relationType)}, { nullable: true })
     ${propertyName}

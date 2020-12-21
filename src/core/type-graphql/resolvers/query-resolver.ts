@@ -32,8 +32,8 @@ export const criteriaToQbWhere = (
       return qb.andWhere(
         new Brackets((bqb) => {
           //criteria[attribute].map((criterion) => exports.criteriaToQbWhere(attribute, bqb, criterion));
-          exports.criteriaToQbWhere(prefix + relation, bqb, criteria);
           delete (filter as any)[relation];
+          criteriaToQbWhere(prefix + relation, bqb, criteria);
         })
       );
     });
@@ -44,7 +44,7 @@ export const criteriaToQbWhere = (
   if (
     !isQueryAnd(filter) &&
     !isQueryOr(filter) &&
-    !isFilterRelation(filter as IPropertyFilterCriteria)
+    (!relations || relations.length <= 0)
   ) {
     const criteria = <IPropertyFilterCriteria>filter;
     const formattedCriteria = Object.keys(criteria).map((property) => ({

@@ -438,11 +438,26 @@ export const toGraphQLSortRelation = (
   relationType: Relation["relationType"]
 ) => {
   let retVal = entityType;
-  if (relationType === "ManyToMany" || relationType === "OneToMany") {
-    retVal = `[${retVal}Sorts]`;
-  } else {
-    retVal = `${retVal}Sorts`;
-  }
+  //FIX to allow nested sorts. Sorts doesn´t have to honor model, it´s a simple relation (1 to 1) to allow nested sorts
+  // if (relationType === "ManyToMany" || relationType === "OneToMany") {
+  //   retVal = `[${retVal}Sorts]`;
+  // } else {
+  retVal = `${retVal}Sorts`;
+  //}
+  return retVal;
+};
+
+export const toGraphQLSortRelationType = (
+  entityType: string,
+  relationType: Relation["relationType"]
+) => {
+  let retVal = entityType;
+  //FIX to allow nested filters. Filters doesn´t have to honor model, it´s a simple relation (1 to 1) to allow nested filter
+  // if (relationType === "ManyToMany" || relationType === "OneToMany") {
+  //   retVal = `${retVal}Filters[]`;
+  // } else {
+  retVal = `${retVal}Sorts`;
+  //}
   return retVal;
 };
 
@@ -451,11 +466,12 @@ export const toGraphQLFilterRelation = (
   relationType: Relation["relationType"]
 ) => {
   let retVal = entityType;
-  if (relationType === "ManyToMany" || relationType === "OneToMany") {
-    retVal = `[${retVal}Filters]`;
-  } else {
-    retVal = `${retVal}Filters`;
-  }
+  //FIX to allow nested filters. Filters doesn´t have to honor model, it´s a simple relation (1 to 1) to allow nested filter
+  // if (relationType === "ManyToMany" || relationType === "OneToMany") {
+  //   retVal = `[${retVal}Filters]`;
+  // } else {
+  retVal = `${retVal}Filters`;
+  //}
   return retVal;
 };
 
@@ -464,11 +480,12 @@ export const toGraphQLFilterRelationType = (
   relationType: Relation["relationType"]
 ) => {
   let retVal = entityType;
-  if (relationType === "ManyToMany" || relationType === "OneToMany") {
-    retVal = `${retVal}Filters[]`;
-  } else {
-    retVal = `${retVal}Filters`;
-  }
+  //FIX to allow nested filters. Filters doesn´t have to honor model, it´s a simple relation (1 to 1) to allow nested filter
+  // if (relationType === "ManyToMany" || relationType === "OneToMany") {
+  //   retVal = `${retVal}Filters[]`;
+  // } else {
+  retVal = `${retVal}Filters`;
+  //}
   return retVal;
 };
 

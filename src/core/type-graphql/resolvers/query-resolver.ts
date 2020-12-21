@@ -23,17 +23,17 @@ export const criteriaToQbWhere = (
 ): WhereExpression => {
   if (!filter) return qb;
 
-  const relations = exports.isFilterRelation(filter);
+  const relations = isFilterRelation(filter as IPropertyFilterCriteria);
 
-  relations.map((relation: any) => {
-    const criteria = filter[relation];
+  relations.map((relation) => {
+    const criteria = (filter as any)[relation];
     const keysAttr = Object.keys(criteria);
     return Object.keys(criteria).map((attribute) => {
       return qb.andWhere(
-        new typeorm_1.Brackets((bqb) => {
+        new Brackets((bqb) => {
           //criteria[attribute].map((criterion) => exports.criteriaToQbWhere(attribute, bqb, criterion));
           exports.criteriaToQbWhere(prefix + relation, bqb, criteria);
-          delete filter[relation];
+          delete (filter as any)[relation];
         })
       );
     });
@@ -41,7 +41,11 @@ export const criteriaToQbWhere = (
 
   if (!filter) return qb;
 
-  if (!isQueryAnd(filter) && !isQueryOr(filter) && !isFilterRelation(filter)) {
+  if (
+    !isQueryAnd(filter) &&
+    !isQueryOr(filter) &&
+    !isFilterRelation(filter as IPropertyFilterCriteria)
+  ) {
     const criteria = <IPropertyFilterCriteria>filter;
     const formattedCriteria = Object.keys(criteria).map((property) => ({
       property,
@@ -216,10 +220,12 @@ export type IFilterCriteria =
   | IOrFilterCriteria;
 
 type FilteredProperty = {
-  [key: string]: {
-    value: any;
-    type: FilterTypesEnum;
-  };
+  [key: string]:
+    | {
+        value: any;
+        type: FilterTypesEnum;
+      }
+    | FilteredProperty;
 };
 export interface IPropertyFilterCriteria extends FilteredProperty {}
 export interface IAndFilterCriteria {
@@ -255,22 +261,23 @@ export const isQueryOr = (criteria: IFilterCriteria) =>
 export const isQueryAnd = (criteria: IFilterCriteria) =>
   (<IAndFilterCriteria>criteria).and;
 
-export const isFilterRelation = (criteria: IFilterCriteria) => {
-  /*{request:{category:{id:{type: "", value: ""}}}}*/
-  /*{category:{id:{type: "", value: ""}}}*/
-  /*{id:{type: "", value: ""}}*/
-  /*{type:{type: "", value: ""}}}, value*/
+export const isFilterRelation = (
+  criteria: IPropertyFilterCriteria
+): string[] => {
   const relations = Object.keys(criteria)
     .map((property) => ({
       property,
       type: criteria[property].type,
       value: criteria[property].value,
     }))
-    .filter((item) => item.type === undefined || typeof item.type !== "string")
+    .filter(
+      (item) =>
+        item.property !== "and" &&
+        item.property !== "or" &&
+        (item.type === undefined || typeof item.type !== "string")
+    )
     .map((item) => item.property);
   return relations;
-  // return (!criteria["type"] ||
-  //     typeof criteria["type"] !== "string");
 };
 
 export enum SortDirectionsEnum {

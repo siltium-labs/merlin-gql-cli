@@ -1,5 +1,6 @@
 export interface IDecodedToken {
-  id: number;
+  [key: string]: any;
+  id: number | string;
   username: string;
   roles: [string];
 }

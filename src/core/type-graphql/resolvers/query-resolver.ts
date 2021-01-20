@@ -22,7 +22,31 @@ export const criteriaToQbWhere = (
   type: "and" | "or" = "and"
 ): WhereExpression => {
   if (!filter) return qb;
-  if (!isQueryAnd(filter) && !isQueryOr(filter)) {
+
+  let relations = isFilterRelation(filter as IPropertyFilterCriteria);
+
+  relations.map((relation) => {
+    const criteria = (filter as any)[relation];
+    const keysAttr = Object.keys(criteria);
+    return Object.keys(criteria).map((attribute) => {
+      return qb.andWhere(
+        new Brackets((bqb) => {
+          //criteria[attribute].map((criterion) => exports.criteriaToQbWhere(attribute, bqb, criterion));
+          criteriaToQbWhere(prefix + relation, bqb, criteria);
+          delete (filter as any)[relation];
+          relations = [];
+        })
+      );
+    });
+  });
+
+  if (!filter) return qb;
+
+  if (
+    !isQueryAnd(filter) &&
+    !isQueryOr(filter) &&
+    (!relations || relations.length <= 0)
+  ) {
     const criteria = <IPropertyFilterCriteria>filter;
     const formattedCriteria = Object.keys(criteria).map((property) => ({
       property,
@@ -54,6 +78,7 @@ export const criteriaToQbWhere = (
         case FilterTypesEnum.GREATHER_THAN:
           expression = `${propName} > :${propUID}`;
           values = { [propUID]: criterion.value };
+          break;
         case FilterTypesEnum.GREATHER_THAN_EQUALS:
           expression = `${propName} >= :${propUID}`;
           values = { [propUID]: criterion.value };
@@ -68,6 +93,10 @@ export const criteriaToQbWhere = (
           break;
         case FilterTypesEnum.IN:
           expression = `${propName} IN (:...${propUID})`;
+          values = { [propUID]: criterion.value };
+          break;
+        case FilterTypesEnum.NOT_IN:
+          expression = `${propName} NOT IN (:...${propUID})`;
           values = { [propUID]: criterion.value };
           break;
         case FilterTypesEnum.LIKE:
@@ -192,10 +221,12 @@ export type IFilterCriteria =
   | IOrFilterCriteria;
 
 type FilteredProperty = {
-  [key: string]: {
-    value: any;
-    type: FilterTypesEnum;
-  };
+  [key: string]:
+    | {
+        value: any;
+        type: FilterTypesEnum;
+      }
+    | FilteredProperty;
 };
 export interface IPropertyFilterCriteria extends FilteredProperty {}
 export interface IAndFilterCriteria {
@@ -216,6 +247,7 @@ export enum FilterTypesEnum {
   LOWER_THAN_EQUALS = "lte",
   NOT_EQUALS = "neq",
   IN = "in",
+  NOT_IN = "not_in",
   LIKE = "like",
 }
 
@@ -229,6 +261,25 @@ export const isQueryOr = (criteria: IFilterCriteria) =>
 
 export const isQueryAnd = (criteria: IFilterCriteria) =>
   (<IAndFilterCriteria>criteria).and;
+
+export const isFilterRelation = (
+  criteria: IPropertyFilterCriteria
+): string[] => {
+  const relations = Object.keys(criteria)
+    .map((property) => ({
+      property,
+      type: criteria[property].type,
+      value: criteria[property].value,
+    }))
+    .filter(
+      (item) =>
+        item.property !== "and" &&
+        item.property !== "or" &&
+        (item.type === undefined || typeof item.type !== "string")
+    )
+    .map((item) => item.property);
+  return relations;
+};
 
 export enum SortDirectionsEnum {
   ASC = "asc",

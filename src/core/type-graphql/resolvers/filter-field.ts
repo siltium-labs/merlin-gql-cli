@@ -27,9 +27,9 @@ export default function FilterField<TField>(
   @InputType({ isAbstract: true })
   abstract class FilterFieldClass {
     // here we use the runtime argument
-    @Field((type) => TFieldClass)
+    @Field((type) => [TFieldClass])
     // and here the generic type
-    value: TField | null = null;
+    value: TField | null = null;  
 
     @Field((type) => FilterTypesEnum, {
       nullable: true,

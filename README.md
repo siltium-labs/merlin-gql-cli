@@ -116,7 +116,7 @@ $ npm install -g merlin-gql
 $ merlin-gql COMMAND
 running command...
 $ merlin-gql (-v|--version|version)
-merlin-gql/0.2.24-rc.4 win32-x64 node-v12.19.0
+merlin-gql/0.2.24-rc.4 win32-x64 node-v14.14.0
 $ merlin-gql --help [COMMAND]
 USAGE
   $ merlin-gql COMMAND

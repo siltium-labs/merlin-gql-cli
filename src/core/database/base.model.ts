@@ -9,6 +9,7 @@ import {
 import { Field, ID, ObjectType } from "type-graphql";
 
 
+@ObjectType({ isAbstract: true })
 export class BaseModel {
   public static getRelations(): IRelationDefinition[] {
     return getConnection()

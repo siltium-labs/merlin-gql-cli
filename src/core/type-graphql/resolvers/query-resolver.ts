@@ -55,7 +55,6 @@ export const criteriaToQbWhere = (
     }));
     formattedCriteria.map((criterion) => {
       const propName = dotSplitedPropToQbAlias(criterion.property, prefix);
-      console.log(criterion);
       const operator = criterion.type;
       const propUID = uuid.v1();
       let expression: string = "";
@@ -158,15 +157,44 @@ export const criteriaToQbWhere = (
   }
 };
 
+
+type SortCriterion = {
+  direction: SortDirectionsEnum,
+  priority: number
+}
+
+//This comes straight from GQL and we need to flatten it
+//to get a list of fields and directions to sort the result as
+type SortCriteriaDictionary = {
+  [property: string]: SortCriterion | SortCriteriaDictionary
+}
+
+type FlattenedSortCriteriaDictionary = {
+  [property: string]: SortCriterion
+}
+
+const flattenSortCriterionDictionary = (sortCriterionDictionary: SortCriteriaDictionary, prefix?: string, accumulated: FlattenedSortCriteriaDictionary = {}): FlattenedSortCriteriaDictionary => {
+  const dottedPrefix = prefix ? `${prefix}.` : ""
+  Object.keys(sortCriterionDictionary).map(key => {
+    const entry = sortCriterionDictionary[key];
+    if (entry.direction) {
+      accumulated[dottedPrefix + key] = entry as SortCriterion;
+    } else {
+      return flattenSortCriterionDictionary(entry as SortCriteriaDictionary, dottedPrefix + key, accumulated)
+    }
+  })
+  return accumulated;
+}
+
 export const criteriaToQbOrderBy = (
   prefix: string,
   qb: SelectQueryBuilder<BaseModel>,
   sort: ISortCriteria | null
 ): SelectQueryBuilder<BaseModel> => {
   if (!sort) return qb;
-  Object.keys(sort)
-
-    .map((property) => ({ property: property, directives: sort[property] }))
+  const flattenedSort = flattenSortCriterionDictionary(sort)
+  Object.keys(flattenedSort)
+    .map((property) => ({ property: property, directives: flattenedSort[property] }))
     .sort((a, b) => b.directives.priority - a.directives.priority)
     .map((criterion) => {
       const propName = dotSplitedPropToQbAlias(criterion.property, prefix);
@@ -222,13 +250,13 @@ export type IFilterCriteria =
 
 type FilteredProperty = {
   [key: string]:
-    | {
-        value: any;
-        type: FilterTypesEnum;
-      }
-    | FilteredProperty;
+  | {
+    value: any;
+    type: FilterTypesEnum;
+  }
+  | FilteredProperty;
 };
-export interface IPropertyFilterCriteria extends FilteredProperty {}
+export interface IPropertyFilterCriteria extends FilteredProperty { }
 export interface IAndFilterCriteria {
   and: IFilterCriteria[];
 }
@@ -295,4 +323,4 @@ type SortedProperties = {
   [key: string]: SortField;
 };
 
-export interface ISortCriteria extends SortedProperties {}
+export interface ISortCriteria extends SortedProperties { }

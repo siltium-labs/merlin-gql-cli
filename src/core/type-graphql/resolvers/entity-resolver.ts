@@ -128,7 +128,7 @@ export const EntityToGraphResolver: IEntityResolver = {
         }
         queryBuilder.skip(criteria.skip);
       }
-      const result = queryBuilder.getMany();
+      const result = queryBuilder.withDeleted().getMany();
       const pageInfo = { total };
       return { pageInfo, result };
     } catch (e) {

@@ -69,8 +69,7 @@ export function ListResolver<T extends ClassType>(
     BaseSortFields
   > extends AbstractListResolver<T, BaseFilterFields, BaseSortFields> {
     @Query((returns) => PaginatedResult, {
-      name: `${baseModelSingularName}List`,
-      nullable: true,
+      name: `${baseModelSingularName}List`
     })
     list(
       @Arg("criteria", (type) => CriteriaQuery, { nullable: true })

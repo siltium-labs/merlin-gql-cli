@@ -1,6 +1,3 @@
-import { getTypeormEntityFromSubclass } from "./../core/type-graphql/utils/typeorm";
-import { getMetadataStorage } from "type-graphql";
-import { BaseModel } from "./../core/database/base.model";
 export const propertyIsDecoratedWithField = (
   propertyName: string,
   targetClassName: string
@@ -14,6 +11,9 @@ export const propertyIsDecoratedWithField = (
   //console.log(JSON.stringify(merlinGqlMetadataStorage));
   const propertyIsInheritedField = !!(
     merlinGqlMetadataStorage.objectTypes[targetClassName]?.extends &&
+    merlinGqlMetadataStorage.objectTypes[
+      merlinGqlMetadataStorage.objectTypes[targetClassName]?.extends as string
+    ] &&
     merlinGqlMetadataStorage.objectTypes[
       merlinGqlMetadataStorage.objectTypes[targetClassName]?.extends as string
     ].fields
@@ -52,7 +52,7 @@ export const resolverIncludesOperation = (
   const merlinGqlMetadataStorage = getMerlinMetadataStorage();
   const propertyIsIgnored = !!merlinGqlMetadataStorage.objectTypes[
     targetClassName
-  ].operations.find((o) => o === "ALL" || o === operation);
+  ]?.operations.find((o) => o === "ALL" || o === operation);
   return propertyIsIgnored;
 };
 

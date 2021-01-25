@@ -119,13 +119,10 @@ export const createNew = async (config: NewProjectConfig) => {
           );
           await generateReadmeFile(config.name, context.projectPath);
           await generateOrmConfigFile(
-            config.template,
             context.projectPath,
             config.ormConfigParams
           );
           await generateConfigFile(
-            config.template,
-            config.templateArgs,
             context.projectPath,
             {
               jwtSecret: config.jwtSecret,
@@ -279,16 +276,10 @@ const generateReadmeFile = async (
 ): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     try {
-      const readmeTemplatePath = path.join(
-        __dirname,
-        "templates",
-        "global",
-        "templates",
-        "README.md.ts"
-      );
+
       const rendered = READMEmdTemplate(appName);
       const readmeDestinationPath = path.join(appPath, "README.md");
-      writeFile(rendered, readmeDestinationPath);
+      writeFile(rendered, readmeDestinationPath, { parser: "markdown" });
       return resolve();
     } catch (e) {
       return reject(e);
@@ -297,22 +288,14 @@ const generateReadmeFile = async (
 };
 
 const generateOrmConfigFile = async (
-  template: NewProjectTemplatesEnum,
   appPath: string,
   configParams: OrmConfigTemplateParams
 ): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     try {
-      const ormConfigTemplatPath = path.join(
-        __dirname,
-        "templates",
-        template,
-        "templates",
-        "ormconfig.json.ts"
-      );
       const rendered = OrmConfigTemplate(configParams);
       const ormConfigDestinationPath = path.join(appPath, "ormconfig.json");
-      writeFile(rendered, ormConfigDestinationPath);
+      writeFile(rendered, ormConfigDestinationPath, { parser: "json" });
       return resolve();
     } catch (e) {
       return reject(e);
@@ -321,26 +304,17 @@ const generateOrmConfigFile = async (
 };
 
 const generateConfigFile = async (
-  template: NewProjectTemplatesEnum,
-  templateArgs: TemplateArgsDictionary,
   appPath: string,
   configParams: ConfigTemplateParams
 ): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     try {
-      const configTemplatPath = path.join(
-        __dirname,
-        "templates",
-        template,
-        "handlebars",
-        "config.development.json.handlebars"
-      );
       const rendered = ConfigFileTemplate(configParams.jwtSecret);
       const configDestinationPath = path.join(
         appPath,
         "config.development.json"
       );
-      writeFile(rendered, configDestinationPath);
+      writeFile(rendered, configDestinationPath, { parser: "json" });
       return resolve();
     } catch (e) {
       return reject(e);
@@ -348,17 +322,17 @@ const generateConfigFile = async (
   });
 };
 
-const prettierOptions: Prettier.Options = {
+const prettierDefaultOptions: Prettier.Options = {
   parser: "typescript",
   endOfLine: "auto",
   tabWidth: 4,
   printWidth: 200,
 };
 
-const writeFile = (rendered: any, filePath: string) => {
+const writeFile = (rendered: any, filePath: string, prettierOptions?: Partial<Prettier.Options>) => {
   let formatted = "";
   try {
-    formatted = Prettier.format(rendered, prettierOptions);
+    formatted = Prettier.format(rendered, { ...prettierDefaultOptions, ...prettierOptions ?? {} });
   } catch (error) {
     console.error("There were some problems with model generation");
     console.error(error);

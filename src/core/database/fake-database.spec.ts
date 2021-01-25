@@ -8,6 +8,8 @@ import {
   createConnection,
   getConnection,
   getRepository,
+  getConnectionOptions,
+  ConnectionOptions,
 } from "typeorm";
 import { beforeEach, afterEach, it } from "mocha";
 import { expect } from "chai";
@@ -27,15 +29,25 @@ export class Purchase extends SimpleBaseModel {
   customer?: Promise<Person>;
 }
 
-beforeEach(() => {
-  return createConnection({
-    type: "sqlite",
-    database: ":memory:",
+beforeEach(async () => {
+  const connectionOptions = await getConnectionOptions();
+  const overridenOptions: ConnectionOptions = {
+    ...connectionOptions,
     dropSchema: true,
     entities: [Person, Purchase],
     synchronize: true,
     logging: false,
-  });
+  };
+  return createConnection(overridenOptions);
+  //As we don´t support sqlite, create ormconfig to supply a valid db to run tests
+  // return createConnection({
+  //   type: "sqlite",
+  //   database: ":memory:",
+  //   dropSchema: true,
+  //   entities: [Person, Purchase],
+  //   synchronize: true,
+  //   logging: false,
+  // });
 });
 afterEach(() => {
   let conn = getConnection();

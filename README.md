@@ -108,6 +108,7 @@ Finally, the CLI will ask you if you want to enable _ngrok_ for remote testing o
 ## CLI Commands
 
 <!-- usage -->
+
 ```sh-session
 $ npm install -g merlin-gql
 $ merlin-gql COMMAND
@@ -119,15 +120,17 @@ USAGE
   $ merlin-gql COMMAND
 ...
 ```
+
 <!-- usagestop -->
 <!-- commands -->
-* [`merlin-gql core:local-command`](#merlin-gql-corelocal-command)
-* [`merlin-gql db-reverse`](#merlin-gql-db-reverse)
-* [`merlin-gql generate:crud`](#merlin-gql-generatecrud)
-* [`merlin-gql help [COMMAND]`](#merlin-gql-help-command)
-* [`merlin-gql list:entities`](#merlin-gql-listentities)
-* [`merlin-gql new`](#merlin-gql-new)
-* [`merlin-gql watch`](#merlin-gql-watch)
+
+- [`merlin-gql core:local-command`](#merlin-gql-corelocal-command)
+- [`merlin-gql db-reverse`](#merlin-gql-db-reverse)
+- [`merlin-gql generate:crud`](#merlin-gql-generatecrud)
+- [`merlin-gql help [COMMAND]`](#merlin-gql-help-command)
+- [`merlin-gql list:entities`](#merlin-gql-listentities)
+- [`merlin-gql new`](#merlin-gql-new)
+- [`merlin-gql watch`](#merlin-gql-watch)
 
 ## `merlin-gql core:local-command`
 
@@ -147,10 +150,10 @@ USAGE
   $ merlin-gql db-reverse
 
 OPTIONS
-  -d, --database=database                                  Database name(or path for sqlite). You can pass multiple
+  -d, --database=database                                  Database name. You can pass multiple
                                                            values separated by comma.
 
-  -e, --engine=mssql|postgres|mysql|mariadb|oracle|sqlite  Database engine
+  -e, --engine=mssql|postgres|mysql|mariadb|oracle  Database engine
 
   -g, --graphqlFiles                                       Generate GraphQL API (inputs, filter, sort, resolver) for
                                                            entity files
@@ -317,4 +320,5 @@ USAGE
 ```
 
 _See code: [src/commands/watch.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.34/src/commands/watch.ts)_
+
 <!-- commandsstop -->

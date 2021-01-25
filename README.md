@@ -150,7 +150,7 @@ USAGE
   $ merlin-gql core:local-command
 ```
 
-_See code: [src\commands\core\local-command.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.35/src\commands\core\local-command.ts)_
+_See code: [src/commands/core/local-command.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.35/src/commands/core/local-command.ts)_
 
 ## `merlin-gql db-reverse`
 
@@ -224,7 +224,7 @@ DESCRIPTION
      You can also run program without specifying any parameters to launch interactive mode.
 ```
 
-_See code: [src\commands\db-reverse.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.35/src\commands\db-reverse.ts)_
+_See code: [src/commands/db-reverse.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.35/src/commands/db-reverse.ts)_
 
 ## `merlin-gql generate:crud`
 
@@ -251,7 +251,7 @@ EXAMPLE
   $ merlin-gql generate:crud
 ```
 
-_See code: [src\commands\generate\crud.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.35/src\commands\generate\crud.ts)_
+_See code: [src/commands/generate/crud.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.35/src/commands/generate/crud.ts)_
 
 ## `merlin-gql help [COMMAND]`
 
@@ -268,7 +268,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.0/src\commands\help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.1/src/commands/help.ts)_
 
 ## `merlin-gql list:entities`
 
@@ -285,7 +285,7 @@ EXAMPLE
   $ merlin-gql list:entities
 ```
 
-_See code: [src\commands\list\entities.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.35/src\commands\list\entities.ts)_
+_See code: [src/commands/list/entities.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.35/src/commands/list/entities.ts)_
 
 ## `merlin-gql new`
 
@@ -317,7 +317,7 @@ ALIASES
   $ merlin-gql new
 ```
 
-_See code: [src\commands\new.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.35/src\commands\new.ts)_
+_See code: [src/commands/new.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.35/src/commands/new.ts)_
 
 ## `merlin-gql watch`
 
@@ -328,7 +328,7 @@ USAGE
   $ merlin-gql watch
 ```
 
-_See code: [src\commands\watch.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.35/src\commands\watch.ts)_
+_See code: [src/commands/watch.ts](https://github.com/silentium-labs/merlin-gql-cli/blob/v0.2.35/src/commands/watch.ts)_
 <!-- commandsstop -->
 
 - [`merlin-gql core:local-command`](#merlin-gql-corelocal-command)

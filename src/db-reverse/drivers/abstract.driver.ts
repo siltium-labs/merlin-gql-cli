@@ -208,7 +208,9 @@ export default abstract class AbstractDriver {
     return dbModel;
   }
 
-  public abstract async ConnectToServer(connectionOptons: IConnectionOptions): Promise<void>;
+  public abstract ConnectToServer(
+    connectionOptons: IConnectionOptions
+  ): Promise<void>;
 
   public async GetAllTables(
     schema: string,
@@ -381,19 +383,19 @@ export default abstract class AbstractDriver {
     return entities;
   }
 
-  public abstract async GetCoulmnsFromEntity(
+  public abstract GetCoulmnsFromEntity(
     entities: Entity[],
     schema: string,
     dbNames: string
   ): Promise<Entity[]>;
 
-  public abstract async GetIndexesFromEntity(
+  public abstract GetIndexesFromEntity(
     entities: Entity[],
     schema: string,
     dbNames: string
   ): Promise<Entity[]>;
 
-  public abstract async GetRelations(
+  public abstract GetRelations(
     entities: Entity[],
     schema: string,
     dbNames: string,
@@ -426,15 +428,15 @@ export default abstract class AbstractDriver {
     });
   }
 
-  public abstract async DisconnectFromServer(): Promise<void>;
+  public abstract DisconnectFromServer(): Promise<void>;
 
-  public abstract async CreateDB(dbName: string): Promise<void>;
+  public abstract CreateDB(dbName: string): Promise<void>;
 
-  public abstract async DropDB(dbName: string): Promise<void>;
+  public abstract DropDB(dbName: string): Promise<void>;
 
-  public abstract async UseDB(dbName: string): Promise<void | boolean>;
+  public abstract UseDB(dbName: string): Promise<void | boolean>;
 
-  public abstract async CheckIfDBExists(dbName: string): Promise<boolean>;
+  public abstract CheckIfDBExists(dbName: string): Promise<boolean>;
 
   // TODO: change name
   protected static escapeCommaSeparatedList(commaSeparatedList: string) {

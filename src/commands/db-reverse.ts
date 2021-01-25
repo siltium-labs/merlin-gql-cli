@@ -66,7 +66,7 @@ export default class DBReverse extends LocalCommand {
     database: flags.string({
       char: "d",
       description:
-        "Database name(or path for sqlite). You can pass multiple values separated by comma.",
+        "Database name. You can pass multiple values separated by comma.",
     }),
     user: flags.string({
       char: "u",
@@ -82,7 +82,7 @@ export default class DBReverse extends LocalCommand {
     }),
     engine: flags.string({
       char: "e",
-      options: ["mssql", "postgres", "mysql", "mariadb", "oracle", "sqlite"],
+      options: ["mssql", "postgres", "mysql", "mariadb", "oracle"],
       description: "Database engine",
     }),
     output: flags.string({

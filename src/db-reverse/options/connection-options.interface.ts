@@ -1,5 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/interface-name-prefix
-export type DatabaseType = "mssql" | "postgres" | "mysql" | "mariadb" | "oracle" | "sqlite"
+export type DatabaseType =
+  | "mssql"
+  | "postgres"
+  | "mysql"
+  | "mariadb"
+  | "oracle";
 
 export default interface IConnectionOptions {
   host: string;

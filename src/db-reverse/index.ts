@@ -138,7 +138,7 @@ function checkYargsParameters(options: DBReverseOptions): DBReverseOptions {
       demand: true,
       default: options.connectionOptions.databaseName,
       describe:
-        "Database name(or path for sqlite). You can pass multiple values separated by comma.",
+        "Database name. You can pass multiple values separated by comma.",
     },
     u: {
       alias: "user",
@@ -160,7 +160,7 @@ function checkYargsParameters(options: DBReverseOptions): DBReverseOptions {
     },
     e: {
       alias: "engine",
-      choices: ["mssql", "postgres", "mysql", "mariadb", "oracle", "sqlite"],
+      choices: ["mssql", "postgres", "mysql", "mariadb", "oracle"],
       demand: true,
       default: options.connectionOptions.databaseType,
       describe: "Database engine",
@@ -315,7 +315,7 @@ export async function useInquirer(
   options.connectionOptions.databaseType = (
     await inquirer.prompt([
       {
-        choices: ["mssql", "postgres", "mysql", "mariadb", "oracle", "sqlite"],
+        choices: ["mssql", "postgres", "mysql", "mariadb", "oracle"],
         default: options.connectionOptions.databaseType,
         message: "Choose database engine",
         name: "engine",
@@ -329,83 +329,71 @@ export async function useInquirer(
     options.connectionOptions.user = driver.standardUser;
     options.connectionOptions.schemaName = driver.standardSchema;
   }
-  if (options.connectionOptions.databaseType !== "sqlite") {
-    const answ = await inquirer.prompt([
-      {
-        default: options.connectionOptions.host,
-        message: "Database address:",
-        name: "host",
-        type: "input",
+
+  const answ = await inquirer.prompt([
+    {
+      default: options.connectionOptions.host,
+      message: "Database address:",
+      name: "host",
+      type: "input",
+    },
+    {
+      message: "Database port:",
+      name: "port",
+      type: "input",
+      default: options.connectionOptions.port,
+      validate(value) {
+        const valid = !Number.isNaN(parseInt(value, 10));
+        return valid || "Please enter a valid port number";
       },
-      {
-        message: "Database port:",
-        name: "port",
-        type: "input",
-        default: options.connectionOptions.port,
-        validate(value) {
-          const valid = !Number.isNaN(parseInt(value, 10));
-          return valid || "Please enter a valid port number";
-        },
-      },
-      {
-        default: options.connectionOptions.ssl,
-        message: "Use SSL:",
-        name: "ssl",
-        type: "confirm",
-      },
-      {
-        message: "Database user name:",
-        name: "login",
-        type: "input",
-        default: options.connectionOptions.user,
-      },
-      {
-        message: "Database user password:",
-        name: "password",
-        type: "password",
-      },
-      {
-        default: options.connectionOptions.databaseName,
-        message:
-          "Database name: (You can pass multiple values separated by comma)",
-        name: "dbName",
-        type: "input",
-      },
-    ]);
-    if (
-      options.connectionOptions.databaseType === "mssql" ||
-      options.connectionOptions.databaseType === "postgres"
-    ) {
-      options.connectionOptions.schemaName = (
-        await inquirer.prompt([
-          {
-            default: options.connectionOptions.schemaName,
-            message:
-              "Database schema: (You can pass multiple values separated by comma)",
-            name: "schema",
-            type: "input",
-          },
-        ])
-      ).schema;
-    }
-    options.connectionOptions.port = parseInt(answ.port, 10);
-    options.connectionOptions.host = answ.host;
-    options.connectionOptions.user = answ.login;
-    options.connectionOptions.password = answ.password;
-    options.connectionOptions.databaseName = answ.dbName;
-    options.connectionOptions.ssl = answ.ssl;
-  } else {
-    options.connectionOptions.databaseName = (
+    },
+    {
+      default: options.connectionOptions.ssl,
+      message: "Use SSL:",
+      name: "ssl",
+      type: "confirm",
+    },
+    {
+      message: "Database user name:",
+      name: "login",
+      type: "input",
+      default: options.connectionOptions.user,
+    },
+    {
+      message: "Database user password:",
+      name: "password",
+      type: "password",
+    },
+    {
+      default: options.connectionOptions.databaseName,
+      message:
+        "Database name: (You can pass multiple values separated by comma)",
+      name: "dbName",
+      type: "input",
+    },
+  ]);
+  if (
+    options.connectionOptions.databaseType === "mssql" ||
+    options.connectionOptions.databaseType === "postgres"
+  ) {
+    options.connectionOptions.schemaName = (
       await inquirer.prompt([
         {
-          default: options.connectionOptions.databaseName,
-          message: "Path to database file:",
-          name: "dbName",
+          default: options.connectionOptions.schemaName,
+          message:
+            "Database schema: (You can pass multiple values separated by comma)",
+          name: "schema",
           type: "input",
         },
       ])
-    ).dbName;
+    ).schema;
   }
+  options.connectionOptions.port = parseInt(answ.port, 10);
+  options.connectionOptions.host = answ.host;
+  options.connectionOptions.user = answ.login;
+  options.connectionOptions.password = answ.password;
+  options.connectionOptions.databaseName = answ.dbName;
+  options.connectionOptions.ssl = answ.ssl;
 
   const ignoreSpecyficTables = (
     await inquirer.prompt([

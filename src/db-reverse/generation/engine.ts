@@ -7,7 +7,6 @@ import IGenerationOptions from "../options/generation-options.interface";
 import PostgresDriver from "../drivers/postgres.driver";
 import MysqlDriver from "../drivers/mysql.driver";
 import OracleDriver from "../drivers/oracle.driver";
-import SqliteDriver from "../drivers/sqlite.driver";
 import modelCustomizationPhase from "./model-customization";
 import generator from "./model-generation";
 import { Entity } from "../models/entity";
@@ -25,8 +24,6 @@ export function createDriver(driverName: string): AbstractDriver {
       return new MariaDbDriver();
     case "oracle":
       return new OracleDriver();
-    case "sqlite":
-      return new SqliteDriver();
     default:
       TomgUtils.LogError("Database engine not recognized.", false);
       throw new Error("Database engine not recognized.");

@@ -15,8 +15,6 @@ type TypeormDatabaseTypes =
   | "postgres"
   | "cockroachdb"
   | "mariadb"
-  | "sqlite"
-  | "better-sqlite3"
   | "cordova"
   | "nativescript"
   | "oracle"
@@ -175,8 +173,6 @@ export default class New extends Command {
             "postgres",
             "cockroachdb",
             "mariadb",
-            "sqlite",
-            "better-sqlite3",
             "cordova",
             "nativescript",
             "oracle",

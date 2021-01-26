@@ -61,7 +61,8 @@ export interface IEntityResolver {
     id: number,
     modelType: typeof BaseModel,
     info: GraphQLResolveInfo | GraphQLPartialResolveInfo,
-    em?: EntityManager
+    em?: EntityManager,
+    includeDeleted?: boolean
   ): Promise<BaseModel | null>;
   /**
    * Reads the GraphQL info and creates the corresponding query builder for a single entity retrieval
@@ -71,7 +72,8 @@ export interface IEntityResolver {
     id: number,
     modelType: typeof BaseModel,
     info: GraphQLResolveInfo | GraphQLPartialResolveInfo,
-    em?: EntityManager
+    em?: EntityManager,
+    includeDeleted?: boolean
   ): Promise<TModel | null>;
 }
 
@@ -128,7 +130,12 @@ export const EntityToGraphResolver: IEntityResolver = {
         }
         queryBuilder.skip(criteria.skip);
       }
-      const result = queryBuilder.withDeleted().getMany();
+
+      if (criteria?.includeDeleted) {
+        queryBuilder.withDeleted();
+      }
+
+      const result = queryBuilder.getMany();
       const pageInfo = { total };
       return { pageInfo, result };
     } catch (e) {
@@ -140,7 +147,8 @@ export const EntityToGraphResolver: IEntityResolver = {
     id: number,
     modelType: typeof BaseModel,
     info: GraphQLResolveInfo,
-    em?: EntityManager
+    em?: EntityManager,
+    includeDeleted?: boolean
   ) => {
     try {
       const manager = em ?? getManager();
@@ -156,6 +164,10 @@ export const EntityToGraphResolver: IEntityResolver = {
           ...fields.selectedFields.map((f) => `${modelAlias}.${f}`),
         ])
         .where(`${modelAlias}.${idName} = :id`, { id });
+
+      if (includeDeleted) {
+        queryBuilder.withDeleted();
+      }
 
       fields.relatedEntities?.map((relation) => {
         populate(modelAlias, idName, queryBuilder, relation);

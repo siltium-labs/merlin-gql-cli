@@ -59,11 +59,10 @@ const ColumnTemplate = (
   const generated = column.generated ? 
     `@PrimaryGeneratedColumn({ type:"${column.type}", ${options}${_default}})` : 
     `@Column("${column.type}",{${primary}${options}${_default}})`;
-  const deletedAt = propertyName === "deletedAt" ? "@DeleteDateColumn()" : "";
+  const deletedAt = propertyName === generationOptions.softDeleteColumn ? "@DeleteDateColumn()" : "";
 
   return `
-    ${generated}
-    ${deletedAt}
+    ${ propertyName !== generationOptions.softDeleteColumn ? generated : deletedAt}    
     ${printPropertyVisibility(generationOptions)} ${propertyName} ${strictMode(generationOptions)}:${column.tscType}${column.options.nullable ? " | null" : ""} ${defaultValue}
   `;
 };

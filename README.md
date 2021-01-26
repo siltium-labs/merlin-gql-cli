@@ -191,6 +191,9 @@ OPTIONS
 
   -u, --user=user                                   Username for database server
 
+  -w, --softDeleteColumn=softDeleteColumn           Enable soft delete in your entities. Use this flag with the name of
+                                                    entity column, it must be a datetime type column.
+
   -x, --pass=pass                                   Password for database server
 
   -z, --secureResolvers                             Add security to Resolvers with @Secure decorator

@@ -421,6 +421,26 @@ export async function useInquirer(
     options.connectionOptions.skipTables = [];
   }
 
+  const { useSoftDelete } = await inquirer.prompt([
+    {
+      default: false,
+      message: "Do you want to use soft delete?",
+      name: "useSoftDelete",
+      type: "confirm",
+    },
+  ]);
+
+  if (useSoftDelete) {
+    const { softDeleteColumn } = await inquirer.prompt({
+      default: undefined,
+      message:
+        "Column name to use as soft delete (remember it must be datetime column)",
+      name: "softDeleteColumn",
+      type: "input",
+    });
+    options.generationOptions.softDeleteColumn = softDeleteColumn;
+  }
+
   options.generationOptions.resultsPath = (
     await inquirer.prompt([
       {

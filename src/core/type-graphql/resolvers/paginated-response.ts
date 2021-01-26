@@ -25,9 +25,9 @@ export default function Paginated<TModel>(
 ): typeof AbstractPaginatedResponse {
   // `isAbstract` decorator option is mandatory to prevent registering in schema
   @ObjectType({ isAbstract: true })
-  abstract class PaginatedResponse<TModel> extends AbstractPaginatedResponse<
+  abstract class PaginatedResponse<
     TModel
-  > {
+  > extends AbstractPaginatedResponse<TModel> {
     // here we use the runtime argument
     @Field((type) => [TClass])
     // and here the generic type
@@ -54,6 +54,7 @@ export abstract class AbstractPaginatorCriteria<TFilter, TSort> {
   sort?: TSort;
   skip?: number;
   max?: number;
+  includeDeleted?: boolean;
 }
 
 export function createPaginationCriteria<TFilter, TSort>(
@@ -76,6 +77,9 @@ export function createPaginationCriteria<TFilter, TSort>(
 
     @Field((type) => Int, { nullable: true })
     max?: number;
+
+    @Field((type) => Boolean, { nullable: true })
+    includeDeleted?: boolean;
   }
 
   return PaginatorCriteria;

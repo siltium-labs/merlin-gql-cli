@@ -49,6 +49,7 @@ export interface IDBReverseFlags {
   graphqlObjectType: boolean;
   graphqlFiles: boolean;
   secureResolvers: boolean;
+  softDeleteColumn: string;
 }
 
 export default class DBReverse extends LocalCommand {
@@ -103,6 +104,12 @@ export default class DBReverse extends LocalCommand {
     secureResolvers: flags.boolean({
       char: "z",
       description: "Add security to Resolvers with @Secure decorator",
+    }),
+
+    softDeleteColumn: flags.string({
+      char: "w",
+      description:
+        "Enable soft delete in your entities. Use this flag with the name of entity column, it must be a datetime type column.",
     }),
 
     ssl: flags.boolean({
@@ -281,6 +288,8 @@ export default class DBReverse extends LocalCommand {
       flags.graphqlFiles ?? options.generationOptions.graphqlFiles;
     options.generationOptions.secureResolvers =
       flags.secureResolvers ?? options.generationOptions.secureResolvers;
+    options.generationOptions.softDeleteColumn =
+      flags.softDeleteColumn ?? undefined;
     return options;
   }
 }

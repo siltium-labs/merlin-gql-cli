@@ -10,6 +10,7 @@ import { EntityToGraphResolver } from "./entity-resolver";
 export abstract class AbstractFindResolver<T> extends AbstractSecureResolver {
   async getById(
     id: number,
+    includeDeleted: boolean,
     info: GraphQLInfo,
     context: IGqlContext
   ): Promise<T | null> {
@@ -32,11 +33,19 @@ export function FindResolver<T extends ClassType>(
     })
     async getById(
       @Arg("id", (type) => ID) id: number,
+      @Arg("includeDeleted", (type) => Boolean, { nullable: true })
+      includeDeleted: boolean = false,
       @Info() info: GraphQLInfo,
       @Ctx() context: IGqlContext
     ): Promise<T | null> {
       this.checkSecurity(context);
-      return EntityToGraphResolver.find<T>(id, baseModelType, info);
+      return EntityToGraphResolver.find<T>(
+        id,
+        baseModelType,
+        info,
+        undefined,
+        includeDeleted
+      );
     }
   }
   return FindResolver;

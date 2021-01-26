@@ -19,6 +19,7 @@ export default interface IGenerationOptions {
   exportType: "named" | "default";
   graphqlFiles?: boolean;
   secureResolvers?: boolean;
+  softDeleteColumn?: string;
 }
 
 export const eolConverter = {

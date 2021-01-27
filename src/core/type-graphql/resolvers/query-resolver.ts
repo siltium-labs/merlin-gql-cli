@@ -59,6 +59,16 @@ export const criteriaToQbWhere = (
       const propUID = uuid.v1();
       let expression: string = "";
       let values: { [prop: string]: any } = {};
+
+      //Because now we receive always an Array (beacuase of IN and NOT_IN) we have to flatten the value for
+      //others filter tpyes
+      if (
+        criterion.type !== FilterTypesEnum.NOT_IN &&
+        criterion.type !== FilterTypesEnum.IN
+      ) {
+        criterion.value = criterion.value[0];
+      }
+
       switch (operator) {
         case FilterTypesEnum.EQUALS:
           expression = `${propName} = :${propUID}`;

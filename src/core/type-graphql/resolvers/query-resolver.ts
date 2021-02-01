@@ -4,6 +4,7 @@ import { Brackets, WhereExpression, SelectQueryBuilder } from "typeorm";
 import * as uuid from "uuid";
 import { BaseModel } from "../../database/base.model";
 import { registerEnumType } from "type-graphql";
+import { access } from "fs-extra";
 
 export const isPageInfoFieldNode = (node: FieldNode) => {
   return node.name.value === "pageInfo";
@@ -22,6 +23,15 @@ export const criteriaToQbWhere = (
   type: "and" | "or" = "and"
 ): WhereExpression => {
   if (!filter) return qb;
+
+  let dictionary: { [key: string]: any } | null = null;
+  if (filter instanceof Array) {
+    //[{dsd, dsls}, {dsd, dsls}, {dsd, dsls}] = {0: {dsds,dsds}, 1:{dsdsd,dsd}}
+    dictionary = filter.reduce((acc, value, idx) => {
+      return { ...acc, [idx]: value };
+    });
+  }
+  filter = dictionary ? dictionary : filter;
 
   let relations = isFilterRelation(filter as IPropertyFilterCriteria);
 
@@ -125,7 +135,7 @@ export const criteriaToQbWhere = (
 
     return qb;
   } else if (isQueryOr(filter)) {
-    const orCriteria = <IOrFilterCriteria>filter;
+    const orCriteria = <IOrFilterCriteria>(filter as unknown);
     if (type === "and") {
       return qb.andWhere(
         new Brackets((bqb) => {
@@ -144,7 +154,7 @@ export const criteriaToQbWhere = (
       );
     }
   } else if (isQueryAnd(filter)) {
-    const andCriteria = <IAndFilterCriteria>filter;
+    const andCriteria = <IAndFilterCriteria>(filter as unknown);
     if (type === "and") {
       return qb.andWhere(
         new Brackets((bqb) => {

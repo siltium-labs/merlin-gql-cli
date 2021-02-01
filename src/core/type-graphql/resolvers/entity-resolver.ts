@@ -1,22 +1,20 @@
+import { FieldNode, GraphQLResolveInfo } from "graphql";
+import { EntityManager, getManager, SelectQueryBuilder } from "typeorm";
 import { BaseModel } from "../../database/base.model";
 import {
-  IQueryCriteria,
-  isPageInfoFieldNode,
-  parseFilter,
-  parseSort,
-  criteriaToQbWhere,
-  criteriaToQbOrderBy,
-} from "./query-resolver";
-import { populate } from "./populate";
-
-import {
-  GraphQLPartialResolveInfo,
   getQueryData,
   getQueryDataFromFilters,
+  getQueryDataFromSorts,
+  GraphQLPartialResolveInfo,
 } from "../../gql/utils";
-import { GraphQLResolveInfo, FieldNode } from "graphql";
-
-import { EntityManager, getManager, SelectQueryBuilder } from "typeorm";
+import { populate } from "./populate";
+import {
+  criteriaToQbOrderBy,
+  criteriaToQbWhere,
+  IQueryCriteria,
+  IQueryData,
+  isPageInfoFieldNode,
+} from "./query-resolver";
 
 export interface IListQueryResult<T> {
   pageInfo: {
@@ -109,10 +107,28 @@ export const EntityToGraphResolver: IEntityResolver = {
       const queryDataFromFilters = getQueryDataFromFilters(
         fields,
         filterParsed,
-        sortParsed,
         modelType.getRelations()
       );
-      queryDataFromFilters.relatedEntities?.map((relation) => {
+      const queryDataFromSorts = sortParsed
+        ? getQueryDataFromSorts(fields, sortParsed, modelType.getRelations())
+        : { selectedFields: [], relatedEntities: [] };
+
+      const allQueryData: IQueryData = {
+        selectedFields: Array.from(
+          new Set([
+            ...queryDataFromFilters.selectedFields,
+            ...queryDataFromSorts.selectedFields,
+          ])
+        ),
+        relatedEntities: Array.from(
+          new Set([
+            ...queryDataFromFilters.relatedEntities,
+            ...queryDataFromSorts.relatedEntities,
+          ])
+        ),
+      };
+
+      allQueryData.relatedEntities?.map((relation) => {
         populate(modelAlias, idName, queryBuilder, relation);
       });
       criteriaToQbWhere(modelAlias, queryBuilder, filterParsed);

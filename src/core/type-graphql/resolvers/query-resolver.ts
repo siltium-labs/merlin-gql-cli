@@ -1,10 +1,9 @@
-import { SortField } from "./../models/base-sort-fields";
 import { FieldNode } from "graphql";
-import { Brackets, WhereExpression, SelectQueryBuilder } from "typeorm";
+import { registerEnumType } from "type-graphql";
+import { Brackets, SelectQueryBuilder, WhereExpression } from "typeorm";
 import * as uuid from "uuid";
 import { BaseModel } from "../../database/base.model";
-import { registerEnumType } from "type-graphql";
-import { access } from "fs-extra";
+import { SortField } from "./../models/base-sort-fields";
 
 export const isPageInfoFieldNode = (node: FieldNode) => {
   return node.name.value === "pageInfo";
@@ -192,7 +191,7 @@ type FlattenedSortCriteriaDictionary = {
   [property: string]: SortCriterion;
 };
 
-const flattenSortCriterionDictionary = (
+export const flattenSortCriterionDictionary = (
   sortCriterionDictionary: SortCriteriaDictionary,
   prefix?: string,
   accumulated: FlattenedSortCriteriaDictionary = {}
@@ -321,20 +320,33 @@ export const isQueryOr = (criteria: IFilterCriteria) =>
 export const isQueryAnd = (criteria: IFilterCriteria) =>
   (<IAndFilterCriteria>criteria).and;
 
-export const isFilterRelation = (
-  criteria: IPropertyFilterCriteria
-): string[] => {
+export const isFilterRelation = (criteria: IFilterCriteria): string[] => {
   const relations = Object.keys(criteria)
     .map((property) => ({
       property,
-      type: criteria[property].type,
-      value: criteria[property].value,
+      type: (criteria as IPropertyFilterCriteria)[property].type,
+      value: (criteria as IPropertyFilterCriteria)[property].value,
     }))
     .filter(
       (item) =>
         item.property !== "and" &&
         item.property !== "or" &&
         (item.type === undefined || typeof item.type !== "string")
+    )
+    .map((item) => item.property);
+  return relations;
+};
+
+export const isSortRelation = (criteria: ISortCriteria) => {
+  const relations = Object.keys(criteria)
+    .map((property) => ({
+      property,
+      direction: (criteria as SortedProperties)[property].direction,
+      priority: (criteria as SortedProperties)[property].priority,
+    }))
+    .filter(
+      (item) =>
+        item.direction === undefined || typeof item.direction !== "string"
     )
     .map((item) => item.property);
   return relations;

@@ -1,16 +1,18 @@
-import { IRelationDefinition, BaseModel } from "./../database/base.model";
-import {
-  IQueryData,
-  ISubQueryData,
-  IFilterCriteria,
-  ISortCriteria,
-  isQueryOr,
-  IOrFilterCriteria,
-  isQueryAnd,
-  IAndFilterCriteria,
-  IPropertyFilterCriteria,
-} from "../type-graphql/resolvers/query-resolver";
 import { FieldNode, GraphQLResolveInfo, SelectionNode } from "graphql";
+import {
+  IAndFilterCriteria,
+  IFilterCriteria,
+  IOrFilterCriteria,
+  IPropertyFilterCriteria,
+  IQueryData,
+  isFilterRelation,
+  ISortCriteria,
+  isQueryAnd,
+  isQueryOr,
+  ISubQueryData,
+} from "../type-graphql/resolvers/query-resolver";
+import { BaseModel, IRelationDefinition } from "./../database/base.model";
+import { isSortRelation } from "./../type-graphql/resolvers/query-resolver";
 
 /**
  *
@@ -43,7 +45,10 @@ export const getQueryData = (
   );
   queryData.selectedFields = [
     ...mainEntityRequestedFields,
-    ...(sort ? getAllPropertiesFromSort(sort) : []),
+    //We don't need sort attributes in select, if this is not true we have to
+    //manage this because it is adding relations instead of relation attributes
+    //📝  https://stackoverflow.com/a/20357066
+    //...(sort ? getAllPropertiesFromSort(sort) : []),
   ];
   const relatedEntities = allRequestedFields.filter((field) =>
     modelType
@@ -117,26 +122,23 @@ export const getInfoFromSubfield = (
 export const getQueryDataFromFilters = (
   queryData: IQueryData | null,
   filter: IFilterCriteria | null,
-  sort: ISortCriteria | null,
-  relations: Array<IRelationDefinition>,
-  positionInsideProperty: number = 0
+  relations: Array<IRelationDefinition>
 ): IQueryData => {
   const data = queryData ?? {
     relatedEntities: [],
     selectedFields: [],
   };
 
-  const relationProperties = [
-    ...getAllPropertiesFromFilter(filter),
-    ...getAllPropertiesFromSort(sort),
-  ];
-  const currentLevelProperties = Array.from(
-    new Set(
-      relationProperties
-        .filter((prop) => prop.split(".").length >= positionInsideProperty + 1)
-        .map((prop) => prop.split(".")[positionInsideProperty])
-    )
-  );
+  let dictionary;
+  if (filter instanceof Array) {
+    dictionary = filter.reduce((acc, value, idx) => {
+      return { ...acc, [idx]: value };
+    });
+  }
+  filter = dictionary ? dictionary : filter;
+
+  const currentLevelProperties = filter ? isFilterRelation(filter) : [];
+
   relations
     .filter((r) => currentLevelProperties.includes(r.name))
     .map((r) => {
@@ -145,8 +147,57 @@ export const getQueryDataFromFilters = (
       );
       const subrelations = getQueryDataFromFilters(
         existingRelation?.data ?? null,
-        filter,
-        sort,
+        (filter as any)[r.name],
+        r.model.getRelations()
+      );
+      if (existingRelation) {
+        const existingSubqueryData = existingRelation.data.relatedEntities.find(
+          (sr) => sr.entityName === r.name
+        );
+        if (existingSubqueryData) {
+          existingSubqueryData.data.relatedEntities = [
+            ...existingSubqueryData.data.relatedEntities,
+            ...subrelations.relatedEntities.filter(
+              (sr) =>
+                !existingSubqueryData.data.relatedEntities
+                  .map((en) => en.entityName)
+                  .includes(sr.entityName)
+            ),
+          ];
+        }
+      } else {
+        const subqueryData: ISubQueryData = {
+          entityName: r.name,
+          data: subrelations,
+        };
+        data.relatedEntities.push(subqueryData);
+      }
+    });
+  return data;
+};
+
+export const getQueryDataFromSorts = (
+  queryData: IQueryData | null,
+  sort: ISortCriteria,
+  relations: Array<IRelationDefinition>,
+  positionInsideProperty: number = 0
+): IQueryData => {
+  const data = queryData ?? {
+    relatedEntities: [],
+    selectedFields: [],
+  };
+
+  const currentLevelProperties = sort ? isSortRelation(sort) : [];
+
+  relations
+    .filter((r) => currentLevelProperties.includes(r.name))
+    .map((r) => {
+      const existingRelation = data.relatedEntities.find(
+        (e) => e.entityName === r.name
+      );
+      const subrelations = getQueryDataFromSorts(
+        existingRelation?.data ?? null,
+        (sort as any)[r.name],
         r.model.getRelations(),
         positionInsideProperty + 1
       );

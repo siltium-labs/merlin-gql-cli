@@ -68,25 +68,22 @@ export function UpdateResolver<T extends ClassType>(
     ): Promise<T> {
       this.checkSecurity(context);
 
+      const em = await getManager();
       const idDatabaseName = baseModelType.getIdDatabaseName();
-      await getManager()
-        .createQueryBuilder()
-        .update(baseModelType)
-        .set(entity)
-        .where(`${idDatabaseName} = :id`, { id })
-        .execute();
-      const updated = <BaseModel>(
+      const dbEntity = <BaseModel>(
         await getManager()
           .getRepository(baseModelType)
           .createQueryBuilder("e")
           .where(`e.${idDatabaseName} = :id`, { id })
           .getOne()
       );
-      await pubSub.publish(`${baseModelSingularName}Update`, updated);
-      const idProperty = baseModelType.getIdPropertyName();
-      const idValue = (updated as { [key: string]: any })[idProperty];
+      let entityToUpdate = { ...dbEntity, ...entity };
+      entityToUpdate = await em
+        .getRepository(baseModelType)
+        .save(entityToUpdate);
+      await pubSub.publish(`${baseModelSingularName}Update`, entityToUpdate);
       return EntityToGraphResolver.find<T>(
-        idValue,
+        id,
         baseModelType,
         info
       ) as Promise<T>;

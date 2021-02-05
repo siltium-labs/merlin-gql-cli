@@ -86,21 +86,11 @@ export function DeleteResolver<T extends ClassType>(
 
       //Try soft delete, if not possible then bye bye record
       try {
-        await getManager()
-          .createQueryBuilder()
-          .softDelete()
-          .from(baseModelType)
-          .where(`${idDatabaseName} = :id`, { id })
-          .execute();
+        await getManager().getRepository(baseModelType).softRemove(toDelete);
       } catch (ex) {
         if (ex.name === "MissingDeleteDateColumnError") {
           // Database Delete
-          await getManager()
-            .createQueryBuilder()
-            .delete()
-            .from(baseModelType)
-            .where(`${idDatabaseName} = :id`, { id })
-            .execute();
+          await getManager().getRepository(baseModelType).delete(toDelete);
         }
       }
       await pubSub.publish(`${baseModelSingularName}Delete`, toDelete);

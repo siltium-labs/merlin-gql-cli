@@ -116,7 +116,8 @@
     "prepack": "rimraf lib && tsc -b && oclif-dev readme && ncp \"src/new/templates\" \"lib/new/templates\" && ncp \"src/db-reverse/templates\" \"lib/db-reverse/templates\"",
     "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register '**/*.spec.ts'",
     "version": "oclif-dev readme && git add README.md",
-    "readme": "oclif-dev readme"
+    "readme": "oclif-dev readme",
+    "rimraf": "./node_modules/rimraf/bin.js"
   },
   "types": "lib/index.d.ts",
   "main": "lib/index.js"

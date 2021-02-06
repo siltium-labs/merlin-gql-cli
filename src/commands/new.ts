@@ -9,6 +9,9 @@ import {
 } from "../new/new.config";
 import chalk from "chalk";
 import { emoji } from "node-emoji";
+import { snakeCase } from "change-case";
+import AbstractDriver from "../db-reverse/drivers/abstract.driver";
+import { MysqlDriver } from "typeorm/driver/mysql/MysqlDriver";
 
 type TypeormDatabaseTypes =
   | "mysql"
@@ -38,6 +41,47 @@ const generateRandomJWTSecret = (length: number) => {
   }
   return result;
 };
+
+enum DatabaseTypesEnum {
+  Mysql = "mysql",
+  Postgres = "postgres",
+  Mariadb = "mariadb",
+  Oracle = "oracle",
+  Mssql = "mssql",
+  MongoDB = "mongodb"
+}
+
+interface IDatabaseDefaultValues {
+  port: number;
+  username: string;
+}
+
+export const DatabaseDefaultValuesEnum: { [key: string]: IDatabaseDefaultValues } = {
+  [DatabaseTypesEnum.Mysql]: {
+    port: 3306,
+    username: 'root'
+  },
+  [DatabaseTypesEnum.Mariadb]: {
+    port: 3306,
+    username: 'root'
+  },
+  [DatabaseTypesEnum.Postgres]: {
+    port: 5432,
+    username: 'postgres'
+  },
+  [DatabaseTypesEnum.Mssql]: {
+    port: 1433,
+    username: 'sa'
+  },
+  [DatabaseTypesEnum.Oracle]: {
+    port: 1521,
+    username: 'oracle'
+  },
+  [DatabaseTypesEnum.MongoDB]: {
+    port: 27017,
+    username: 'admin'
+  }
+}
 
 export default class New extends Command {
   static aliases = ["new"];
@@ -121,6 +165,7 @@ export default class New extends Command {
     }),
   };
 
+
   async run() {
     const { args, flags } = this.parse(New);
     if (!flags.template) {
@@ -169,17 +214,12 @@ export default class New extends Command {
           message: `Select the type of database for your project`,
           type: "list",
           choices: [
-            "mysql",
-            "postgres",
-            "cockroachdb",
-            "mariadb",
-            "cordova",
-            "nativescript",
-            "oracle",
-            "mssql",
-            "mongodb",
-            "sqljs",
-            "react-native",
+            DatabaseTypesEnum.Mysql,
+            DatabaseTypesEnum.Postgres,
+            DatabaseTypesEnum.MongoDB,
+            DatabaseTypesEnum.Mssql,
+            DatabaseTypesEnum.Mariadb,
+            DatabaseTypesEnum.Oracle
           ],
         },
       ]);
@@ -191,16 +231,20 @@ export default class New extends Command {
           name: "databaseName",
           message: `Enter the database name`,
           type: "input",
+          default: snakeCase(flags.name.toLowerCase())
         },
       ]);
       flags.databaseName = databaseName.trim();
     }
+
+
     if (!flags.databaseHost) {
       const { databaseHost }: { databaseHost: string } = await inquirer.prompt([
         {
           name: "databaseHost",
           message: `Enter the database host`,
           type: "input",
+          default: "127.0.0.1"
         },
       ]);
       flags.databaseHost = databaseHost.trim();
@@ -211,6 +255,7 @@ export default class New extends Command {
           name: "databasePort",
           message: `Enter the database port`,
           type: "input",
+          default:DatabaseDefaultValuesEnum[flags.databaseType]?.port.toString()
         },
       ]);
       flags.databasePort = databasePort.trim();
@@ -221,6 +266,7 @@ export default class New extends Command {
           name: "databaseUser",
           message: `Enter the database user`,
           type: "input",
+          default:DatabaseDefaultValuesEnum[flags.databaseType]?.username
         },
       ]);
       flags.databaseUser = databaseUser.trim();

@@ -11,6 +11,8 @@ on:
 jobs:
   build-publish:
     runs-on: ubuntu-latest
+    env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -18,7 +20,6 @@ jobs:
           node-version: 12
       - run: npm install
       - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
+        
 
 

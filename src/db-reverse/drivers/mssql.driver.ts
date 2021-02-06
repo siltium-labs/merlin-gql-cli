@@ -7,7 +7,7 @@ import AbstractDriver from "./abstract.driver";
 import IConnectionOptions from "../options/connection-options.interface";
 import { Entity } from "../models/entity";
 import { Column } from "../models/column";
-import { Index } from "../models";
+import { Index } from "../models/Index";
 import IGenerationOptions from "../options/generation-options.interface";
 import { RelationInternal } from "../models/relation-internal";
 

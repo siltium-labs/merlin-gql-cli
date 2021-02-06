@@ -1,6 +1,6 @@
 import { Column } from "./column";
 import { Relation } from "./relation";
-import { Index } from ".";
+import { Index } from "./Index";
 import { RelationId } from "./relation-id";
 
 export type Entity = {

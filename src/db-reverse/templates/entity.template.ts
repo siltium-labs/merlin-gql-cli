@@ -1,5 +1,5 @@
 import { JoinColumnOptions } from "typeorm";
-import { Index } from "../models";
+import { Index } from "../models/Index";
 import { Column } from "../models/column";
 import { Relation } from "../models/relation";
 import IGenerationOptions from "../options/generation-options.interface";
@@ -48,21 +48,21 @@ const ColumnTemplate = (
   column: Column,
   generationOptions: IGenerationOptions
 ) => {
-  const propertyName = toPropertyName(column.tscName, generationOptions);  
+  const propertyName = toPropertyName(column.tscName, generationOptions);
   const defaultValue = defaultValueIfNeeded(
     !!column.options.nullable,
     column.tscType
   );
   const primary = column.primary ? `primary: ${column.primary}, `: "";
   const options = toJson(column.options);
-  const _default = column.default ? `, default: ${column.default} `: "";  
-  const generated = column.generated ? 
-    `@PrimaryGeneratedColumn({ type:"${column.type}", ${options}${_default}})` : 
+  const _default = column.default ? `, default: ${column.default} `: "";
+  const generated = column.generated ?
+    `@PrimaryGeneratedColumn({ type:"${column.type}", ${options}${_default}})` :
     `@Column("${column.type}",{${primary}${options}${_default}})`;
   const deletedAt = propertyName === generationOptions.softDeleteColumn ? "@DeleteDateColumn()" : "";
 
   return `
-    ${ propertyName !== generationOptions.softDeleteColumn ? generated : deletedAt}    
+    ${ propertyName !== generationOptions.softDeleteColumn ? generated : deletedAt}
     ${printPropertyVisibility(generationOptions)} ${propertyName} ${strictMode(generationOptions)}:${column.tscType}${column.options.nullable ? " | null" : ""} ${defaultValue}
   `;
 };
@@ -93,10 +93,10 @@ const RelationTemplate = (
     @JoinTable({ name:"${relation.joinTableOptions}",
     joinColumns:[${relation.joinTableOptions?.joinColumns?.map(jc => JoinColumnOptionsTemplate(jc, generationOptions)).join(",")}],
     inverseJoinColumns:[${relation.joinTableOptions?.inverseJoinColumns?.map(jc => JoinColumnOptionsTemplate(jc, generationOptions)).join(",")}],
-    ${entity.database ? `database: "${entity.database}",`: ""} 
+    ${entity.database ? `database: "${entity.database}",`: ""}
     ${entity.schema ? `schema: "${entity.schema}"`: ""}
     })` : undefined;
-    
+
     const propertyName = `${printPropertyVisibility(generationOptions)}${toPropertyName(relation.fieldName, generationOptions)}?:${toRelation(relatedTableEntityName, relation.relationType, generationOptions)};`
     return `
     @${relation.relationType} (() => ${relatedTableEntityName}, ${relatedTablePorpertyName} => ${relatedTablePorpertyName}.${relatedFieldPropertyName}
@@ -135,26 +135,26 @@ const constructorTemplate = (
 };
 
 // prettier-ignore
-export const EntityTemplate = (    
+export const EntityTemplate = (
     entity: Entity,
     generationOptions: IGenerationOptions
-): string => {          
-  const entityName:string = toEntityName(entity.tscName, generationOptions);  
+): string => {
+  const entityName:string = toEntityName(entity.tscName, generationOptions);
   const schema = entity.schema ? `, { schema:"${entity.schema}"` : "";
   const database = entity.database ? `, database: "${entity.database}"` : "";
   const schemaDatabase = entity.schema ? `${schema}${database} }` : "";
-    
+
   return `
-        import {BaseEntity,Column,Entity,Index,JoinColumn,JoinTable,ManyToMany,ManyToOne,OneToMany,OneToOne,PrimaryColumn,PrimaryGeneratedColumn,RelationId,DeleteDateColumn} from "typeorm";        
-        import { BaseModel } from "merlin-gql";        
+        import {BaseEntity,Column,Entity,Index,JoinColumn,JoinTable,ManyToMany,ManyToOne,OneToMany,OneToOne,PrimaryColumn,PrimaryGeneratedColumn,RelationId,DeleteDateColumn} from "typeorm";
+        import { BaseModel } from "merlin-gql";
         ${entity.fileImports.map(fileImport => ImportsTemplate(fileImport,generationOptions)).join("\n")}
 
         ${entity.indices.map(index => IndexTemplate(index, generationOptions)).join("\n")}
         @Entity("${entity.sqlName}" ${schemaDatabase})
         export ${defaultExport(generationOptions)} class ${entityName} extends BaseModel {
-          
+
           ${entity.columns.map(c => ColumnTemplate(entity, c, generationOptions)).join("\n")}
-          
+
           ${entity.relations.map(r => RelationTemplate(entity, r, generationOptions)).join("\n")}
 
           ${entity.relationIds.map(ri => RelationIdTemplate(entityName, ri, generationOptions)).join("\n")}

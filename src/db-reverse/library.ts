@@ -6,7 +6,7 @@ import * as Utils from "./misc/utils";
 
 export { Column } from "./models/column";
 export { Entity } from "./models/entity";
-export { Index } from "./models";
+export { Index } from "./models/Index";
 export { Relation } from "./models/relation";
 export { RelationId } from "./models/relation-id";
 export {

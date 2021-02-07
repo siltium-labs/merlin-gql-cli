@@ -12,7 +12,6 @@
     "apollo-server": "^2.19.2",
     "chalk": "^4.1.0",
     "change-case": "^4.1.2",
-    "class-validator": "^0.13.1",
     "cli-ux": "^5.5.1",
     "execa": "^5.0.0",
     "fs-extra": "^9.1.0",
@@ -85,7 +84,8 @@
     "graphql": "^15.4.0",
     "reflect-metadata": "^0.1.13",
     "type-graphql": "^1.1.1",
-    "typeorm": "^0.2.30"
+    "typeorm": "^0.2.30",
+    "class-validator": "^0.13.1"
   },
   "engines": {
     "node": ">=8.0.0"

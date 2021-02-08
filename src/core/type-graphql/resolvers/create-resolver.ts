@@ -41,12 +41,9 @@ export abstract class AbstractCreateResolver<T> extends AbstractSecureResolver {
 }
 
 export function CreateResolver<T extends ClassType>(
-  baseModelType: typeof BaseModel
+  baseModelType: typeof BaseModel,
+  inputClass: typeof BaseInputFields
 ): typeof AbstractCreateResolver {
-  const inputClass: typeof BaseInputFields = Reflect.getMetadata(
-    ModelDecoratorMetadataKeys.Create,
-    baseModelType
-  );
 
   const baseModelSingularName = singular(
     baseModelType.name[0].toLowerCase() + baseModelType.name.slice(1)

@@ -8,22 +8,18 @@ import {
 } from "./../../../utils/metadata-storage";
 
 export function ObjectType(
-  filePath: string,
   operations: CrudOperationsAndAll[]
 ): ClassDecorator;
 export function ObjectType(
-  filePath: string,
   operations: CrudOperationsAndAll[],
   options: ObjectTypeOptions
 ): ClassDecorator;
 export function ObjectType(
-  filePath: string,
   operations: CrudOperationsAndAll[],
   name: string,
   options?: ObjectTypeOptions
 ): ClassDecorator;
 export function ObjectType(
-  filePath: string,
   operations: CrudOperationsAndAll[],
   nameOrOptions?: string | ObjectTypeOptions,
   maybeOptions?: ObjectTypeOptions
@@ -39,14 +35,12 @@ export function ObjectType(
     const metadataEntry = merlinGqlMetadataStorage.objectTypes[superClassName];
     if (metadataEntry) {
       metadataEntry.extends = baseSuperClassName;
-      metadataEntry.filePath = filePath;
       metadataEntry.operations = operations;
     } else {
       merlinGqlMetadataStorage.objectTypes = {
         ...merlinGqlMetadataStorage.objectTypes,
         ...{
           [superClassName]: {
-            filePath: filePath,
             fields: [],
             extends: baseSuperClassName,
             operations: operations,

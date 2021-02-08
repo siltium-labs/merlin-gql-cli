@@ -6,7 +6,6 @@ import {
   toEntityName,
   toFileName,
   toInputsCreateName,
-  toInputsName,
   toInputsUpdateName,
   toPropertyName,
 } from "./../generation/model-generation";
@@ -72,9 +71,11 @@ const ColumnUpdateTemplate = (
 export const InputsTemplate = (
     tscName: string,
     columns: Column[],
-    generationOptions: IGenerationOptions
+    generationOptions: IGenerationOptions,
+    create:boolean = true,
+    update: boolean = false
   ): string => {
-      
+
       const entityName:string = toEntityName(tscName, generationOptions)
       const entityFileName:string = toEntityFileName(tscName, generationOptions)
       const inputsCreateName:string = toInputsCreateName(tscName, generationOptions);
@@ -82,19 +83,20 @@ export const InputsTemplate = (
       const ignoreMetadata = generationOptions.graphqlFiles ?? false;
 
       return `
-      
+
       import {InputType, Field, Float, ID} from "type-graphql";
       import { BaseInputFields } from 'merlin-gql';
       import { ${entityName} } from "../../models/${toFileName(tscName, generationOptions)}/${entityFileName}";
-      
-      @InputType()
+
+      ${create ? `@InputType()
       export class ${inputsCreateName} extends BaseInputFields implements Partial<${entityName}> {
         ${columns.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.tscName, tscName,))).filter(c => !c.generated).map(c => ColumnTemplate(c, generationOptions)).join("\n")}
-      }
+      }` : ''}
 
+      ${update ? `
       @InputType()
       export class ${inputUpdateName} extends BaseInputFields implements Partial<${entityName}> {
         ${columns.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.tscName, tscName))).filter(c => !c.generated).map(c => ColumnUpdateTemplate(c, generationOptions)).join("\n")}
-      }
+      }` : ''}
       `
   }

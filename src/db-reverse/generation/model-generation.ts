@@ -26,7 +26,6 @@ const prettierOptions: Prettier.Options = {
 };
 
 export const populateTypeGraphQLMetadata = async () => {
-  console.log("populateTypeGraphQLMetadata")
   try {
     await loadOtFiles();
   } catch (e) {

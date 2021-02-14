@@ -1,5 +1,5 @@
 import { NewProjectTemplatesEnum, TemplateArgsDictionary } from "./new.config";
-
+import { TypeormDatabaseTypes } from "../commands/new";
 export const generateDependencies = (
   template: NewProjectTemplatesEnum,
   templateArgs: TemplateArgsDictionary
@@ -18,7 +18,19 @@ export const generateDependencies = (
   ];
   if (template === NewProjectTemplatesEnum.Example) {
     const argDependantDependencies: string[] = [];
-
+    switch (templateArgs["database"] as TypeormDatabaseTypes) {
+      case "mssql":
+      case "mariadb":
+        argDependantDependencies.push("mysql2");
+      case "postgres":
+        argDependantDependencies.push("pg");
+      case "mssql":
+        argDependantDependencies.push("mssql");
+      case "oracle":
+        argDependantDependencies.push("oracledb");
+      case "mongodb":
+        argDependantDependencies.push("mongodb");
+    }
     return [
       ...baseDependencies,
       ...argDependantDependencies,

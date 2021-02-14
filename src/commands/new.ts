@@ -10,21 +10,14 @@ import {
 import chalk from "chalk";
 import { emoji } from "node-emoji";
 import { snakeCase } from "change-case";
-import AbstractDriver from "../db-reverse/drivers/abstract.driver";
-import { MysqlDriver } from "typeorm/driver/mysql/MysqlDriver";
 
-type TypeormDatabaseTypes =
+export type TypeormDatabaseTypes =
   | "mysql"
   | "postgres"
-  | "cockroachdb"
   | "mariadb"
-  | "cordova"
-  | "nativescript"
   | "oracle"
   | "mssql"
-  | "mongodb"
-  | "sqljs"
-  | "react-native";
+  | "mongodb";
 
 const toTitleCase = (str: string) =>
   str
@@ -255,7 +248,7 @@ export default class New extends Command {
           name: "databasePort",
           message: `Enter the database port`,
           type: "input",
-          default:DatabaseDefaultValuesEnum[flags.databaseType]?.port.toString()
+          default: DatabaseDefaultValuesEnum[flags.databaseType]?.port.toString()
         },
       ]);
       flags.databasePort = databasePort.trim();
@@ -266,7 +259,7 @@ export default class New extends Command {
           name: "databaseUser",
           message: `Enter the database user`,
           type: "input",
-          default:DatabaseDefaultValuesEnum[flags.databaseType]?.username
+          default: DatabaseDefaultValuesEnum[flags.databaseType]?.username
         },
       ]);
       flags.databaseUser = databaseUser.trim();
@@ -323,6 +316,7 @@ export default class New extends Command {
 
     if (flags.template === NewProjectTemplatesEnum.Example) {
       templateArgs["ngrok"] = flags.ngrok;
+      templateArgs["database"] = flags.databaseType as TypeormDatabaseTypes;
     }
 
     const config: NewProjectConfig = {

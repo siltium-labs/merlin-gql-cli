@@ -103,4 +103,6 @@ Finally, the CLI will ask you if you want to enable _ngrok_ for remote testing o
 
 > For more information **ngrok** and and how it does work, please refer to https://ngrok.com/
 
-<! --### Project Structure -->
+### Project Structure
+
+Once generated, your project structure will look like this

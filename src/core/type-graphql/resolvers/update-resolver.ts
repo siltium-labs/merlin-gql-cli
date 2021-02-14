@@ -43,12 +43,9 @@ export abstract class AbstractUpdateResolver<T> extends AbstractSecureResolver {
 }
 
 export function UpdateResolver<T extends ClassType>(
-  baseModelType: typeof BaseModel
+  baseModelType: typeof BaseModel,
+  inputUpdateClass: typeof BaseInputFields
 ): typeof AbstractUpdateResolver {
-  const inputUpdateClass: typeof BaseInputFields = Reflect.getMetadata(
-    ModelDecoratorMetadataKeys.Update,
-    baseModelType
-  );
 
   const baseModelSingularName = singular(
     baseModelType.name[0].toLowerCase() + baseModelType.name.slice(1)

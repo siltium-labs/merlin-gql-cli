@@ -56,8 +56,6 @@ export const loadOtFiles = async () => {
         (p) => `${process.cwd()}/dist/${p}`
       ),
     ];
-    //console.log(resolversRelativePaths);
-
     resolversRelativePaths.map((r) => {
       loadOtsFromGlob(r);
     });

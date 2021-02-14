@@ -39,16 +39,10 @@ export abstract class AbstractListResolver<
 }
 
 export function ListResolver<T extends ClassType>(
-  baseModelType: typeof BaseModel
+  baseModelType: typeof BaseModel,
+  filterClass: typeof BaseFilterFields,
+  sortClass: typeof BaseSortFields
 ): typeof AbstractListResolver {
-  const filterClass: typeof BaseFilterFields = Reflect.getMetadata(
-    ModelDecoratorMetadataKeys.Filter,
-    baseModelType
-  );
-  const sortClass: typeof BaseSortFields = Reflect.getMetadata(
-    ModelDecoratorMetadataKeys.Sort,
-    baseModelType
-  );
   const baseModelSingularName = singular(
     baseModelType.name[0].toLowerCase() + baseModelType.name.slice(1)
   );

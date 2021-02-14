@@ -12,7 +12,7 @@ export const propertyIsDecoratedWithField = (
   const propertyIsInheritedField = !!(
     merlinGqlMetadataStorage.objectTypes[targetClassName]?.extends &&
     merlinGqlMetadataStorage.objectTypes[
-      merlinGqlMetadataStorage.objectTypes[targetClassName]?.extends as string
+    merlinGqlMetadataStorage.objectTypes[targetClassName]?.extends as string
     ] &&
     merlinGqlMetadataStorage.objectTypes[
       merlinGqlMetadataStorage.objectTypes[targetClassName]?.extends as string
@@ -68,7 +68,6 @@ export type CrudOperationsAndAll = "ALL" | CrudOperations;
 
 export type ObjectTypesMetadataStorage = {
   [key: string]: {
-    filePath: string | null;
     operations: CrudOperationsAndAll[];
     fields: FieldDefinitionMetadata[];
     extends: string | null;
@@ -88,6 +87,9 @@ export const getMerlinMetadataStorage = (): MerlinMetadataStorage => {
     ((global as any).MerlinMetadataStorage = MERLIN_METADATA_STORAGE)
   );
 };
+export const resetMetadataStorage = () => {
+  (global as any).MerlinMetadataStorage = MERLIN_METADATA_STORAGE;
+}
 export const addOperationMetadata = (
   entityName: string,
   operation: CrudOperationsAndAll
@@ -105,7 +107,6 @@ export const addOperationMetadata = (
       ...merlinGqlMetadataStorage.objectTypes,
       ...{
         [entityName]: {
-          filePath: null,
           fields: [],
           extends: null,
           operations: [operation],
@@ -133,7 +134,6 @@ export const addFieldMetadata = (entityName: string, fieldName: string) => {
       ...merlinGqlMetadataStorage.objectTypes,
       ...{
         [entityName]: {
-          filePath: null,
           fields: [metadataValue],
           extends: null,
           operations: [],
@@ -164,7 +164,6 @@ export const addNoSortMetadata = (entityName: string, fieldName: string) => {
       ...merlinGqlMetadataStorage.objectTypes,
       ...{
         [entityName]: {
-          filePath: null,
           fields: [metadataValue],
           extends: null,
           operations: [],
@@ -194,7 +193,6 @@ export const addNoFilterMetadata = (entityName: string, fieldName: string) => {
       ...merlinGqlMetadataStorage.objectTypes,
       ...{
         [entityName]: {
-          filePath: null,
           fields: [metadataValue],
           extends: null,
           operations: [],
@@ -204,9 +202,4 @@ export const addNoFilterMetadata = (entityName: string, fieldName: string) => {
   }
 };
 
-export const getWatchedFiles = () => {
-  const merlinGqlMetadataStorage = getMerlinMetadataStorage();
-  return Object.values(merlinGqlMetadataStorage.objectTypes)
-    .filter((v) => !!v.filePath)
-    .map((v) => v.filePath) as string[];
-};
+

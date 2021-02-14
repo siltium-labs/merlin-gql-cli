@@ -1,6 +1,6 @@
 {
   "name": "merlin-gql",
-  "version": "0.3.8",
+  "version": "1.0.0",
   "author": "silentium-labs",
   "bin": {
     "merlin-gql": "./bin/run"
@@ -12,6 +12,7 @@
     "apollo-server": "^2.19.2",
     "chalk": "^4.1.0",
     "change-case": "^4.1.2",
+    "chokidar": "^3.5.1",
     "cli-ux": "^5.5.1",
     "execa": "^5.0.0",
     "fs-extra": "^9.1.0",
@@ -20,6 +21,7 @@
     "listr": "^0.14.3",
     "ncp": "^2.0.0",
     "node-emoji": "^1.10.0",
+    "ora": "^5.3.0",
     "pluralize": "^8.0.0",
     "prettier": "^2.2.1",
     "rxjs": "^6.6.3",

@@ -6,16 +6,12 @@ import * as Prettier from "prettier";
 import * as changeCase from "change-case";
 import * as fs from "fs";
 import * as path from "path";
-import { EOL } from "os";
-import IConnectionOptions from "../options/connection-options.interface";
-import IGenerationOptions, {
-  eolConverter,
-} from "../options/generation-options.interface";
+import IGenerationOptions from "../options/generation-options.interface";
 import { Entity } from "../models/entity";
 import { Relation } from "../models/relation";
 import { singular } from "pluralize";
 import { ModelGenerationOptions } from "../../commands/generate/crud";
-import { propertyIsDecoratedWithField } from "../../utils/metadata-storage";
+import { resetMetadataStorage, resolverIncludesOperation } from "../../utils/metadata-storage";
 import { FilterTemplate } from "../templates/filters.template";
 import { SortTemplate } from "../templates/sorts.template";
 import { ObjectTypeTemplate } from "../templates/object-type.template";
@@ -31,7 +27,7 @@ const prettierOptions: Prettier.Options = {
 
 export const populateTypeGraphQLMetadata = async () => {
   try {
-    const _ = await loadOtFiles();
+    await loadOtFiles();
   } catch (e) {
     throw e;
   }
@@ -43,6 +39,7 @@ export const generator = async (
   flags?: ModelGenerationOptions
 ) => {
   try {
+    resetMetadataStorage();
     await populateTypeGraphQLMetadata();
 
     const resultPath = generationOptions.resultsPath;
@@ -122,8 +119,8 @@ const generateGraphQLFiles = (
         element
       );
     }
-
-    if (!flags || flags.filter) {
+    const shouldGenerateFilterAndSortAccordingToMetadata = resolverIncludesOperation(element.tscName, "LIST")
+    if (!flags || flags.filter || (!flags?.filter &&  shouldGenerateFilterAndSortAccordingToMetadata)) {
       generateFilters(
         generationOptions,
         baseFileName,
@@ -132,7 +129,7 @@ const generateGraphQLFiles = (
       );
     }
 
-    if (!flags || flags.sort) {
+    if (!flags || flags.sort || (!flags?.filter &&  shouldGenerateFilterAndSortAccordingToMetadata)) {
       generateSort(
         generationOptions,
         baseFileName,
@@ -140,8 +137,11 @@ const generateGraphQLFiles = (
         element
       );
     }
+    const shouldGenerateCreateInputAccordingToMetadata = resolverIncludesOperation(element.tscName, "CREATE")
+    const shouldGenerateUpdateInputAccordingToMetadata = resolverIncludesOperation(element.tscName, "UPDATE")
 
-    if (!flags || flags.input) {
+
+    if (!flags || flags.input || (!flags?.input && (shouldGenerateCreateInputAccordingToMetadata || shouldGenerateUpdateInputAccordingToMetadata))) {
       generateInput(
         generationOptions,
         baseFileName,
@@ -212,14 +212,18 @@ const generateInput = (
   generationOptions: IGenerationOptions,
   baseFileName: string,
   filesPath: string,
-  element: Entity
+  element: Entity,
+  create:boolean = true,
+  update:boolean = true
 ) => {
   const filePath = path.resolve(filesPath, `${baseFileName}.input.ts`);
 
   const rendered = InputsTemplate(
     element.tscName,
     element.columns,
-    generationOptions
+    generationOptions,
+    create,
+    update
   );
   writeFile(rendered, generationOptions, element, filePath);
 };

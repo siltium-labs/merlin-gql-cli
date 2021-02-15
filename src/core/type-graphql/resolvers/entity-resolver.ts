@@ -5,7 +5,7 @@ import {
   getQueryData,
   getQueryDataFromFilters,
   getQueryDataFromSorts,
-  GraphQLPartialResolveInfo,
+  GraphQLPartialResolveInfo
 } from "../../gql/utils";
 import { populate } from "./populate";
 import {
@@ -13,7 +13,7 @@ import {
   criteriaToQbWhere,
   IQueryCriteria,
   IQueryData,
-  isPageInfoFieldNode,
+  isPageInfoFieldNode
 } from "./query-resolver";
 
 export interface IListQueryResult<T> {

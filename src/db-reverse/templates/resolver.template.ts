@@ -1,4 +1,4 @@
-import { resolverIncludesOperation } from "./../../utils/metadata-storage";
+import { getMerlinMetadataStorage, isOperationSecure, resolverIncludesOperation, securityRolesAllowedForOperation } from "./../../utils/metadata-storage";
 import {
   toEntityFileName,
   toEntityName,
@@ -16,97 +16,110 @@ export const ResolverTemplate = (
   tscName: string,
   generationOptions: IGenerationOptions
 ): string => {
-    const secureResolverDecorator = generationOptions.secureResolvers ? "@Secure()" : "";
-    const secureImport = generationOptions.secureResolvers ? "Secure " : undefined;
-    const entityName:string = toEntityName(tscName, generationOptions)
-    const fileName:string = toFileName(tscName, generationOptions)
-    const filtersName:string = toFiltersName(tscName, generationOptions);
-    const createInputName:string = toInputsCreateName(tscName, generationOptions);
-    const updateInputName:string = toInputsUpdateName(tscName, generationOptions);
-    const sortsName:string = toSortsName(tscName, generationOptions);
-    const ignoreMetadata = generationOptions.graphqlFiles ?? false;
+  //const secureResolverDecorator = generationOptions.secureResolvers ? "@Secure()" : "";
+  const entityName: string = toEntityName(tscName, generationOptions)
+  const fileName: string = toFileName(tscName, generationOptions)
+  const filtersName: string = toFiltersName(tscName, generationOptions);
+  const createInputName: string = toInputsCreateName(tscName, generationOptions);
+  const updateInputName: string = toInputsUpdateName(tscName, generationOptions);
+  const sortsName: string = toSortsName(tscName, generationOptions);
+  const ignoreMetadata = generationOptions.graphqlFiles ?? false;
 
 
-    const resolverImports:string[] =secureImport  ? [secureImport]:[]
-    //list resolver based on metadata
-    const shouldGenerateListResolver = ignoreMetadata || resolverIncludesOperation(entityName,"LIST")
-    const listResolver:string = shouldGenerateListResolver ? `
+  const resolverImports: string[] = []
+  const isListSecure = isOperationSecure(entityName, "LIST");
+  const listSecuredRoles = securityRolesAllowedForOperation(entityName, "LIST");
+  //list resolver based on metadata
+  const shouldGenerateListResolver = ignoreMetadata || resolverIncludesOperation(entityName, "LIST")
+  const listResolver: string = shouldGenerateListResolver ? `
     const BaseListResolver = ListResolver(${entityName},${filtersName},${sortsName});
     @Resolver()
-    ${secureResolverDecorator}
+    ${isListSecure ? `@Secure(${listSecuredRoles ? listSecuredRoles.map(r => `"${r}"`).join(', ') : ''})` : ''}
     export class ${entityName}ListResolver extends BaseListResolver<${entityName}, ${filtersName}, ${sortsName}> {}
     ` : ""
-    if(shouldGenerateListResolver){
-      resolverImports.push("ListResolver")
-    }
+  if (shouldGenerateListResolver) {
+    resolverImports.push("ListResolver")
+  }
 
-    //find resolver based on metadata
-    const shouldGenerateFindResolver = ignoreMetadata || resolverIncludesOperation(entityName,"FIND");
-    const findResolver:string = shouldGenerateFindResolver ? `
+  //find resolver based on metadata
+  const isFindSecure = isOperationSecure(entityName, "FIND");
+  const findSecuredRoles = securityRolesAllowedForOperation(entityName, "FIND");
+  const shouldGenerateFindResolver = ignoreMetadata || resolverIncludesOperation(entityName, "FIND");
+  const findResolver: string = shouldGenerateFindResolver ? `
     const BaseFindResolver = FindResolver(${entityName});
     @Resolver()
-    ${secureResolverDecorator}
+    ${isFindSecure ? `@Secure(${findSecuredRoles ? findSecuredRoles.map(r => `"${r}"`).join(', ') : ''})` : ''}
     export class ${entityName}FindResolver extends BaseFindResolver<${entityName}> {}
     ` : "";
 
-    if(shouldGenerateFindResolver){
-      resolverImports.push("FindResolver")
-    }
+  if (shouldGenerateFindResolver) {
+    resolverImports.push("FindResolver")
+  }
 
-    //update resolver based on metadata
-    const shouldGenerateUpdateResolver = ignoreMetadata || resolverIncludesOperation(entityName,"UPDATE")
-    const updateResolver:string = shouldGenerateUpdateResolver ? `
+  //update resolver based on metadata
+  const isUpdateSecure = isOperationSecure(entityName, "UPDATE");
+  const updateSecuredRoles = securityRolesAllowedForOperation(entityName, "UPDATE");
+  const shouldGenerateUpdateResolver = ignoreMetadata || resolverIncludesOperation(entityName, "UPDATE")
+  const updateResolver: string = shouldGenerateUpdateResolver ? `
     const BaseUpdateResolver = UpdateResolver(${entityName},${updateInputName});
     @Resolver()
-    ${secureResolverDecorator}
+    ${isUpdateSecure ? `@Secure(${updateSecuredRoles ? updateSecuredRoles.map(r => `"${r}"`).join(', ') : ''})` : ''}
     export class ${entityName}UpdateResolver extends BaseUpdateResolver<${entityName}> {}
     ` : "";
 
-    if(shouldGenerateUpdateResolver){
-      resolverImports.push("UpdateResolver")
-    }
+  if (shouldGenerateUpdateResolver) {
+    resolverImports.push("UpdateResolver")
+  }
 
-    //create resolver based on metadata
-    const shouldGenerateCreateResolver = ignoreMetadata || resolverIncludesOperation(entityName,"CREATE")
-    const createResolver:string = shouldGenerateCreateResolver ? `
+  //create resolver based on metadata
+  const isCreateSecure = isOperationSecure(entityName, "CREATE");
+  const createSecuredRoles = securityRolesAllowedForOperation(entityName, "CREATE");
+  const shouldGenerateCreateResolver = ignoreMetadata || resolverIncludesOperation(entityName, "CREATE")
+  const createResolver: string = shouldGenerateCreateResolver ? `
     const BaseCreateResolver = CreateResolver(${entityName},${createInputName});
     @Resolver()
-    ${secureResolverDecorator}
+    ${isCreateSecure ? `@Secure(${createSecuredRoles ? createSecuredRoles.map(r => `"${r}"`).join(', ') : ''})` : ''}
     export class ${entityName}CreateResolver extends BaseCreateResolver<${entityName}> {}
     ` : "";
 
-    if(shouldGenerateCreateResolver){
-      resolverImports.push("CreateResolver")
-    }
+  if (shouldGenerateCreateResolver) {
+    resolverImports.push("CreateResolver")
+  }
 
-    //create resolver based on metadata
-    const shouldGenerateDeleteResolver = ignoreMetadata || resolverIncludesOperation(entityName,"DELETE")
-    const deleteResolver:string = shouldGenerateDeleteResolver ? `
+  //delete resolver based on metadata
+  const isDeleteSecure = isOperationSecure(entityName, "DELETE");
+  const deleteSecuredRoles = securityRolesAllowedForOperation(entityName, "DELETE");
+  const shouldGenerateDeleteResolver = ignoreMetadata || resolverIncludesOperation(entityName, "DELETE")
+  const deleteResolver: string = shouldGenerateDeleteResolver ? `
     const BaseDeleteResolver = DeleteResolver(${entityName});
     @Resolver()
-    ${secureResolverDecorator}
+    ${isDeleteSecure ? `@Secure(${deleteSecuredRoles ? deleteSecuredRoles.map(r => `"${r}"`).join(', ') : ''})` : ''}
     export class ${entityName}DeleteResolver extends BaseDeleteResolver<${entityName}> {}
     ` : "";
 
-    if(shouldGenerateDeleteResolver){
-      resolverImports.push("DeleteResolver")
-    }
+  if (shouldGenerateDeleteResolver) {
+    resolverImports.push("DeleteResolver")
+  }
 
-    const inputsToImport:string[] = []
-    if(shouldGenerateCreateResolver){
-      inputsToImport.push(createInputName);
-    }
-    if(shouldGenerateUpdateResolver){
-      inputsToImport.push(updateInputName);
-    }
-    return `
+  const inputsToImport: string[] = []
+  if (shouldGenerateCreateResolver) {
+    inputsToImport.push(createInputName);
+  }
+  if (shouldGenerateUpdateResolver) {
+    inputsToImport.push(updateInputName);
+  }
+  const secureImport = (isListSecure || isFindSecure || isUpdateSecure || isCreateSecure || isDeleteSecure) ? "Secure " : undefined;
+  if (secureImport) {
+    resolverImports.push(secureImport);
+  }
+  return `
 
     import { Resolver } from "type-graphql";
     import { ${entityName} } from "../../models/${fileName}/${toEntityFileName(tscName, generationOptions)}";
     ${shouldGenerateListResolver ? `
     import ${toLocalImport(filtersName, generationOptions)} from "./${fileName}.filter";
     import ${toLocalImport(sortsName, generationOptions)} from "./${fileName}.sort";
-    `:''}
+    `: ''}
     ${inputsToImport.length > 0 ? `
     import ${toLocalImport(inputsToImport.join(", "), generationOptions)} from "./${fileName}.input"
     `: ''}

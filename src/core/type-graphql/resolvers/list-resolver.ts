@@ -7,20 +7,18 @@ import {
   InputType,
   ObjectType,
   Query,
-  Resolver,
+  Resolver
 } from "type-graphql";
 import { IGqlContext } from "../../context";
 import { BaseModel } from "../../database/base.model";
 import { GraphQLInfo } from "../../gql/utils";
-import { ModelDecoratorMetadataKeys } from "../model-decorators/model-decorator.keys";
 import { AbstractSecureResolver } from "../models/abstract-secure-resolver";
 import { BaseFilterFields } from "../models/base-filter-fields";
 import { BaseSortFields } from "../models/base-sort-fields";
-import { getTypeormEntityFromSubclass } from "../utils/typeorm";
 import { EntityToGraphResolver, IListQueryResult } from "./entity-resolver";
-import Paginated, {
+import {
   AbstractPaginatorCriteria,
-  createPaginationCriteria,
+  createPaginationCriteria, Paginated
 } from "./paginated-response";
 import { IQueryCriteria } from "./query-resolver";
 
@@ -28,7 +26,7 @@ export abstract class AbstractListResolver<
   T,
   BaseFilterFields,
   BaseSortFields
-> extends AbstractSecureResolver {
+  > extends AbstractSecureResolver {
   list(
     criteriaQuery: AbstractPaginatorCriteria<BaseFilterFields, BaseSortFields>,
     info: GraphQLInfo,
@@ -49,19 +47,19 @@ export function ListResolver<T extends ClassType>(
   //console.log(filterClass, sortClass, baseModelType);
   @InputType(`${baseModelSingularName}Criteria`)
   class CriteriaQuery extends createPaginationCriteria(filterClass, sortClass)<
-    BaseFilterFields,
-    BaseSortFields
-  > {}
+  BaseFilterFields,
+  BaseSortFields
+  > { }
 
   @ObjectType(`${baseModelSingularName}Result`)
-  class PaginatedResult extends Paginated(baseModelType)<T> {}
+  class PaginatedResult extends Paginated(baseModelType)<T> { }
 
   @Resolver({ isAbstract: true })
   abstract class ListResolver<
     T,
     BaseFilterFields,
     BaseSortFields
-  > extends AbstractListResolver<T, BaseFilterFields, BaseSortFields> {
+    > extends AbstractListResolver<T, BaseFilterFields, BaseSortFields> {
     @Query((returns) => PaginatedResult, {
       name: `${baseModelSingularName}List`,
     })

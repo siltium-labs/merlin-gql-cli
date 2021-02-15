@@ -9,16 +9,14 @@ import {
   PubSubEngine,
   Resolver,
   Root,
-  Subscription,
+  Subscription
 } from "type-graphql";
 import { getRepository } from "typeorm";
 import { IGqlContext } from "../../context";
 import { BaseModel } from "../../database/base.model";
 import { GraphQLInfo } from "../../gql/utils";
-import { ModelDecoratorMetadataKeys } from "../model-decorators/model-decorator.keys";
 import { AbstractSecureResolver } from "../models/abstract-secure-resolver";
 import { BaseInputFields } from "../models/base-input-fields";
-import { getTypeormEntityFromSubclass } from "../utils/typeorm";
 import { EntityToGraphResolver } from "./entity-resolver";
 
 export abstract class AbstractCreateResolver<T> extends AbstractSecureResolver {

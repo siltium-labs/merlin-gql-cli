@@ -5,22 +5,23 @@ import {
 import {
   CrudOperationsAndAll,
   getMerlinMetadataStorage,
+  OperationMetadataDefinition,
 } from "./../../../utils/metadata-storage";
 
 export function ObjectType(
-  operations: CrudOperationsAndAll[]
+  operations: (CrudOperationsAndAll | OperationMetadataDefinition)[]
 ): ClassDecorator;
 export function ObjectType(
-  operations: CrudOperationsAndAll[],
+  operations: (CrudOperationsAndAll | OperationMetadataDefinition)[],
   options: ObjectTypeOptions
 ): ClassDecorator;
 export function ObjectType(
-  operations: CrudOperationsAndAll[],
+  operations: (CrudOperationsAndAll | OperationMetadataDefinition)[],
   name: string,
   options?: ObjectTypeOptions
 ): ClassDecorator;
 export function ObjectType(
-  operations: CrudOperationsAndAll[],
+  operations: (CrudOperationsAndAll | OperationMetadataDefinition)[],
   nameOrOptions?: string | ObjectTypeOptions,
   maybeOptions?: ObjectTypeOptions
 ): ClassDecorator {
@@ -35,7 +36,7 @@ export function ObjectType(
     const metadataEntry = merlinGqlMetadataStorage.objectTypes[superClassName];
     if (metadataEntry) {
       metadataEntry.extends = baseSuperClassName;
-      metadataEntry.operations = operations;
+      metadataEntry.operations = operations.map(o => typeof o === 'string' ? { type: o, secure: false } : o);
     } else {
       merlinGqlMetadataStorage.objectTypes = {
         ...merlinGqlMetadataStorage.objectTypes,

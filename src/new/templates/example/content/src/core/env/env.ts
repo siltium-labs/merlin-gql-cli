@@ -1,6 +1,3 @@
-import { first } from "rxjs/operators";
-import { Subject, Observable } from "rxjs";
-import { LoggerOptions } from "typeorm/logger/LoggerOptions";
 import * as fs from "fs";
 
 export const isProduction = process.env.NODE_ENV === "prod";

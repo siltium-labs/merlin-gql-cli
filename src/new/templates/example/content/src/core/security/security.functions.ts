@@ -4,46 +4,50 @@ import {
   EntityToGraphResolver,
   getInfoFromSubfield,
   GraphQLInfo,
-  IDecodedToken,
+  IDecodedToken
 } from "merlin-gql";
+import { Arg, Field, Info, InputType, Mutation, ObjectType, Resolver } from "type-graphql";
 import { getManager } from "typeorm";
 import { User } from "../../models/user/user.model";
 import { getCurrentEnvironmentalConfig } from "../env/env";
 
-export interface ILoginRequest {
-  username: string;
-  password: string;
+@InputType()
+export class LoginCredentials {
+  @Field()
+  username!: string;
+  @Field()
+  password!: string;
 }
 
-export interface ILoginResult {
+@ObjectType()
+export class LoginResult {
+  @Field(_ => User, { nullable: true })
   user?: User;
-  token: string;
+  @Field()
+  token!: string;
 }
 
-export enum RolesEnum {
-  Anonymous = "anonymous",
-  User = "User",
-  Administrator = "administrator",
-}
 
-export const SecurityFunctions = {
-  login: async (
-    data: ILoginRequest,
-    info: GraphQLInfo
-  ): Promise<ILoginResult> => {
+@Resolver()
+export class SecurityFunctions {
+  @Mutation(_ => LoginResult)
+  async login(
+    @Arg("credentials", (type) => LoginCredentials)
+    credentials: LoginCredentials,
+    @Info() info: GraphQLInfo,
+  ): Promise<LoginResult> {
     try {
       const em = getManager();
-      const username = data.username;
+      const username = credentials.username;
       const user = await em
         .getRepository(User)
         .createQueryBuilder("u")
-        .select(["u.id", "u.username", "u.password", "r.name"])
-        .leftJoinAndSelect("u.roles", "r")
+        .select(["u.id", "u.username", "u.password", "u.role"])
         .where("u.username = :username", { username })
         .getOne();
       if (user) {
         const passwordIsValid = await bcrypt.compare(
-          data.password,
+          credentials.password,
           user.password
         );
         if (passwordIsValid) {
@@ -55,18 +59,18 @@ export const SecurityFunctions = {
 
           const populatedUser = subinfo
             ? <User>(
-                await EntityToGraphResolver.find<User>(
-                  user.id,
-                  User,
-                  subinfo,
-                  em
-                )
+              await EntityToGraphResolver.find<User>(
+                user.id,
+                User,
+                subinfo,
+                em
               )
+            )
             : undefined;
           const logedUserContext = {
             id: user.id,
             username: user.username,
-            roles: (await user.roles)?.map((r) => r.name),
+            roles: [user.role],
           } as IDecodedToken;
           return {
             user: populatedUser,
@@ -81,8 +85,8 @@ export const SecurityFunctions = {
     } catch (e) {
       throw e;
     }
-  },
-  decodeToken: async (token: string): Promise<IDecodedToken> => {
+  }
+  static async decodeToken(token: string): Promise<IDecodedToken> {
     try {
       const secretTokeSign = (await getCurrentEnvironmentalConfig())
         .secretToken;
@@ -90,5 +94,5 @@ export const SecurityFunctions = {
     } catch (e) {
       throw e;
     }
-  },
+  }
 };

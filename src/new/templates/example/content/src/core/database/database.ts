@@ -17,7 +17,6 @@ export const initializeDatabase = async (): Promise<void> => {
 
         resolve();
       } catch (e) {
-        console.log(e);
         reject(e);
       }
     } catch (e) {

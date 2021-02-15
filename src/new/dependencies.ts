@@ -1,5 +1,4 @@
 import { NewProjectTemplatesEnum, TemplateArgsDictionary } from "./new.config";
-import { TypeormDatabaseTypes } from "../commands/new";
 export const generateDependencies = (
   template: NewProjectTemplatesEnum,
   templateArgs: TemplateArgsDictionary
@@ -16,32 +15,32 @@ export const generateDependencies = (
     "type-graphql",
     "typeorm",
   ];
+  const argDependantDependencies: string[] = [];
+  if (["mysql", "mariadb"].includes(templateArgs["database"]))
+    argDependantDependencies.push("mysql2");
+  if (templateArgs["database"] === "postgres")
+    argDependantDependencies.push("pg");
+  if (templateArgs["database"] === "mssql")
+    argDependantDependencies.push("mssql");
+  if (templateArgs["database"] === "oracle")
+    argDependantDependencies.push("oracledb");
+  if (templateArgs["database"] === "mongodb")
+    argDependantDependencies.push("mongodb");
   if (template === NewProjectTemplatesEnum.Example) {
-    const argDependantDependencies: string[] = [];
-    switch (templateArgs["database"] as TypeormDatabaseTypes) {
-      case "mssql":
-      case "mariadb":
-        argDependantDependencies.push("mysql2");
-      case "postgres":
-        argDependantDependencies.push("pg");
-      case "mssql":
-        argDependantDependencies.push("mssql");
-      case "oracle":
-        argDependantDependencies.push("oracledb");
-      case "mongodb":
-        argDependantDependencies.push("mongodb");
-    }
+
     return [
       ...baseDependencies,
       ...argDependantDependencies,
       "bcryptjs",
       "jsonwebtoken",
-      "mysql2",
       "node-fetch",
       "dayjs",
     ];
   } else {
-    return baseDependencies;
+    return [
+      ...baseDependencies,
+      ...argDependantDependencies
+    ];
   }
 };
 
@@ -50,7 +49,6 @@ export const generateDevDependencies = (
   templateArgs: TemplateArgsDictionary
 ): Array<string> => {
   const baseDevDependencies = [
-    "concurrently",
     "gulp",
     "gulp-nodemon",
     "gulp-relative-sourcemaps-source",
@@ -60,12 +58,14 @@ export const generateDevDependencies = (
     "nodemon",
     "ts-node",
     "typescript",
+    "open"
   ];
+  const argDependantDevDependencies: string[] = [];
+  if (templateArgs["ngrok"]) {
+    argDependantDevDependencies.push("ngrok");
+  }
   if (template === NewProjectTemplatesEnum.Example) {
-    const argDependantDevDependencies: string[] = [];
-    if (templateArgs["ngrok"]) {
-      argDependantDevDependencies.push("ngrok");
-    }
+
     return [
       ...baseDevDependencies,
       ...argDependantDevDependencies,

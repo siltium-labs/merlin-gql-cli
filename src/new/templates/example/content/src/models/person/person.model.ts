@@ -1,41 +1,20 @@
-import { PersonFilterFields } from "./person.filters";
-import { PersonSortFields } from "./person.sort";
-
-import { ObjectType, Field, Int } from "type-graphql";
-import {
-  Entity,
-  Column,
-  OneToOne,
-  JoinColumn,
-  DeleteDateColumn,
-} from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne, DeleteDateColumn } from "typeorm";
+import { SimpleBaseModel } from "merlin-gql";
 import { User } from "../user/user.model";
-import { Inputs, Sorts, Filters, SimpleBaseModel } from "merlin-gql";
-import { PersonInput } from "./person.input";
 
 @Entity()
-@Inputs(PersonInput)
-@Sorts(PersonSortFields)
-@Filters(PersonFilterFields)
-@ObjectType()
 export class Person extends SimpleBaseModel {
-  @Field()
-  @Column("varchar")
-  name: string = "John Doe";
+    
+    @Column("varchar")
+    name: string = "";
 
-  @Field((type) => Int)
-  @Column("int")
-  age: number = 5;
+    @Column("int")
+    age: number = 0;
 
-  @Field((type) => Int)
-  @Column("int")
-  userId: number = 5;
+    @DeleteDateColumn()
+    deletedDate: Date | null = null;
 
-  @Field((type) => User)
-  @OneToOne((_) => User, "person")
-  @JoinColumn([{ name: "user_id", referencedColumnName: "id" }])
-  user?: Promise<User>;
-
-  @DeleteDateColumn()
-  deletedDate: Date | null = null;
+    @OneToOne(() => User, (user) => user.person)
+    @JoinColumn([{ name: "user_id", referencedColumnName: "id" }])
+    user?: Promise<User>;
 }

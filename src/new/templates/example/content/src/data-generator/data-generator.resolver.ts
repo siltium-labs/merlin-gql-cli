@@ -1,14 +1,10 @@
 //
-import { getManager, EntityManager } from "typeorm";
+import { getManager, EntityManager, getConnection } from "typeorm";
 import bcrypt from "bcryptjs";
-import { Customer } from "../models/customer/customer.model";
 import { Resolver, Mutation, Field, ObjectType } from "type-graphql";
 import { isProduction } from "../core/env/env";
-import { Purchase } from "../models/purchase/purchase.model";
 import { Person } from "../models/person/person.model";
-import { RolesEnum } from "../core/security/security.functions";
-import { Role } from "../models/role/role.model";
-import { User } from "../models/user/user.model";
+import { RolesEnum, User } from "../models/user/user.model";
 import { ArrayUtils } from "./utils/array-utils";
 import { StringUtils } from "./utils/string-utils";
 import { NumberUtils } from "./utils/number-utils";
@@ -155,26 +151,9 @@ export const emailTerminations = [
   "@mail.com",
 ];
 
-export const loadRoles = async (em: EntityManager) => {
-  const roles: { [key: string]: Role } = {};
-  const administrator = new Role();
-  administrator.name = RolesEnum.Administrator;
-  roles[RolesEnum.Administrator] = await em.save(administrator);
-
-  const dashboardViewer = new Role();
-  dashboardViewer.name = RolesEnum.Anonymous;
-  roles[RolesEnum.Anonymous] = await em.save(dashboardViewer);
-
-  const dashboardDesigner = new Role();
-  dashboardDesigner.name = RolesEnum.User;
-  roles[RolesEnum.User] = await em.save(dashboardDesigner);
-
-  return roles;
-};
 
 export const loadUsers = async (
-  em: EntityManager,
-  roles: { [key: string]: Role }
+  em: EntityManager
 ) => {
   const users: User[] = [];
   for (let i = 0; i < 10; i++) {
@@ -188,30 +167,30 @@ export const loadUsers = async (
       lastName = ArrayUtils.randomFrom(lastNames);
       userName =
         i === 0
-          ? "demo@demo.com"
+          ? "admin@demo.com"
           : StringUtils.removeAccents(
-              firstName.toLowerCase() +
-                "_" +
-                lastName.toLowerCase() +
-                ArrayUtils.randomFrom(emailTerminations)
-            );
+            firstName.toLowerCase() +
+            "_" +
+            lastName.toLowerCase() +
+            ArrayUtils.randomFrom(emailTerminations)
+          );
       hasValidName = !users.some((user) => user.username === userName);
       email =
         i === 0
-          ? "demo@demo.com"
+          ? "admin@demo.com"
           : StringUtils.removeAccents(
-              firstName.toLowerCase() +
-                "_" +
-                lastName.toLowerCase() +
-                ArrayUtils.randomFrom(emailTerminations)
-            );
+            firstName.toLowerCase() +
+            "_" +
+            lastName.toLowerCase() +
+            ArrayUtils.randomFrom(emailTerminations)
+          );
       hasValidName = !users.some((user) => user.username === userName);
     }
     const user = new User();
     user.username = userName;
     user.password = await bcrypt.hash("Aa123456", 10);
     user.email = email;
-    user.roles = Promise.resolve([roles[RolesEnum.Administrator]]);
+    user.role = i === 0 ? RolesEnum.Admin : RolesEnum.User;
 
     const savedUser = await em.save(user);
     users.push(savedUser);
@@ -219,22 +198,11 @@ export const loadUsers = async (
   return users;
 };
 
-export const loadCustomers = async (em: EntityManager) => {
-  const customers: Customer[] = [];
-  for (let i = 0; i < 50; i++) {
-    const customer = new Customer();
-    customer.name = `${ArrayUtils.randomFrom(names)} ${ArrayUtils.randomFrom(
-      lastNames
-    )}`;
-    const saved = await em.save(customer);
-    customers.push(saved);
-  }
-  return customers;
-};
+
 
 export const loadPeople = async (em: EntityManager, users: User[]) => {
   const people: Person[] = [];
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < users.length; i++) {
     const person = new Person();
     person.name = `${ArrayUtils.randomFrom(names)} ${ArrayUtils.randomFrom(
       lastNames
@@ -247,29 +215,10 @@ export const loadPeople = async (em: EntityManager, users: User[]) => {
   return people;
 };
 
-export const loadPurchases = async (
-  em: EntityManager,
-  customers: Customer[]
-) => {
-  const purchases: Purchase[] = [];
-  for (let i = 0; i < 100; i++) {
-    const purchase = new Purchase();
-    purchase.total = NumberUtils.randomBetween(100, 1000000) / 10;
-    purchase.customer = Promise.resolve(ArrayUtils.randomFrom(customers));
-    purchase.secret = Math.random().toString(36).substring(7);
-    const saved = await em.save(purchase);
-    purchases.push(saved);
-  }
-  return purchases;
-};
-
 export const generateData = async () => {
   await getManager().transaction(async (em) => {
     try {
-      const roles = await loadRoles(em);
-      const users = await loadUsers(em, roles);
-      const customers = await loadCustomers(em);
-      const purchases = await loadPurchases(em, customers);
+      const users = await loadUsers(em);
       const people = await loadPeople(em, users);
     } catch (e) {
       console.log("Error when genereting data: ", e);
@@ -277,6 +226,14 @@ export const generateData = async () => {
     }
   });
 };
+
+export const cleanAllData = async () => {
+  const connection = getConnection()
+  for (const meta of connection.entityMetadatas) {
+    const repository = connection.getRepository(meta.name);
+    await repository.query(`TRUNCATE TABLE \` ${meta.tableName}\`;`);
+  }
+}
 
 @ObjectType()
 export class SuccessOrError {

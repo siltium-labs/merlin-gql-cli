@@ -52,8 +52,30 @@ export const resolverIncludesOperation = (
   const merlinGqlMetadataStorage = getMerlinMetadataStorage();
   const propertyIsIgnored = !!merlinGqlMetadataStorage.objectTypes[
     targetClassName
-  ]?.operations.find((o) => o === "ALL" || o === operation);
+  ]?.operations.find((o) => o.type === "ALL" || o.type === operation);
   return propertyIsIgnored;
+};
+
+export const isOperationSecure = (
+  targetClassName: string,
+  operation: CrudOperations
+) => {
+  const merlinGqlMetadataStorage = getMerlinMetadataStorage();
+  const operationMetadata = merlinGqlMetadataStorage.objectTypes[
+    targetClassName
+  ]?.operations.find((o) => o.type === "ALL" || o.type === operation);
+  return !!operationMetadata?.secure;
+};
+
+export const securityRolesAllowedForOperation = (
+  targetClassName: string,
+  operation: CrudOperations
+) => {
+  const merlinGqlMetadataStorage = getMerlinMetadataStorage();
+  const operationMetadata = merlinGqlMetadataStorage.objectTypes[
+    targetClassName
+  ]?.operations.find((o) => o.type === "ALL" || o.type === operation) as OperationMetadataDefinition;
+  return operationMetadata.roles;
 };
 
 export type FieldDefinitionMetadata = {
@@ -66,9 +88,15 @@ export type CrudOperations = "CREATE" | "UPDATE" | "DELETE" | "LIST" | "FIND";
 
 export type CrudOperationsAndAll = "ALL" | CrudOperations;
 
+export type OperationMetadataDefinition = {
+  type: CrudOperationsAndAll,
+  secure: boolean,
+  roles?: string[]
+}
+
 export type ObjectTypesMetadataStorage = {
   [key: string]: {
-    operations: CrudOperationsAndAll[];
+    operations: OperationMetadataDefinition[];
     fields: FieldDefinitionMetadata[];
     extends: string | null;
   };
@@ -92,7 +120,7 @@ export const resetMetadataStorage = () => {
 }
 export const addOperationMetadata = (
   entityName: string,
-  operation: CrudOperationsAndAll
+  operation: CrudOperationsAndAll | OperationMetadataDefinition
 ) => {
   const merlinGqlMetadataStorage = getMerlinMetadataStorage();
   const existentMetadataForPrototype =
@@ -100,7 +128,7 @@ export const addOperationMetadata = (
   if (existentMetadataForPrototype) {
     existentMetadataForPrototype.operations = [
       ...existentMetadataForPrototype.operations,
-      operation,
+      typeof operation === 'string' ? { type: operation, secure: false } : operation,
     ];
   } else {
     merlinGqlMetadataStorage.objectTypes = {
@@ -109,7 +137,7 @@ export const addOperationMetadata = (
         [entityName]: {
           fields: [],
           extends: null,
-          operations: [operation],
+          operations: [typeof operation === 'string' ? { type: operation, secure: false } : operation],
         },
       },
     };

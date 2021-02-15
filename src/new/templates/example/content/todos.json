@@ -2,5 +2,9 @@
   {
     "title": "Test Json Resolver",
     "completed": true
+  },
+  {
+    "title": "Compile Json Resolver",
+    "completed": false
   }
 ]

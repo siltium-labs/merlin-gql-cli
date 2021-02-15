@@ -1,5 +1,5 @@
 import { GraphQLScalarType } from "graphql";
-import { ClassType, InputType, Field, ID, Int, Float } from "type-graphql";
+import { ClassType, Field, Float, ID, InputType, Int } from "type-graphql";
 import { FilterTypesEnum } from "./query-resolver";
 
 @InputType()
@@ -29,7 +29,7 @@ export default function FilterField<TField>(
     // here we use the runtime argument
     @Field((type) => [TFieldClass])
     // and here the generic type
-    value: TField | null = null;  
+    value: TField | null = null;
 
     @Field((type) => FilterTypesEnum, {
       nullable: true,

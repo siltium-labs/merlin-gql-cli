@@ -4,7 +4,6 @@ import { IGqlContext } from "../../context";
 import { BaseModel } from "../../database/base.model";
 import { GraphQLInfo } from "../../gql/utils";
 import { AbstractSecureResolver } from "../models/abstract-secure-resolver";
-import { getTypeormEntityFromSubclass } from "../utils/typeorm";
 import { EntityToGraphResolver } from "./entity-resolver";
 
 export abstract class AbstractFindResolver<T> extends AbstractSecureResolver {

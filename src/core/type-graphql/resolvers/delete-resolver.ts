@@ -10,14 +10,13 @@ import {
   PubSubEngine,
   Resolver,
   Root,
-  Subscription,
+  Subscription
 } from "type-graphql";
 import { getManager } from "typeorm";
 import { IGqlContext } from "../../context";
 import { BaseModel } from "../../database/base.model";
 import { GraphQLInfo } from "../../gql/utils";
 import { AbstractSecureResolver } from "../models/abstract-secure-resolver";
-import { getTypeormEntityFromSubclass } from "../utils/typeorm";
 import { EntityToGraphResolver } from "./entity-resolver";
 
 export abstract class AbstractDeleteResolver<T> extends AbstractSecureResolver {

@@ -4,6 +4,7 @@ const tsProject = ts.createProject("tsconfig.json");
 const nodemon = require("gulp-nodemon");
 const sourcemaps = require("gulp-sourcemaps");
 const relativeSourcemapsSource = require("gulp-relative-sourcemaps-source");
+const open = require('open');
 
 gulp.task("assets", () => {
     return gulp.src(["./src/**/*", "!./src/**/*.ts"]).pipe(gulp.dest("dist"));
@@ -28,14 +29,17 @@ gulp.task("nodemon", cb => {
         script: "dist/app.js"
     }).on("start", () => {
         if (!started) {
-            cb();
+            setTimeout(() => {
+                open(`http://localhost:${process.env.PORT || 4000}/graphql`);
+            }, 3000)
             started = true;
+            cb();
         }
     });
 });
 
 gulp.task("watch", () => {
-    return gulp.watch(["src/**/*.ts", "src/**/*.json","src/**/*.graphql","src/**/*.ejs"], gulp.series("compile"));
+    return gulp.watch(["src/**/*.ts", "src/**/*.json", "src/**/*.graphql"], gulp.series("compile"));
 });
 
 gulp.task("default", gulp.parallel("watch", gulp.series("compile", "nodemon")));

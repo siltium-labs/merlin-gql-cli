@@ -20,7 +20,7 @@ export abstract class AbstractPaginatedResponse<TModel> {
   };
 }
 
-export default function Paginated<TModel>(
+export function Paginated<TModel>(
   TClass: ClassType<TModel>
 ): typeof AbstractPaginatedResponse {
   // `isAbstract` decorator option is mandatory to prevent registering in schema

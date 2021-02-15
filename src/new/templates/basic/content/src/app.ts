@@ -1,13 +1,13 @@
 import "reflect-metadata";
 import { ApolloServer } from "apollo-server-express";
 import cors from "cors";
-import express, { json, Request, text } from "express";
+import express, { json, text } from "express";
 import http from "http";
-import { GqlContext } from "merlin-gql";
 import path from "path";
 import { initializeDatabase } from "./core/database/database";
 import { getCurrentEnvironmentalConfig, isDevelopment } from "./core/env/env";
 import { graphqlSchema } from "./core/graphql-schema";
+
 
 const startServer = async () => {
   const app = express();
@@ -31,7 +31,7 @@ const startServer = async () => {
   server.applyMiddleware({ app });
   server.installSubscriptionHandlers(httpServer);
 
-  const apolloGraphQLServerUrl = `localhost:${process.env.PORT || 4001}${
+  const apolloGraphQLServerUrl = `localhost:${process.env.PORT || 4000}${
     server.graphqlPath
   }`;
 

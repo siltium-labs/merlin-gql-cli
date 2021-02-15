@@ -177,7 +177,8 @@ const createPackageJson = (
         version: "0.1.0",
         scripts: {
           test: 'echo "Error: no test specified" && exit 1',
-          start: `env PORT=4000 concurrently "gulp" "sleep 10 && start http://localhost:4000/graphql"`,
+          start: `env PORT=4000 gulp`,
+          watch: `merlin-gql generate:watch`
         },
       };
       if (templateArs["ngrok"]) {
@@ -218,6 +219,7 @@ const runNpmInstallForDependencies = async (
   appPath: string
 ): Promise<void> => {
   try {
+    console.log(generateDependencies(template, templateArgs));
     await spawnCommand(
       npmCommandName,
       ["i", "-s", ...generateDependencies(template, templateArgs)],

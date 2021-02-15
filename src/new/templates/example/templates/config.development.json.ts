@@ -1,7 +1,7 @@
 export const ConfigFileTemplate = (jwtSecret: string | undefined): string => {
   return `
   {
-    "secretToken": "${jwtSecret}",
+    ${jwtSecret ? '"secretToken": "${jwtSecret}",' : ''}
     "enablePlayground": true
   }
       `;

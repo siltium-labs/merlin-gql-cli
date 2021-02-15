@@ -290,9 +290,9 @@ export default class New extends Command {
         },
       ]);
       flags.jwtSecretToken =
-        jwtSecretToken !== "" ? jwtSecretToken : generateRandomJWTSecret(30);
+        jwtSecretToken && jwtSecretToken !== "" ? jwtSecretToken : generateRandomJWTSecret(30);
     }
-    if (!flags.ngrok && flags.template === NewProjectTemplatesEnum.Example) {
+    if (!flags.ngrok) {
       const { ngrok }: { ngrok: boolean } = await inquirer.prompt([
         {
           name: "ngrok",
@@ -313,10 +313,9 @@ export default class New extends Command {
       },
     };
     const templateArgs: TemplateArgsDictionary = {};
-
+    templateArgs["database"] = flags.databaseType as TypeormDatabaseTypes;
     if (flags.template === NewProjectTemplatesEnum.Example) {
       templateArgs["ngrok"] = flags.ngrok;
-      templateArgs["database"] = flags.databaseType as TypeormDatabaseTypes;
     }
 
     const config: NewProjectConfig = {

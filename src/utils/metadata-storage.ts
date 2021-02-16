@@ -52,7 +52,7 @@ export const propertyIsCreateInputIgnored = (
   const merlinGqlMetadataStorage = getMerlinMetadataStorage();
   const propertyIsIgnored = !!merlinGqlMetadataStorage.objectTypes[
     targetClassName
-  ]?.fields.find((f) => f.name === propertyName && f.ignoreUpdateInput === true);
+  ]?.fields.find((f) => f.name === propertyName && f.ignoreCreateInput === true);
   return propertyIsIgnored;
 };
 

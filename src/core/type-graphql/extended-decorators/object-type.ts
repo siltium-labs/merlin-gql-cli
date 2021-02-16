@@ -8,6 +8,10 @@ import {
   OperationMetadataDefinition,
 } from "./../../../utils/metadata-storage";
 
+/**
+ *
+ * @deprecated it will be removed in version 1.1.0, you should use @MerlinGQLResolver instead
+ */
 export function ObjectType(
   operations: (CrudOperationsAndAll | OperationMetadataDefinition)[]
 ): ClassDecorator;
@@ -55,3 +59,5 @@ export function ObjectType(
     )(superClass);
   };
 }
+
+export const MerlinGQLResolver = ObjectType;

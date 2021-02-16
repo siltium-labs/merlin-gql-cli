@@ -1,15 +1,17 @@
-import {
-  addFieldMetadata,
-  getMerlinMetadataStorage,
-} from "../../../utils/metadata-storage";
-import { FieldOptions } from "type-graphql";
+import { Field as TypeGraphQLField, FieldOptions } from "type-graphql";
 import {
   MethodAndPropDecorator,
-  ReturnTypeFunc,
+  ReturnTypeFunc
 } from "type-graphql/dist/decorators/types";
-import { Field as TypeGraphQLField } from "type-graphql";
+import {
+  addFieldMetadata
+} from "../../../utils/metadata-storage";
 import { getEntityNameFromSublass } from "./utils";
 
+/**
+ *
+ * @deprecated it will be removed in version 1.1.0, you should use @MerlinGQLField instead
+ */
 export function Field(): MethodAndPropDecorator;
 export function Field(options: FieldOptions): MethodAndPropDecorator;
 export function Field(
@@ -34,3 +36,5 @@ export function Field(
     )(superClass, propertyKey, descriptor);
   };
 }
+
+export const MerlinGQLField = Field;

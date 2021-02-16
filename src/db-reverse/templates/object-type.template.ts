@@ -50,14 +50,14 @@ const ColumnTemplate = (
   column: Column,
   generationOptions: IGenerationOptions
 ) => {
-  const propertyName = toPropertyName(column.tscName, generationOptions);  
-  const fieldType = column.generated ?     
-    `@Field((type) => ID ${column.options.nullable ? ",{ nullable: true }" : ""})` : 
-    `@Field((type)=> ${defaultFieldType(column.tscType)} ${column.options.nullable ? ",{ nullable: true }" : ""})`;
+  const propertyName = toPropertyName(column.tscName, generationOptions);
+  const fieldType = column.generated ?
+    `@MerlinGQLField((type) => ID ${column.options.nullable ? ",{ nullable: true }" : ""})` :
+    `@MerlinGQLField((type)=> ${defaultFieldType(column.tscType)} ${column.options.nullable ? ",{ nullable: true }" : ""})`;
 
   return `
-    ${fieldType}  
-    ${propertyName}!:${column.tscType}; 
+    ${fieldType}
+    ${propertyName}!:${column.tscType};
   `;
 };
 
@@ -70,41 +70,35 @@ const RelationTemplate = (
     const relatedTableEntityName = toEntityName(relation.relatedTable, generationOptions);
     const propertyName = `${toPropertyName(relation.fieldName, generationOptions)}?:${toRelation(relatedTableEntityName, relation.relationType, generationOptions)};`
     return `
-    @Field((type) =>  ${toGraphQLModelRelation(relatedTableEntityName, relation.relationType)}, { nullable: true })    
+    @MerlinGQLField((type) =>  ${toGraphQLModelRelation(relatedTableEntityName, relation.relationType)}, { nullable: true })
     ${propertyName}
     `;
   };
 
 // prettier-ignore
-export const ObjectTypeTemplate = (    
+export const ObjectTypeTemplate = (
     entity: Entity,
     generationOptions: IGenerationOptions
-): string => {          
-  const entityName:string = toEntityName(entity.tscName, generationOptions);  
+): string => {
+  const entityName:string = toEntityName(entity.tscName, generationOptions);
   const fileName:string = toFileName(entity.tscName, generationOptions)
   const inputsCreateName:string = toInputsCreateName(entity.tscName, generationOptions);
   const inputUpdateName:string = toInputsUpdateName(entity.tscName, generationOptions);
   const sortName:string = toSortsName(entity.tscName, generationOptions);
   const filterName:string = toFiltersName(entity.tscName, generationOptions);
-    
+
   return `
-        import { Field, Filter, Inputs, ObjectType, Sort } from "merlin-gql";   
+        import { MerlinGQLField, MerlinGQLResolver } from "merlin-gql";
         import { Int, Float, ID } from "type-graphql";
-        import { ${entityName} } from "./${toEntityFileName(entityName, generationOptions)}";        
-        import { ${inputsCreateName},  ${inputUpdateName} } from "../../_generated/${fileName}/${fileName}.input";        
-        import { ${sortName} } from "../../_generated/${fileName}/${fileName}.sort";
-        import { ${filterName} } from "../../_generated/${fileName}/${fileName}.filter";
-        
+        import { ${entityName} } from "./${toEntityFileName(entityName, generationOptions)}";
+
         ${entity.fileImports.map(fileImport => ImportsTemplate(fileImport, generationOptions)).join("\n")}
-        
-        @ObjectType(__filename, ["FIND", "LIST", "CREATE", "UPDATE", "DELETE"])     
-        @Inputs(${inputsCreateName}, ${inputUpdateName})
-        @Sort(${sortName})
-        @Filter(${filterName})   
+
+        @MerlinGQLResolver(["FIND", "LIST", "CREATE", "UPDATE", "DELETE"])
         export ${defaultExport(generationOptions)} class ${entityName}OT extends ${entityName} {
-          
+
           ${entity.columns.map(c => ColumnTemplate(entity, c, generationOptions)).join("\n")}
-          
+
           ${entity.relations.map(r => RelationTemplate(entity, r, generationOptions)).join("\n")}
         }
       `

@@ -1,4 +1,4 @@
-import { propertyIsDecoratedWithField } from "../../utils/metadata-storage";
+import { propertyIsCreateInputIgnored, propertyIsDecoratedWithField, propertyIsUpdateInputIgnored } from "../../utils/metadata-storage";
 import { Column } from "../models/column";
 import IGenerationOptions from "../options/generation-options.interface";
 import {
@@ -69,20 +69,20 @@ const ColumnUpdateTemplate = (
 };
 // prettier-ignore
 export const InputsTemplate = (
-    tscName: string,
-    columns: Column[],
-    generationOptions: IGenerationOptions,
-    create:boolean = true,
-    update: boolean = false
-  ): string => {
+  tscName: string,
+  columns: Column[],
+  generationOptions: IGenerationOptions,
+  create: boolean = true,
+  update: boolean = false
+): string => {
 
-      const entityName:string = toEntityName(tscName, generationOptions)
-      const entityFileName:string = toEntityFileName(tscName, generationOptions)
-      const inputsCreateName:string = toInputsCreateName(tscName, generationOptions);
-      const inputUpdateName:string = toInputsUpdateName(tscName, generationOptions);
-      const ignoreMetadata = generationOptions.graphqlFiles ?? false;
+  const entityName: string = toEntityName(tscName, generationOptions)
+  const entityFileName: string = toEntityFileName(tscName, generationOptions)
+  const inputsCreateName: string = toInputsCreateName(tscName, generationOptions);
+  const inputUpdateName: string = toInputsUpdateName(tscName, generationOptions);
+  const ignoreMetadata = generationOptions.graphqlFiles ?? false;
 
-      return `
+  return `
 
       import {InputType, Field, Float, ID} from "type-graphql";
       import { BaseInputFields } from 'merlin-gql';
@@ -90,13 +90,13 @@ export const InputsTemplate = (
 
       ${create ? `@InputType()
       export class ${inputsCreateName} extends BaseInputFields implements Partial<${entityName}> {
-        ${columns.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.tscName, tscName,))).filter(c => !c.generated).map(c => ColumnTemplate(c, generationOptions)).join("\n")}
+        ${columns.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.tscName, tscName) && !propertyIsCreateInputIgnored(c.tscName, tscName))).filter(c => !c.generated).map(c => ColumnTemplate(c, generationOptions)).join("\n")}
       }` : ''}
 
       ${update ? `
       @InputType()
       export class ${inputUpdateName} extends BaseInputFields implements Partial<${entityName}> {
-        ${columns.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.tscName, tscName))).filter(c => !c.generated).map(c => ColumnUpdateTemplate(c, generationOptions)).join("\n")}
+        ${columns.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.tscName, tscName) && !propertyIsUpdateInputIgnored(c.tscName, tscName))).filter(c => !c.generated).map(c => ColumnUpdateTemplate(c, generationOptions)).join("\n")}
       }` : ''}
       `
-  }
+}

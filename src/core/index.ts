@@ -25,5 +25,6 @@ export * from "./type-graphql/extended-decorators/field";
 export * from "./type-graphql/extended-decorators/object-type";
 export * from "./type-graphql/extended-decorators/no-sort";
 export * from "./type-graphql/extended-decorators/no-filter";
+export * from "./type-graphql/extended-decorators/no-input";
 export * from "../utils/metadata-storage";
 export * from "./schema/schema";

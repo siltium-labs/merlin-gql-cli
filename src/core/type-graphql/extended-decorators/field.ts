@@ -8,18 +8,15 @@ import {
 } from "../../../utils/metadata-storage";
 import { getEntityNameFromSublass } from "./utils";
 
-/**
- *
- * @deprecated it will be removed in version 1.1.0, you should use @MerlinGQLField instead
- */
-export function Field(): MethodAndPropDecorator;
-export function Field(options: FieldOptions): MethodAndPropDecorator;
-export function Field(
+
+export function MerlinGQLField(): MethodAndPropDecorator;
+export function MerlinGQLField(options: FieldOptions): MethodAndPropDecorator;
+export function MerlinGQLField(
   returnTypeFunction?: ReturnTypeFunc,
   options?: FieldOptions,
   isNotInheritance?: boolean
 ): MethodAndPropDecorator;
-export function Field(
+export function MerlinGQLField(
   returnTypeFuncOrOptions?: ReturnTypeFunc | FieldOptions,
   maybeOptions?: FieldOptions,
   isNotInheritance?: boolean
@@ -37,4 +34,26 @@ export function Field(
   };
 }
 
-export const MerlinGQLField = Field;
+/**
+ *
+ * @deprecated it will be removed in version 1.1.0, you should use ```@MerlinGQLField``` instead
+ */
+export function Field(): MethodAndPropDecorator;
+export function Field(options: FieldOptions): MethodAndPropDecorator;
+export function Field(
+  returnTypeFunction?: ReturnTypeFunc,
+  options?: FieldOptions,
+  isNotInheritance?: boolean
+): MethodAndPropDecorator;
+export function Field(
+  returnTypeFuncOrOptions?: ReturnTypeFunc | FieldOptions,
+  maybeOptions?: FieldOptions,
+  isNotInheritance?: boolean
+): MethodDecorator | PropertyDecorator {
+  return (prototype, propertyKey, descriptor) => {
+    return MerlinGQLField(
+      returnTypeFuncOrOptions as ReturnTypeFunc,
+      maybeOptions
+    )(prototype, propertyKey, descriptor);
+  };
+}

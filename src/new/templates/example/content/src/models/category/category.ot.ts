@@ -1,15 +1,15 @@
-import { Field ,NoFilter,ObjectType } from "merlin-gql";
-import { Float, ID } from "type-graphql";
+import { Field, MerlinGQLField, MerlinGQLResolver } from "merlin-gql";
+import { ID } from "type-graphql";
 import { Category } from "../../models/category/category.model";
 
-@ObjectType([
+@MerlinGQLResolver([
     "ALL"
 ])
 export class CategoryOT extends Category {
-    @NoFilter()
+    @MerlinGQLField()
     @Field(_ => ID)
     id!: any;
 
-    @Field(_ => String, { nullable: true })
+    @MerlinGQLField(_ => String, { nullable: true })
     name!: any;
 }

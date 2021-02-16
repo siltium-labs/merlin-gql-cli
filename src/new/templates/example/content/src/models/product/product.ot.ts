@@ -1,26 +1,26 @@
-import { Field ,NoFilter,NoSort,ObjectType } from "merlin-gql";
+import { MerlinGQLField, MerlinGQLResolver, NoSort } from "merlin-gql";
 import { Float, ID, Int } from "type-graphql";
 import { Product } from "../../models/product/product.model";
 import { Category } from "../category/category.model";
 
-@ObjectType([
+@MerlinGQLResolver([
     "ALL"
 ])
 export class ProductOT extends Product {
     
-    @Field(_ => ID)
+    @MerlinGQLField(_ => ID)
     id!: any;
     
-    @Field(_ => String, { nullable: true })
+    @MerlinGQLField(_ => String, { nullable: true })
     name!: any;
 
-    @Field(_ => Float)
+    @MerlinGQLField(_ => Float)
     price!: any;
 
     @NoSort()
-    @Field(_ => Category)
+    @MerlinGQLField(_ => Category)
     category!:any;
 
-    @Field(_ => Int)
+    @MerlinGQLField(_ => Int)
     categoryId!:any;
 }

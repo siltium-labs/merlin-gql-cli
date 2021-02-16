@@ -7,24 +7,22 @@ import {
   getMerlinMetadataStorage,
   OperationMetadataDefinition,
 } from "./../../../utils/metadata-storage";
+import { MerlinGQLField } from "./field";
 
-/**
- *
- * @deprecated it will be removed in version 1.1.0, you should use @MerlinGQLResolver instead
- */
-export function ObjectType(
+
+export function MerlinGQLResolver(
   operations: (CrudOperationsAndAll | OperationMetadataDefinition)[]
 ): ClassDecorator;
-export function ObjectType(
+export function MerlinGQLResolver(
   operations: (CrudOperationsAndAll | OperationMetadataDefinition)[],
   options: ObjectTypeOptions
 ): ClassDecorator;
-export function ObjectType(
+export function MerlinGQLResolver(
   operations: (CrudOperationsAndAll | OperationMetadataDefinition)[],
   name: string,
   options?: ObjectTypeOptions
 ): ClassDecorator;
-export function ObjectType(
+export function MerlinGQLResolver(
   operations: (CrudOperationsAndAll | OperationMetadataDefinition)[],
   nameOrOptions?: string | ObjectTypeOptions,
   maybeOptions?: ObjectTypeOptions
@@ -60,4 +58,32 @@ export function ObjectType(
   };
 }
 
-export const MerlinGQLResolver = ObjectType;
+/**
+ *
+ * @deprecated it will be removed in version 1.1.0, you should use ```@MerlinGQLResolver``` instead
+ */
+export function ObjectType(
+  operations: (CrudOperationsAndAll | OperationMetadataDefinition)[]
+): ClassDecorator;
+export function ObjectType(
+  operations: (CrudOperationsAndAll | OperationMetadataDefinition)[],
+  options: ObjectTypeOptions
+): ClassDecorator;
+export function ObjectType(
+  operations: (CrudOperationsAndAll | OperationMetadataDefinition)[],
+  name: string,
+  options?: ObjectTypeOptions
+): ClassDecorator;
+export function ObjectType(
+  operations: (CrudOperationsAndAll | OperationMetadataDefinition)[],
+  nameOrOptions?: string | ObjectTypeOptions,
+  maybeOptions?: ObjectTypeOptions
+): ClassDecorator {
+  return (target) => {
+    return MerlinGQLResolver(
+      operations,
+      nameOrOptions as any,
+      maybeOptions
+    )(target);
+  };
+}

@@ -1,29 +1,28 @@
-import { Field, ObjectType, Secure } from "merlin-gql";
+import { MerlinGQLField, MerlinGQLResolver } from "merlin-gql";
 import { ID } from "type-graphql";
 import { Person } from "../person/person.model";
 import { RolesEnum, User } from "./user.model";
 
-@Secure()
-@ObjectType(["FIND", "LIST", "CREATE", "UPDATE", "DELETE"])
+@MerlinGQLResolver(["FIND", "LIST", "CREATE", "UPDATE", "DELETE"])
 export class UserOT extends User {
-    @Field((type) => ID)
+    @MerlinGQLField((type) => ID)
     id!: number;
 
-    @Field((type) => String)
+    @MerlinGQLField((type) => String)
     username!: string;
 
-    @Field((type) => String)
+    @MerlinGQLField((type) => String)
     password!: string;
 
-    @Field((type) => String)
+    @MerlinGQLField((type) => String)
     email!: string;
 
-    @Field((type) => Date, { nullable: true })
+    @MerlinGQLField((type) => Date, { nullable: true })
     deletedDate!: Date;
 
-    @Field((type) => RolesEnum)
+    @MerlinGQLField((type) => RolesEnum)
     role!: string;
 
-    @Field((type) => Person, { nullable: true })
+    @MerlinGQLField((type) => Person, { nullable: true })
     person?: Promise<Person>;
 }

@@ -1,27 +1,27 @@
-import { Field, NoSort, ObjectType } from "merlin-gql";
+import { MerlinGQLField, MerlinGQLResolver, NoSort } from "merlin-gql";
 import { Float, ID } from "type-graphql";
-import { Person } from "./person.model";
 import { User } from "../user/user.model";
+import { Person } from "./person.model";
 
-@ObjectType([
+@MerlinGQLResolver([
     { type: "FIND", secure: true, roles: ["admin"] },
     { type: "LIST", secure: true }
     , "CREATE", "UPDATE", "DELETE"
 ])
 export class PersonOT extends Person {
-    @Field((type) => ID)
+    @MerlinGQLField((type) => ID)
     id!: number;
 
-    @Field((type) => String)
+    @MerlinGQLField((type) => String)
     name!: string;
     
-    @Field((type) => Float)
+    @MerlinGQLField((type) => Float)
     age!: number;
 
-    @Field((type) => Date, { nullable: true })
+    @MerlinGQLField((type) => Date, { nullable: true })
     @NoSort()
     deletedDate!: Date;
 
-    @Field((type) => User, { nullable: true })
+    @MerlinGQLField((type) => User, { nullable: true })
     user?: Promise<User>;
 }

@@ -98,12 +98,12 @@ export default class DBReverse extends LocalCommand {
     graphqlFiles: flags.boolean({
       char: "g",
       description:
-        "Generate GraphQL API (inputs, filter, sort, resolver) for entity files",
+        "Generate GraphQL API (Description GraphQL files) for entity files",
     }),
 
     secureResolvers: flags.boolean({
       char: "z",
-      description: "Add security to Resolvers with @Secure decorator",
+      description: "Add security to GraphQL API",
     }),
 
     softDeleteColumn: flags.string({

@@ -179,7 +179,7 @@ export default class New extends Command {
             {
               name: `${toTitleCase(
                 NewProjectTemplatesEnum.Example
-              )} - Showcases basic functionality examples. For more info check https://github.com/silentium-labs/merlin-gql`,
+              )} - Showcases basic functionality examples. For more info check https://github.com/silentium-labs/merlin-gql-cli`,
               value: NewProjectTemplatesEnum.Example,
             },
           ],

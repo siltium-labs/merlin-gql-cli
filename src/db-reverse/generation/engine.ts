@@ -56,10 +56,10 @@ export async function createModelFromDatabase(
   let flags: ModelGenerationOptions = {
     model: true,
     objectType: generationOptions.graphqlFiles,
-    input: generationOptions.graphqlFiles,
-    filter: generationOptions.graphqlFiles,
-    sort: generationOptions.graphqlFiles,
-    resolver: generationOptions.graphqlFiles,
+    input: false,
+    filter: false,
+    sort: false,
+    resolver: false,
   };
 
   generator(generationOptions, dbModel, flags);

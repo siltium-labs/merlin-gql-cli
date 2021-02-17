@@ -648,7 +648,7 @@ export async function useInquirer(
       {
         default: false,
         message:
-          "Do you want to generate GraphQL API (object types, inputs, filter, sort, resolver) for entity files? ",
+          "Do you want to generate GraphQL API (Description GraphQL files) for entity files? ",
         name: "graphqlFiles",
         type: "confirm",
       },
@@ -660,7 +660,7 @@ export async function useInquirer(
       await inquirer.prompt([
         {
           default: false,
-          message: "Do you want to secure resolvers with @Secure decorator",
+          message: "Do you want to secure GraphQL API?",
           name: "secureResolvers",
           type: "confirm",
         },

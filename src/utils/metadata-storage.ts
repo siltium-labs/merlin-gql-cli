@@ -12,7 +12,7 @@ export const propertyIsDecoratedWithField = (
   const propertyIsInheritedField = !!(
     merlinGqlMetadataStorage.objectTypes[targetClassName]?.extends &&
     merlinGqlMetadataStorage.objectTypes[
-    merlinGqlMetadataStorage.objectTypes[targetClassName]?.extends as string
+      merlinGqlMetadataStorage.objectTypes[targetClassName]?.extends as string
     ] &&
     merlinGqlMetadataStorage.objectTypes[
       merlinGqlMetadataStorage.objectTypes[targetClassName]?.extends as string
@@ -52,7 +52,9 @@ export const propertyIsCreateInputIgnored = (
   const merlinGqlMetadataStorage = getMerlinMetadataStorage();
   const propertyIsIgnored = !!merlinGqlMetadataStorage.objectTypes[
     targetClassName
-  ]?.fields.find((f) => f.name === propertyName && f.ignoreCreateInput === true);
+  ]?.fields.find(
+    (f) => f.name === propertyName && f.ignoreCreateInput === true
+  );
   return propertyIsIgnored;
 };
 
@@ -63,7 +65,9 @@ export const propertyIsUpdateInputIgnored = (
   const merlinGqlMetadataStorage = getMerlinMetadataStorage();
   const propertyIsIgnored = !!merlinGqlMetadataStorage.objectTypes[
     targetClassName
-  ]?.fields.find((f) => f.name === propertyName && f.ignoreUpdateInput === true);
+  ]?.fields.find(
+    (f) => f.name === propertyName && f.ignoreUpdateInput === true
+  );
   return propertyIsIgnored;
 };
 
@@ -96,8 +100,10 @@ export const securityRolesAllowedForOperation = (
   const merlinGqlMetadataStorage = getMerlinMetadataStorage();
   const operationMetadata = merlinGqlMetadataStorage.objectTypes[
     targetClassName
-  ]?.operations.find((o) => o.type === "ALL" || o.type === operation) as OperationMetadataDefinition;
-  return operationMetadata.roles;
+  ]?.operations.find(
+    (o) => o.type === "ALL" || o.type === operation
+  ) as OperationMetadataDefinition;
+  return operationMetadata?.roles ?? [];
 };
 
 export type FieldDefinitionMetadata = {
@@ -113,10 +119,10 @@ export type CrudOperations = "CREATE" | "UPDATE" | "DELETE" | "LIST" | "FIND";
 export type CrudOperationsAndAll = "ALL" | CrudOperations;
 
 export type OperationMetadataDefinition = {
-  type: CrudOperationsAndAll,
-  secure: boolean,
-  roles?: string[]
-}
+  type: CrudOperationsAndAll;
+  secure: boolean;
+  roles?: string[];
+};
 
 export type ObjectTypesMetadataStorage = {
   [key: string]: {
@@ -141,7 +147,7 @@ export const getMerlinMetadataStorage = (): MerlinMetadataStorage => {
 };
 export const resetMetadataStorage = () => {
   (global as any).MerlinMetadataStorage = MERLIN_METADATA_STORAGE;
-}
+};
 export const addOperationMetadata = (
   entityName: string,
   operation: CrudOperationsAndAll | OperationMetadataDefinition
@@ -152,7 +158,9 @@ export const addOperationMetadata = (
   if (existentMetadataForPrototype) {
     existentMetadataForPrototype.operations = [
       ...existentMetadataForPrototype.operations,
-      typeof operation === 'string' ? { type: operation, secure: false } : operation,
+      typeof operation === "string"
+        ? { type: operation, secure: false }
+        : operation,
     ];
   } else {
     merlinGqlMetadataStorage.objectTypes = {
@@ -161,7 +169,11 @@ export const addOperationMetadata = (
         [entityName]: {
           fields: [],
           extends: null,
-          operations: [typeof operation === 'string' ? { type: operation, secure: false } : operation],
+          operations: [
+            typeof operation === "string"
+              ? { type: operation, secure: false }
+              : operation,
+          ],
         },
       },
     };
@@ -174,7 +186,7 @@ export const addFieldMetadata = (entityName: string, fieldName: string) => {
     ignoreFilter: false,
     ignoreSort: false,
     ignoreCreateInput: false,
-    ignoreUpdateInput: false
+    ignoreUpdateInput: false,
   };
   const existentMetadataForPrototype =
     merlinGqlMetadataStorage.objectTypes[entityName];
@@ -204,12 +216,14 @@ export const addNoSortMetadata = (entityName: string, fieldName: string) => {
     ignoreFilter: false,
     ignoreSort: true,
     ignoreCreateInput: false,
-    ignoreUpdateInput: false
+    ignoreUpdateInput: false,
   };
   const existentMetadataForPrototype =
     merlinGqlMetadataStorage.objectTypes[entityName];
   if (existentMetadataForPrototype) {
-    const existentFieldMetadata = existentMetadataForPrototype.fields.find(f => f.name === metadataValue.name);
+    const existentFieldMetadata = existentMetadataForPrototype.fields.find(
+      (f) => f.name === metadataValue.name
+    );
     if (existentFieldMetadata) {
       existentFieldMetadata.ignoreSort = true;
     } else {
@@ -218,7 +232,6 @@ export const addNoSortMetadata = (entityName: string, fieldName: string) => {
         metadataValue,
       ];
     }
-
   } else {
     merlinGqlMetadataStorage.objectTypes = {
       ...merlinGqlMetadataStorage.objectTypes,
@@ -239,12 +252,14 @@ export const addNoFilterMetadata = (entityName: string, fieldName: string) => {
     ignoreFilter: true,
     ignoreSort: false,
     ignoreCreateInput: false,
-    ignoreUpdateInput: false
+    ignoreUpdateInput: false,
   };
   const existentMetadataForPrototype =
     merlinGqlMetadataStorage.objectTypes[entityName];
   if (existentMetadataForPrototype) {
-    const existentFieldMetadata = existentMetadataForPrototype.fields.find(f => f.name === metadataValue.name);
+    const existentFieldMetadata = existentMetadataForPrototype.fields.find(
+      (f) => f.name === metadataValue.name
+    );
     if (existentFieldMetadata) {
       existentFieldMetadata.ignoreFilter = true;
     } else {
@@ -253,7 +268,6 @@ export const addNoFilterMetadata = (entityName: string, fieldName: string) => {
         metadataValue,
       ];
     }
-
   } else {
     merlinGqlMetadataStorage.objectTypes = {
       ...merlinGqlMetadataStorage.objectTypes,
@@ -268,19 +282,24 @@ export const addNoFilterMetadata = (entityName: string, fieldName: string) => {
   }
 };
 
-export const addNoCreateInputMetadata = (entityName: string, fieldName: string) => {
+export const addNoCreateInputMetadata = (
+  entityName: string,
+  fieldName: string
+) => {
   const merlinGqlMetadataStorage = getMerlinMetadataStorage();
   const metadataValue: FieldDefinitionMetadata = {
     name: fieldName,
     ignoreFilter: false,
     ignoreSort: false,
     ignoreCreateInput: true,
-    ignoreUpdateInput: false
+    ignoreUpdateInput: false,
   };
   const existentMetadataForPrototype =
     merlinGqlMetadataStorage.objectTypes[entityName];
   if (existentMetadataForPrototype) {
-    const existentFieldMetadata = existentMetadataForPrototype.fields.find(f => f.name === metadataValue.name);
+    const existentFieldMetadata = existentMetadataForPrototype.fields.find(
+      (f) => f.name === metadataValue.name
+    );
     if (existentFieldMetadata) {
       existentFieldMetadata.ignoreCreateInput = true;
     } else {
@@ -289,7 +308,6 @@ export const addNoCreateInputMetadata = (entityName: string, fieldName: string) 
         metadataValue,
       ];
     }
-
   } else {
     merlinGqlMetadataStorage.objectTypes = {
       ...merlinGqlMetadataStorage.objectTypes,
@@ -304,19 +322,24 @@ export const addNoCreateInputMetadata = (entityName: string, fieldName: string) 
   }
 };
 
-export const addNoUpdateInputMetadata = (entityName: string, fieldName: string) => {
+export const addNoUpdateInputMetadata = (
+  entityName: string,
+  fieldName: string
+) => {
   const merlinGqlMetadataStorage = getMerlinMetadataStorage();
   const metadataValue: FieldDefinitionMetadata = {
     name: fieldName,
     ignoreFilter: false,
     ignoreSort: false,
     ignoreCreateInput: false,
-    ignoreUpdateInput: true
+    ignoreUpdateInput: true,
   };
   const existentMetadataForPrototype =
     merlinGqlMetadataStorage.objectTypes[entityName];
   if (existentMetadataForPrototype) {
-    const existentFieldMetadata = existentMetadataForPrototype.fields.find(f => f.name === metadataValue.name);
+    const existentFieldMetadata = existentMetadataForPrototype.fields.find(
+      (f) => f.name === metadataValue.name
+    );
     if (existentFieldMetadata) {
       existentFieldMetadata.ignoreUpdateInput = true;
     } else {
@@ -325,7 +348,6 @@ export const addNoUpdateInputMetadata = (entityName: string, fieldName: string) 
         metadataValue,
       ];
     }
-
   } else {
     merlinGqlMetadataStorage.objectTypes = {
       ...merlinGqlMetadataStorage.objectTypes,
@@ -339,4 +361,3 @@ export const addNoUpdateInputMetadata = (entityName: string, fieldName: string) 
     };
   }
 };
-

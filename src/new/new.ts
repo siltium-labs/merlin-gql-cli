@@ -219,7 +219,6 @@ const runNpmInstallForDependencies = async (
   appPath: string
 ): Promise<void> => {
   try {
-    console.log(generateDependencies(template, templateArgs));
     await spawnCommand(
       npmCommandName,
       ["i", "-s", ...generateDependencies(template, templateArgs)],

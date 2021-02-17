@@ -123,7 +123,7 @@ export const ResolverTemplate = (
     ${inputsToImport.length > 0 ? `
     import ${toLocalImport(inputsToImport.join(", "), generationOptions)} from "./${fileName}.input"
     `: ''}
-    import { ${resolverImports.join(", ")} } from "merlin-gql";
+    import { ${resolverImports.join(", ")} } from "@merlin-gql/core";
 
     ${listResolver}
 

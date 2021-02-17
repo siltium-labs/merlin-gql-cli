@@ -8,7 +8,7 @@ import { initializeDatabase } from "./core/database/database";
 import { getCurrentEnvironmentalConfig, isDevelopment } from "./core/env/env";
 import { graphqlSchema } from "./core/graphql-schema";
 import { SecurityFunctions } from "./core/security/security.functions";
-import { GqlContext } from "merlin-gql";
+import { GqlContext } from "@merlin-gql/core";
 
 const createContext = async (token?: string) => {
   if (token) {

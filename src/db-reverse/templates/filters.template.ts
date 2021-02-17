@@ -49,7 +49,7 @@ const ColumnTemplate = (
     `@Field((type)=> ${defaultValue}, { nullable: true })`;
 
   return `
-    ${graphqlDecorator}    
+    ${graphqlDecorator}
     ${propertyName}?:${column.tscType};
   `;
 };
@@ -58,11 +58,11 @@ const ColumnTemplate = (
 const RelationTemplate = (
   relation: Relation,
   generationOptions: IGenerationOptions
-) => {  
+) => {
   const relatedTableEntityName = toEntityName(relation.relatedTable, generationOptions);
   const propertyName = `${toPropertyName(relation.fieldName, generationOptions)}?:${toGraphQLFilterRelationType(relatedTableEntityName, relation.relationType)};`
   return `
-    @Field((type) =>  ${toGraphQLFilterRelation(relatedTableEntityName, relation.relationType)}, { nullable: true })    
+    @Field((type) =>  ${toGraphQLFilterRelation(relatedTableEntityName, relation.relationType)}, { nullable: true })
     ${propertyName}
     `;
 };
@@ -78,12 +78,12 @@ export const FilterTemplate = (
 
   return `
         import {InputType,Field} from "type-graphql";
-        import { BaseFilterFields, FilteredID, FilteredInt, FilteredFloat, FilteredBoolean, FilteredDate, FilteredString } from "merlin-gql";
-        ${entity.fileImports.map(fileImport => ImportsTemplate(fileImport,generationOptions)).join("\n")}        
-        
+        import { BaseFilterFields, FilteredID, FilteredInt, FilteredFloat, FilteredBoolean, FilteredDate, FilteredString } from "@merlin-gql/core";
+        ${entity.fileImports.map(fileImport => ImportsTemplate(fileImport,generationOptions)).join("\n")}
+
         @InputType()
         export ${defaultExport(generationOptions)} class ${filterName} extends BaseFilterFields {
-        
+
           @Field((type) => [${filterName}], { nullable: true })
           or?: ${filterName}[];
 
@@ -91,8 +91,8 @@ export const FilterTemplate = (
           and?: ${filterName}[];
 
           ${entity.columns.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.tscName, entity.tscName) && !propertyIsFilterIgnored(c.tscName, entity.tscName))).map(c => ColumnTemplate(c, generationOptions)).join("\n")}
-          
-          ${entity.relations.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.fieldName, entity.tscName) && !propertyIsFilterIgnored(c.fieldName, entity.tscName))).map(r => RelationTemplate(r, generationOptions)).join("\n")}         
+
+          ${entity.relations.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.fieldName, entity.tscName) && !propertyIsFilterIgnored(c.fieldName, entity.tscName))).map(r => RelationTemplate(r, generationOptions)).join("\n")}
         }
       `
 }

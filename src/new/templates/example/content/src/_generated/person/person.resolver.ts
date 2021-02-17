@@ -6,7 +6,7 @@ import { PersonSorts } from "./person.sort";
 
 import { PersonCreateInput, PersonUpdateInput } from "./person.input";
 
-import { ListResolver, FindResolver, UpdateResolver, CreateResolver, DeleteResolver, Secure } from "merlin-gql";
+import { ListResolver, FindResolver, UpdateResolver, CreateResolver, DeleteResolver, Secure } from "@merlin-gql/core";
 
 const BaseListResolver = ListResolver(Person, PersonFilters, PersonSorts);
 @Resolver()

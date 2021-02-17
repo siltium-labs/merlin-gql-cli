@@ -1,4 +1,4 @@
-import { EntityToGraphResolver, GraphQLInfo, IGqlContext, IQueryCriteria,Paginated,  createPaginationCriteria  } from "merlin-gql";
+import { EntityToGraphResolver, GraphQLInfo, IGqlContext, IQueryCriteria,Paginated,  createPaginationCriteria  } from "@merlin-gql/core";
 import { Arg, Ctx, FieldResolver, Float, Info, InputType, Mutation, ObjectType, Query, Resolver, Root } from "type-graphql";
 import { Person } from "../models/person/person.model";
 import { PersonFilters } from "../_generated/person/person.filter";

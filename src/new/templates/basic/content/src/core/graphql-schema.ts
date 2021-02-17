@@ -1,4 +1,4 @@
-import { loadOtFiles } from "merlin-gql";
+import { loadOtFiles } from "@merlin-gql/core";
 import { buildSchema } from "type-graphql";
 
 export const graphqlSchema = async () => {

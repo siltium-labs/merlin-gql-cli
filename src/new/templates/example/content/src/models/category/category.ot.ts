@@ -1,4 +1,4 @@
-import { Field, MerlinGQLField, MerlinGQLResolver } from "merlin-gql";
+import { Field, MerlinGQLField, MerlinGQLResolver } from "@merlin-gql/core";
 import { ID } from "type-graphql";
 import { Category } from "../../models/category/category.model";
 

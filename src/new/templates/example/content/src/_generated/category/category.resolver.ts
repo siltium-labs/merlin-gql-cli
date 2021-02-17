@@ -6,7 +6,7 @@ import { CategorySorts } from "./category.sort";
 
 import { CategoryCreateInput, CategoryUpdateInput } from "./category.input";
 
-import { ListResolver, FindResolver, UpdateResolver, CreateResolver, DeleteResolver } from "merlin-gql";
+import { ListResolver, FindResolver, UpdateResolver, CreateResolver, DeleteResolver } from "@merlin-gql/core";
 
 const BaseListResolver = ListResolver(Category, CategoryFilters, CategorySorts);
 @Resolver()

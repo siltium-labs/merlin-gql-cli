@@ -1,5 +1,5 @@
 import { InputType, Field } from "type-graphql";
-import { BaseFilterFields, FilteredID, FilteredInt, FilteredFloat, FilteredBoolean, FilteredDate, FilteredString } from "merlin-gql";
+import { BaseFilterFields, FilteredID, FilteredInt, FilteredFloat, FilteredBoolean, FilteredDate, FilteredString } from "@merlin-gql/core";
 
 import { CategoryFilters } from "../category/category.filter";
 

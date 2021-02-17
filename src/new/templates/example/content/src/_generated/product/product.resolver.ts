@@ -6,7 +6,7 @@ import { ProductSorts } from "./product.sort";
 
 import { ProductCreateInput, ProductUpdateInput } from "./product.input";
 
-import { ListResolver, FindResolver, UpdateResolver, CreateResolver, DeleteResolver } from "merlin-gql";
+import { ListResolver, FindResolver, UpdateResolver, CreateResolver, DeleteResolver } from "@merlin-gql/core";
 
 const BaseListResolver = ListResolver(Product, ProductFilters, ProductSorts);
 @Resolver()

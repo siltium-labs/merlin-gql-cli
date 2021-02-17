@@ -1,4 +1,4 @@
-import { MerlinGQLField, MerlinGQLResolver, NoSort } from "merlin-gql";
+import { MerlinGQLField, MerlinGQLResolver, NoSort } from "@merlin-gql/core";
 import { Float, ID } from "type-graphql";
 import { User } from "../user/user.model";
 import { Person } from "./person.model";
@@ -14,7 +14,7 @@ export class PersonOT extends Person {
 
     @MerlinGQLField((type) => String)
     name!: string;
-    
+
     @MerlinGQLField((type) => Float)
     age!: number;
 

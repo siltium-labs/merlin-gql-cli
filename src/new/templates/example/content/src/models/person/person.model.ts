@@ -1,10 +1,10 @@
 import { Column, Entity, JoinColumn, OneToOne, DeleteDateColumn } from "typeorm";
-import { SimpleBaseModel } from "merlin-gql";
+import { SimpleBaseModel } from "@merlin-gql/core";
 import { User } from "../user/user.model";
 
 @Entity()
 export class Person extends SimpleBaseModel {
-    
+
     @Column("varchar")
     name: string = "";
 

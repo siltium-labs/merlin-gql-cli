@@ -1,5 +1,5 @@
 import { InputType, Field } from "type-graphql";
-import { BaseSortFields, SortField } from "merlin-gql";
+import { BaseSortFields, SortField } from "@merlin-gql/core";
 
 import { UserSorts } from "../user/user.sort";
 

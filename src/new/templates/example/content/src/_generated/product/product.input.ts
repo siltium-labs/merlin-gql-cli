@@ -1,5 +1,5 @@
 import { InputType, Field, Float, ID } from "type-graphql";
-import { BaseInputFields } from "merlin-gql";
+import { BaseInputFields } from "@merlin-gql/core";
 import { Product } from "../../models/product/product.model";
 
 @InputType()

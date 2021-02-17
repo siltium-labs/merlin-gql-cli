@@ -146,7 +146,7 @@ export const EntityTemplate = (
 
   return `
         import {BaseEntity,Column,Entity,Index,JoinColumn,JoinTable,ManyToMany,ManyToOne,OneToMany,OneToOne,PrimaryColumn,PrimaryGeneratedColumn,RelationId,DeleteDateColumn} from "typeorm";
-        import { BaseModel } from "merlin-gql";
+        import { BaseModel } from "@merlin-gql/core";
         ${entity.fileImports.map(fileImport => ImportsTemplate(fileImport,generationOptions)).join("\n")}
 
         ${entity.indices.map(index => IndexTemplate(index, generationOptions)).join("\n")}

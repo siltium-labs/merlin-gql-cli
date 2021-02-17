@@ -88,7 +88,7 @@ export const ObjectTypeTemplate = (
   const filterName:string = toFiltersName(entity.tscName, generationOptions);
 
   return `
-        import { MerlinGQLField, MerlinGQLResolver } from "merlin-gql";
+        import { MerlinGQLField, MerlinGQLResolver } from "@merlin-gql/core";
         import { Int, Float, ID } from "type-graphql";
         import { ${entityName} } from "./${toEntityFileName(entityName, generationOptions)}";
 

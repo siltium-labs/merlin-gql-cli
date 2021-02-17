@@ -1,4 +1,4 @@
-import { MerlinGQLField, MerlinGQLResolver } from "merlin-gql";
+import { MerlinGQLField, MerlinGQLResolver } from "@merlin-gql/core";
 import { ID } from "type-graphql";
 import { Person } from "../person/person.model";
 import { RolesEnum, User } from "./user.model";

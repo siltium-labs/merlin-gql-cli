@@ -63,7 +63,7 @@ export const SortTemplate = (
 
   return `
         import {InputType, Field} from "type-graphql";
-        import { BaseSortFields, SortField } from "merlin-gql";
+        import { BaseSortFields, SortField } from "@merlin-gql/core";
         ${entity.fileImports.map(fileImport => ImportsTemplate(fileImport,generationOptions)).join("\n")}
 
         @InputType()

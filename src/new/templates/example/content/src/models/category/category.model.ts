@@ -1,4 +1,4 @@
-import { BaseModel } from "merlin-gql";
+import { BaseModel } from "@merlin-gql/core";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Product } from "../product/product.model";
 

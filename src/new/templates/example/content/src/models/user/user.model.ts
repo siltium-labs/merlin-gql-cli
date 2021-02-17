@@ -1,4 +1,4 @@
-import { SimpleBaseModel } from "merlin-gql";
+import { SimpleBaseModel } from "@merlin-gql/core";
 import { registerEnumType } from "type-graphql";
 import { Column, DeleteDateColumn, Entity, OneToOne } from "typeorm";
 import { Person } from "../person/person.model";

@@ -5,7 +5,7 @@ import {
   getInfoFromSubfield,
   GraphQLInfo,
   IDecodedToken
-} from "merlin-gql";
+} from "@merlin-gql/core";
 import { Arg, Field, Info, InputType, Mutation, ObjectType, Resolver } from "type-graphql";
 import { getManager } from "typeorm";
 import { User } from "../../models/user/user.model";

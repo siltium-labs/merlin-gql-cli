@@ -9,7 +9,7 @@ export const generateDependencies = (
     "cors",
     "express",
     "graphql",
-    "merlin-gql",
+    "@merlin-gql/core",
     "pluralize",
     "reflect-metadata",
     "type-graphql",

@@ -1,4 +1,4 @@
-import { BaseModel } from "merlin-gql";
+import { BaseModel } from "@merlin-gql/core";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Category } from "../category/category.model";
 

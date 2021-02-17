@@ -8,3 +8,4 @@
 node_modules
 ormconfig.json
 merlin-gql-config.json
+.npmrc

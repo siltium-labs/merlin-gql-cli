@@ -1,7 +1,7 @@
 import {
   getMerlinMetadataStorage,
 } from "../../utils/metadata-storage";
-import { loadOtFiles } from "../../core/schema/schema";
+import { loadOtFiles } from "@merlin-gql/core";
 import LocalCommand from "../core/local-command";
 import fs from "fs";
 import cli from "cli-ux";

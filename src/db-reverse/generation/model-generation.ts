@@ -1,5 +1,5 @@
 import { EntityTemplate } from "./../templates/entity.template";
-import { loadOtFiles } from "./../../core/schema/schema";
+import { loadOtFiles } from "@merlin-gql/core";
 import { InputsTemplate } from "./../templates/inputs.template";
 import { ResolverTemplate } from "./../templates/resolver.template";
 import * as Prettier from "prettier";

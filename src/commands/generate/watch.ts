@@ -1,8 +1,7 @@
 
-import { findFileNamesFromGlob, loadOtFiles } from "../../core/schema/schema";
+import { findFileNamesFromGlob, loadOtFiles } from "@merlin-gql/core";
 import LocalCommand from "../core/local-command";
 import fs from "fs";
-import cli from "cli-ux";
 import { Connection } from "typeorm";
 import { getConnection } from "../generate/crud";
 import { exec } from "child_process";

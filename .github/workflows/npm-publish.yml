@@ -19,7 +19,6 @@ jobs:
         with:
           node-version: 12
       - run: npm install
-      - run: npm install --no-save graphql@^15.4.0 reflect-metadata@^0.1.13 type-graphql@^1.1.1 typeorm@0.2.30 class-validator@^0.13.1
       - run: npm publish
 
 

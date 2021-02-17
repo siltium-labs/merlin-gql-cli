@@ -1,6 +1,6 @@
 {
   "name": "@merlin-gql/cli",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "author": "silentium-labs",
   "bin": {
     "@merlin-gql/cli": "./bin/run"

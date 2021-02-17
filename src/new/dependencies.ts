@@ -58,7 +58,8 @@ export const generateDevDependencies = (
     "nodemon",
     "ts-node",
     "typescript",
-    "open"
+    "open",
+    "gulp-cached"
   ];
   const argDependantDevDependencies: string[] = [];
   if (templateArgs["ngrok"]) {

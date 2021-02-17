@@ -4,10 +4,21 @@ const tsProject = ts.createProject("tsconfig.json");
 const nodemon = require("gulp-nodemon");
 const sourcemaps = require("gulp-sourcemaps");
 const relativeSourcemapsSource = require("gulp-relative-sourcemaps-source");
+const cache = require("gulp-cached");
 const open = require('open');
 
 gulp.task("assets", () => {
-    return gulp.src(["./src/**/*", "!./src/**/*.ts"]).pipe(gulp.dest("dist"));
+    const isProduction = process.env.NODE_ENV === "prod";
+    const sufix = isProduction ? "" : ".development";
+    return gulp
+        .src([
+            "./src/**/*",
+            "!./src/**/*.ts",
+            `config${sufix}.json`,
+            "merlin-gql-config.json"
+        ])
+        .pipe(cache("cache_assets", { optimizeMemory: true }))
+        .pipe(gulp.dest("dist"));
 });
 
 gulp.task(
@@ -15,6 +26,7 @@ gulp.task(
     gulp.series(() => {
         return gulp
             .src("src/**/*.ts")
+            .pipe(cache("cache_compile", { optimizeMemory: true }))
             .pipe(sourcemaps.init())
             .pipe(tsProject())
             .pipe(relativeSourcemapsSource({ dest: "dist" }))
@@ -23,23 +35,35 @@ gulp.task(
     }, "assets")
 );
 
-gulp.task("nodemon", cb => {
-    let started = false;
-    return nodemon({
-        script: "dist/app.js"
-    }).on("start", () => {
-        if (!started) {
-            setTimeout(() => {
-                open(`http://localhost:${process.env.PORT || 4000}/graphql`);
-            }, 3000)
-            started = true;
-            cb();
-        }
+let started = false;
+gulp.task("nodemon", (cb) => {
+    if (started) {
+        return cb();
+    }
+
+    let stream = nodemon({
+        script: "dist/app.js",
     });
+    stream
+        .on("start", () => {
+            if (!started) {
+                setTimeout(() => {
+                    open(`http://localhost:${process.env.PORT || 4000}/graphql`);
+                }, 5000)
+                started = true;
+                cb();
+            }
+        })
+        .on("restart", function () {
+            cb();
+        });
 });
 
-gulp.task("watch", () => {
-    return gulp.watch(["src/**/*.ts", "src/**/*.json", "src/**/*.graphql"], gulp.series("compile"));
+gulp.task("default", (cb) => {
+    gulp.watch(
+        ["src/**/*.ts", "src/**/*.json", "src/**/*.graphql", "src/**/*.ejs"],
+        { ignoreInitial: false },
+        gulp.series("compile", "nodemon")
+    );
+    cb();
 });
-
-gulp.task("default", gulp.parallel("watch", gulp.series("compile", "nodemon")));

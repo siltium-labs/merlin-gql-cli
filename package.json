@@ -1,6 +1,6 @@
 {
   "name": "@merlin-gql/cli",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "silentium-labs",
   "bin": {
     "@merlin-gql/cli": "./bin/run"
@@ -31,9 +31,7 @@
     "yargs": "16.2.0",
     "type-graphql": "^1.1.1",
     "typeorm": "^0.2.31",
-    "reflect-metadata": "^0.1.13",
-    "class-validator": "^0.13.1",
-    "graphql": "^15.5.0"
+    "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.0",

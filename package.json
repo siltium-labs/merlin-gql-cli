@@ -31,6 +31,7 @@
     "yargs": "16.2.0",
     "type-graphql": "^1.1.1",
     "graphql": "^15.5.0",
+    "class-validator": "^0.13.1",
     "typeorm": "^0.2.31",
     "reflect-metadata": "^0.1.13"
   },

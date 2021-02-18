@@ -75,7 +75,12 @@ Once you run the command, the CLI will guide ask you to choose a template for yo
 
 As previously recommended, if this is your first time using Merlin GQL or you want to explore it's features, we recommend to select the **Example** template.
 
-![Imgur](https://i.imgur.com/fLOu3ut.png)
+```
+MacBook-Air:$ npx @merlin-gql/cli new
+? Select a starting template for your project (Use arrow keys)
+❯ Basic - Contains only the very minimum required files to start.
+  Example - Showcases basic functionality examples. For more info check https://github.com/silentium-labs/merlin-gql-cli
+```
 
 ### Example Template
 
@@ -100,3 +105,114 @@ Finally, the CLI will ask you if you want to enable _ngrok_ for remote testing o
 ### Project Structure
 
 Once generated, your project structure will look like this
+
+```
+.
+├── dist
+├── src
+│   ├── _generated
+│   ├── app.ts
+│   ├── core
+│   │   ├── database
+│   │   ├── env
+│   │   ├── graphql-schema.ts
+│   │   └── security
+│   ├── data-generator
+│   │   ├── data-generator.resolver.ts
+│   │   └── utils
+│   ├── models
+│   └── resolvers
+├── tsconfig.json
+├── config.development.json
+├── gulpfile.js
+├── merlin-gql-config.json
+├── ormconfig.json
+├── package-lock.json
+├── package.json
+└── README.md
+```
+
+Most of the configuration files like `ormconfig.json`, `merlin-gql-config.json` and `config.development.json` will already be configured with the values that were propmpted during the project creation. We will talk about each of those files in the _Configuration_ section of the docs.
+
+### Starting the Project
+
+All you need to do to start seing your GraphQL API in action is running the command
+`npm start`
+
+## Creating your first GraphQL Resolver
+
+### TypeORM Entity Models
+
+_TypeORM Entity Models_ files is the fist of two files required to start using **Merlin GQL**
+Those live on the `src/models` folder and we suggest creating a folder for each model.
+The reason for that will be evident once we review the second required file, which is the _Merlin GQL Resolver_ files.
+
+To define a _TypeORM Entity Model_ all you need to do is create a Class that extends our _BaseModel_ and decorate it with _TypeORM Decorators_
+
+> Although it's not required, we recommend to use the _{kebab-case-name-of-your-model}.model.ts_ naming strategy for your entity model files. eg: person.model.ts
+
+```typescript
+import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { BaseModel } from "@merlin-gql/core";
+
+@Entity()
+export class Person extends BaseModel {
+  @PrimaryGeneratedColumn()
+  id: number = 0;
+
+  @Column("varchar")
+  name: string;
+
+  @Column("integer", { nullable: true })
+  securitySocialNumber: number | null = null;
+}
+```
+
+> You **MUST** extend _BaseModel_ for your code to work properly, please don't forget to do that when defining your _Entities_ otherwise you are going to get some errors.
+
+For more information about _TypeORM Entities_ definition check the [official documentation](https://typeorm.io/#/entities)
+
+### MerlinGQL Resolver Generators
+
+The second file required for **Merlin GQL** to work is the _Resolver Generator_ files. This are in charge of _generating_ the code that you need for all the operations that your _GraphQL API_ will _expose_ for each one of your entities, as well as configuring things like _filtering criteria_, _sort criteria_, _input criteria_ and _security_.
+
+We will review those settings individually later.
+
+To create your first _Resolver Generator_ file you need to create a file within your model folder and create a class that extends the _TypeORM Entity_ and decorate it with `@MerlinGQLResolver()`
+
+```typescript
+import { MerlinGQLResolver, MerlinGQLField } from "@merlin-gql/core";
+import { ID, Int } from "type-graphql";
+
+@MerlinGQLResolver(["FIND", "LIST", "CREATE", "UPDATE", "DELETE"])
+export class PersonResolverGenerator extends Person {
+  @MerlinGQLField((_) => ID)
+  id!: number;
+
+  @MerlinGQLField((_) => String)
+  name!: string;
+
+  @MerlinGQLField((_) => Int, { nullable: true })
+  securitySocialNumber!: number | null;
+}
+```
+
+At this point, it's up to your judgment what fields do you want to expose to your _GraphQL Schema_, you could pick a few or expose all your fields.
+
+Lets analyze each piece of this code individually.
+The `@MerlinGQLResolver()` decorator, tells the framework that you want this _TypeORM Entity_ exposed to the _GraphQL Schema_. It takes an _array of operations_ as argument.
+Those operations belong to the **FIND** _one by id_, **LIST** _by user defined criteria_, **CREATE** _a new entity_, **UPDATE** _an existing one_ and **DELETE** _one by id_.
+
+> You can configure the security individually for each operation if you want. Please refer to the **Security** section of the docs to see that in action.
+
+Then, in the class we define a subset of the _TypeORM Entity properties_ and decorate them with the `@MerlinGQLField()` decorator, this decorator will tell the _GraphQL Schema_ which type of field we are using.
+
+Once we have our _TypeORM Entity_ and _MerlinGQL Resolver Generator_ we can run the following command.
+
+`npm run watch`
+
+> Please make sure that your API is running while using this command, if not then on a separate shell, run `npm start`.
+
+This will generate a bunch of files inside the `src/_generated` folder. And if we go to the _GraphQL Playground_ in `http://localhost:4000/graphql` we will have a fully functional _GraphQL API_ with the _CRUD Functionalities_ that were defined for our first _Person_ entity.
+
+

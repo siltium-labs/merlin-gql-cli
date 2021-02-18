@@ -1,8 +1,8 @@
 ![Logo](https://i.imgur.com/4Yf8iaI.png)
 
-[![Version](https://img.shields.io/npm/v/merlin-gql.svg)](https://npmjs.org/package/merlin-gql)
-[![Downloads/week](https://img.shields.io/npm/dw/merlin-gql.svg)](https://npmjs.org/package/merlin-gql)
-[![License](https://img.shields.io/npm/l/merlin-gql.svg)](https://github.com/silentium-labs/merlin-gql/blob/master/package.json)
+[![Version](https://img.shields.io/npm/v/@merlin-gql/cli.svg)](https://npmjs.org/package/@merlin-gql/cli)
+[![Downloads/week](https://img.shields.io/npm/dw/@merlin-gql/cli.svg)](https://npmjs.org/package/@merlin-gql/cli)
+[![License](https://img.shields.io/npm/l/@merlin-gql/cli.svg)](https://github.com/silentium-labs/@merlin-gql/cli/blob/master/package.json)
 
 # Merlin GQL
 
@@ -50,13 +50,13 @@ You can use _npx_ or install it globally with _npm_, both approaches are valid a
 If you want to install Merlin GQL globally with npm you need to run the command:
 
 ```
-npm install --global merlin-gql
+npm install --global @merlin-gql/cli
 ```
 
 or it's short version
 
 ```
-npm i -g merlin-gql
+npm i -g @merlin-gql/cli
 ```
 
 If you want to use _npx_ instead, you don't need to install Merlin GQL globally.
@@ -68,13 +68,7 @@ If you want to use _npx_ instead, you don't need to install Merlin GQL globally.
 With the CLI you can create a new project using the _new_ command
 
 ```
-merlin-gql new
-```
-
-or with npx
-
-```
-npx merlin-gql new
+npx @merlin-gql/cli new
 ```
 
 Once you run the command, the CLI will guide ask you to choose a template for your project, if you are familiar with Merlin GQL you can select the **Bascic** template, which is a template with only the bare minimum files required to create your API without any example files and without boilerplate code.

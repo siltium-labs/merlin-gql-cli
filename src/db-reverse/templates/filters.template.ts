@@ -1,7 +1,7 @@
 import {
   propertyIsDecoratedWithField,
   propertyIsFilterIgnored,
-} from "../../utils/metadata-storage";
+} from "@merlin-gql/core";
 import { Column } from "../models/column";
 import { Relation } from "../models/relation";
 import IGenerationOptions from "../options/generation-options.interface";
@@ -75,7 +75,6 @@ export const FilterTemplate = (
 
   const filterName: string = toFiltersName(entity.tscName, generationOptions);
   const ignoreMetadata = generationOptions.graphqlFiles ?? false;
-
   return `
         import {InputType,Field} from "type-graphql";
         import { BaseFilterFields, FilteredID, FilteredInt, FilteredFloat, FilteredBoolean, FilteredDate, FilteredString } from "@merlin-gql/core";

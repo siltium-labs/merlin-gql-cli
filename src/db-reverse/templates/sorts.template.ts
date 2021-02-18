@@ -1,7 +1,7 @@
 import {
   propertyIsDecoratedWithField,
   propertyIsSortIgnored,
-} from "../../utils/metadata-storage";
+} from "@merlin-gql/core";
 import { Column } from "../models/column";
 import { Relation } from "../models/relation";
 import IGenerationOptions from "../options/generation-options.interface";

@@ -1,4 +1,4 @@
-import { propertyIsCreateInputIgnored, propertyIsDecoratedWithField, propertyIsUpdateInputIgnored } from "../../utils/metadata-storage";
+import { propertyIsCreateInputIgnored, propertyIsDecoratedWithField, propertyIsUpdateInputIgnored } from "@merlin-gql/core";
 import { Column } from "../models/column";
 import IGenerationOptions from "../options/generation-options.interface";
 import {
@@ -85,7 +85,7 @@ export const InputsTemplate = (
   return `
 
       import {InputType, Field, Float, ID} from "type-graphql";
-      import { BaseInputFields } from 'merlin-gql';
+      import { BaseInputFields } from "@merlin-gql/core";
       import { ${entityName} } from "../../models/${toFileName(tscName, generationOptions)}/${entityFileName}";
 
       ${create ? `@InputType()

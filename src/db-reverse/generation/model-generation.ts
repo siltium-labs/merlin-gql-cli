@@ -11,7 +11,7 @@ import { Entity } from "../models/entity";
 import { Relation } from "../models/relation";
 import { singular } from "pluralize";
 import { ModelGenerationOptions } from "../../commands/generate/crud";
-import { resetMetadataStorage, resolverIncludesOperation } from "../../utils/metadata-storage";
+import { resetMetadataStorage, resolverIncludesOperation } from "@merlin-gql/core";
 import { FilterTemplate } from "../templates/filters.template";
 import { SortTemplate } from "../templates/sorts.template";
 import { ObjectTypeTemplate } from "../templates/object-type.template";

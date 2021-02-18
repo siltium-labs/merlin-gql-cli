@@ -1,4 +1,4 @@
-import { getMerlinMetadataStorage, isOperationSecure, resolverIncludesOperation, securityRolesAllowedForOperation } from "./../../utils/metadata-storage";
+import { isOperationSecure, resolverIncludesOperation, securityRolesAllowedForOperation } from "@merlin-gql/core";
 import {
   toEntityFileName,
   toEntityName,

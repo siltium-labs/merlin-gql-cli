@@ -1,6 +1,6 @@
 import {
   getMerlinMetadataStorage,
-} from "../../utils/metadata-storage";
+} from "@merlin-gql/core";
 import { loadOtFiles } from "@merlin-gql/core";
 import LocalCommand from "../core/local-command";
 import fs from "fs";
@@ -44,6 +44,9 @@ export default class All extends LocalCommand {
 
   async run() {
     const connection: Connection | null = await getConnection();
+    if (!connection) {
+      throw "Could not initialize a typeorm connection";
+    }
     try {
       this.checks();
       const { args, flags } = this.parse(All);

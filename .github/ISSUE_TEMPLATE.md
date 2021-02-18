@@ -2,9 +2,10 @@
 Describe your issue here.
 
 ### Your environment
-* version of merlin_gql
+* version of *@merlin-gql/core* and/or *@merlin-gql/cli*
 * version of node
 * version of typeorm
+* version of TypeGraphQL
 
 ### Steps to reproduce
 Tell us how to reproduce this issue. Please provide a working demo if possible.

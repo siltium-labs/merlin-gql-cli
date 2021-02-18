@@ -215,5 +215,3 @@ Once we have our _TypeORM Entity_ and _MerlinGQL Resolver Generator_ we can run 
 > Please make sure that your API is running while using this command, if not then on a separate shell, run `npm start`.
 
 This will generate a bunch of files inside the `src/_generated` folder. And if we go to the _GraphQL Playground_ in `http://localhost:4000/graphql` we will have a fully functional _GraphQL API_ with the _CRUD Functionalities_ that were defined for our first _Person_ entity.
-
-

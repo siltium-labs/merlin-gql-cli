@@ -6,7 +6,7 @@
     "@merlin-gql/cli": "./bin/run"
   },
   "dependencies": {
-    "@merlin-gql/core": "0.0.1",
+    "@merlin-gql/core": "0.0.4",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "@oclif/plugin-help": "^3.2.1",
@@ -14,10 +14,12 @@
     "chalk": "^4.1.0",
     "change-case": "^4.1.2",
     "chokidar": "^3.5.1",
+    "class-validator": "^0.13.1",
     "cli-ux": "^5.5.1",
     "execa": "^5.0.0",
     "fs-extra": "^9.1.0",
     "global-npm": "^0.4.1",
+    "graphql": "^15.5.0",
     "inquirer": "^7.3.3",
     "listr": "^0.14.3",
     "ncp": "^2.0.0",
@@ -25,15 +27,13 @@
     "ora": "^5.3.0",
     "pluralize": "^8.0.0",
     "prettier": "^2.2.1",
+    "reflect-metadata": "^0.1.13",
     "rxjs": "^6.6.3",
     "tslib": "^2.1.0",
-    "uuid": "^8.3.2",
-    "yargs": "16.2.0",
     "type-graphql": "^1.1.1",
-    "graphql": "^15.5.0",
-    "class-validator": "^0.13.1",
     "typeorm": "^0.2.31",
-    "reflect-metadata": "^0.1.13"
+    "uuid": "^8.3.2",
+    "yargs": "16.2.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.0",

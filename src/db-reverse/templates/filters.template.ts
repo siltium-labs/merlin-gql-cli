@@ -45,8 +45,8 @@ const ColumnTemplate = (
   const propertyName = toPropertyName(column.tscName, generationOptions);
   const defaultValue = defaultFilterType(column.tscType);
   const graphqlDecorator = column.generated ?
-    `@Field((type)=> FilteredID, {nullable: true})` :
-    `@Field((type)=> ${defaultValue}, { nullable: true })`;
+    `@Field((_) => FilteredID, {nullable: true})` :
+    `@Field((_) => ${defaultValue}, { nullable: true })`;
 
   return `
     ${graphqlDecorator}
@@ -62,7 +62,7 @@ const RelationTemplate = (
   const relatedTableEntityName = toEntityName(relation.relatedTable, generationOptions);
   const propertyName = `${toPropertyName(relation.fieldName, generationOptions)}?:${toGraphQLFilterRelationType(relatedTableEntityName, relation.relationType)};`
   return `
-    @Field((type) =>  ${toGraphQLFilterRelation(relatedTableEntityName, relation.relationType)}, { nullable: true })
+    @Field((_) =>  ${toGraphQLFilterRelation(relatedTableEntityName, relation.relationType)}, { nullable: true })
     ${propertyName}
     `;
 };
@@ -83,10 +83,10 @@ export const FilterTemplate = (
         @InputType()
         export ${defaultExport(generationOptions)} class ${filterName} extends BaseFilterFields {
 
-          @Field((type) => [${filterName}], { nullable: true })
+          @Field((_) => [${filterName}], { nullable: true })
           or?: ${filterName}[];
 
-          @Field((type) => [${filterName}], { nullable: true })
+          @Field((_) => [${filterName}], { nullable: true })
           and?: ${filterName}[];
 
           ${entity.columns.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.tscName, entity.tscName) && !propertyIsFilterIgnored(c.tscName, entity.tscName))).map(c => ColumnTemplate(c, generationOptions)).join("\n")}

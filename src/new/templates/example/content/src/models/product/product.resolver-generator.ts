@@ -8,19 +8,19 @@ import { Category } from "../category/category.model";
 ])
 export class ProductResolverGenerator extends Product {
 
-    @MerlinGQLField(_ => ID)
+    @MerlinGQLField((_) => ID)
     id!: any;
 
-    @MerlinGQLField(_ => String, { nullable: true })
+    @MerlinGQLField((_) => String, { nullable: true })
     name!: any;
 
-    @MerlinGQLField(_ => Float)
+    @MerlinGQLField((_) => Float)
     price!: any;
 
     @NoSort()
-    @MerlinGQLField(_ => Category)
+    @MerlinGQLField((_) => Category)
     category!:any;
 
-    @MerlinGQLField(_ => Int)
+    @MerlinGQLField((_) => Int)
     categoryId!:any;
 }

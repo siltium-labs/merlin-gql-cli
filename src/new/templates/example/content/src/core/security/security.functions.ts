@@ -21,7 +21,7 @@ export class LoginCredentials {
 
 @ObjectType()
 export class LoginResult {
-  @Field(_ => User, { nullable: true })
+  @Field((_) => User, { nullable: true })
   user?: User;
   @Field()
   token!: string;
@@ -30,9 +30,9 @@ export class LoginResult {
 
 @Resolver()
 export class SecurityFunctions {
-  @Mutation(_ => LoginResult)
+  @Mutation((_) => LoginResult)
   async login(
-    @Arg("credentials", (type) => LoginCredentials)
+    @Arg("credentials", (_) => LoginCredentials)
     credentials: LoginCredentials,
     @Info() info: GraphQLInfo,
   ): Promise<LoginResult> {

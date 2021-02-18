@@ -49,7 +49,7 @@ const ColumnTemplate = (
     column.tscType
   );
   return `
-        @Field((type)=> ${defaultType}${fieldNullable})
+        @Field((_) => ${defaultType}${fieldNullable})
         ${propertyName}${questionMarkIfNullable}:${column.tscType}${defaultValue};
         `;
 };
@@ -63,7 +63,7 @@ const ColumnUpdateTemplate = (
   const propertyName = toPropertyName(column.tscName, generationOptions);
   const questionMarkNullable = "?";
   return `
-        @Field((type)=> ${defaultType}${fieldNullable})
+        @Field((_) => ${defaultType}${fieldNullable})
         ${propertyName}${questionMarkNullable}:${column.tscType};
         `;
 };

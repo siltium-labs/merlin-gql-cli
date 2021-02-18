@@ -5,24 +5,24 @@ import { CategoryFilters } from "../category/category.filter";
 
 @InputType()
 export class ProductFilters extends BaseFilterFields {
-    @Field((type) => [ProductFilters], { nullable: true })
+    @Field((_) => [ProductFilters], { nullable: true })
     or?: ProductFilters[];
 
-    @Field((type) => [ProductFilters], { nullable: true })
+    @Field((_) => [ProductFilters], { nullable: true })
     and?: ProductFilters[];
 
-    @Field((type) => FilteredFloat, { nullable: true })
+    @Field((_) => FilteredFloat, { nullable: true })
     id?: number;
 
-    @Field((type) => FilteredString, { nullable: true })
+    @Field((_) => FilteredString, { nullable: true })
     name?: string;
 
-    @Field((type) => FilteredFloat, { nullable: true })
+    @Field((_) => FilteredFloat, { nullable: true })
     price?: number;
 
-    @Field((type) => FilteredFloat, { nullable: true })
+    @Field((_) => FilteredFloat, { nullable: true })
     categoryId?: number;
 
-    @Field((type) => CategoryFilters, { nullable: true })
+    @Field((_) => CategoryFilters, { nullable: true })
     category?: CategoryFilters;
 }

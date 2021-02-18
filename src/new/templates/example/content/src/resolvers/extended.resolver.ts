@@ -40,7 +40,7 @@ export class PersonExtendedListResolver extends PersonListResolver {
         name: `PersonList`,
     })
     list(
-        @Arg("criteria", (type) => CriteriaQuery, { nullable: true })
+        @Arg("criteria", (_) => CriteriaQuery, { nullable: true })
         criteriaQuery: CriteriaQuery,
         @Info() info: GraphQLInfo,
         @Ctx() context: IGqlContext

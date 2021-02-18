@@ -4,48 +4,48 @@ import { Person } from "../../models/person/person.model";
 
 @InputType()
 export class PersonCreateInput extends BaseInputFields implements Partial<Person> {
-    @Field((type) => Float)
+    @Field((_) => Float)
     id: number = 0;
 
-    @Field((type) => Date)
+    @Field((_) => Date)
     created: Date = new Date();
 
-    @Field((type) => Date, { nullable: true })
+    @Field((_) => Date, { nullable: true })
     updated?: Date;
 
-    @Field((type) => Boolean)
+    @Field((_) => Boolean)
     deleted: boolean = false;
 
-    @Field((type) => String)
+    @Field((_) => String)
     name: string = "";
 
-    @Field((type) => Float)
+    @Field((_) => Float)
     age: number = 0;
 
-    @Field((type) => Date, { nullable: true })
+    @Field((_) => Date, { nullable: true })
     deletedDate?: Date;
 }
 
 @InputType()
 export class PersonUpdateInput extends BaseInputFields implements Partial<Person> {
-    @Field((type) => Float, { nullable: true })
+    @Field((_) => Float, { nullable: true })
     id?: number;
 
-    @Field((type) => Date, { nullable: true })
+    @Field((_) => Date, { nullable: true })
     created?: Date;
 
-    @Field((type) => Date, { nullable: true })
+    @Field((_) => Date, { nullable: true })
     updated?: Date;
 
-    @Field((type) => Boolean, { nullable: true })
+    @Field((_) => Boolean, { nullable: true })
     deleted?: boolean;
 
-    @Field((type) => String, { nullable: true })
+    @Field((_) => String, { nullable: true })
     name?: string;
 
-    @Field((type) => Float, { nullable: true })
+    @Field((_) => Float, { nullable: true })
     age?: number;
 
-    @Field((type) => Date, { nullable: true })
+    @Field((_) => Date, { nullable: true })
     deletedDate?: Date;
 }

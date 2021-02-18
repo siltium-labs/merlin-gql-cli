@@ -243,7 +243,7 @@ export class SuccessOrError {
 
 @Resolver()
 export class DataGeneratorResolver {
-  @Mutation((type) => SuccessOrError)
+  @Mutation((_) => SuccessOrError)
   async generateData() {
     if (!isProduction) {
       await generateData();

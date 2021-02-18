@@ -9,19 +9,19 @@ import { Person } from "./person.model";
     , "CREATE", "UPDATE", "DELETE"
 ])
 export class PersonResolverGenerator extends Person {
-    @MerlinGQLField((type) => ID)
+    @MerlinGQLField((_) => ID)
     id!: number;
 
-    @MerlinGQLField((type) => String)
+    @MerlinGQLField((_) => String)
     name!: string;
 
-    @MerlinGQLField((type) => Float)
+    @MerlinGQLField((_) => Float)
     age!: number;
 
-    @MerlinGQLField((type) => Date, { nullable: true })
+    @MerlinGQLField((_) => Date, { nullable: true })
     @NoSort()
     deletedDate!: Date;
 
-    @MerlinGQLField((type) => User, { nullable: true })
+    @MerlinGQLField((_) => User, { nullable: true })
     user?: Promise<User>;
 }

@@ -52,8 +52,8 @@ const ColumnTemplate = (
 ) => {
   const propertyName = toPropertyName(column.tscName, generationOptions);
   const fieldType = column.generated ?
-    `@MerlinGQLField((type) => ID ${column.options.nullable ? ",{ nullable: true }" : ""})` :
-    `@MerlinGQLField((type)=> ${defaultFieldType(column.tscType)} ${column.options.nullable ? ",{ nullable: true }" : ""})`;
+    `@MerlinGQLField((_) => ID ${column.options.nullable ? ",{ nullable: true }" : ""})` :
+    `@MerlinGQLField((_) => ${defaultFieldType(column.tscType)} ${column.options.nullable ? ",{ nullable: true }" : ""})`;
 
   return `
     ${fieldType}
@@ -70,7 +70,7 @@ const RelationTemplate = (
     const relatedTableEntityName = toEntityName(relation.relatedTable, generationOptions);
     const propertyName = `${toPropertyName(relation.fieldName, generationOptions)}?:${toRelation(relatedTableEntityName, relation.relationType, generationOptions)};`
     return `
-    @MerlinGQLField((type) =>  ${toGraphQLModelRelation(relatedTableEntityName, relation.relationType)}, { nullable: true })
+    @MerlinGQLField((_) =>  ${toGraphQLModelRelation(relatedTableEntityName, relation.relationType)}, { nullable: true })
     ${propertyName}
     `;
   };

@@ -10,7 +10,7 @@ class Ping {
 
 @Resolver()
 export class PingResolver {
-    @Query(_ => Ping)
+    @Query((_) => Ping)
     ping() {
         return new Ping();
     }

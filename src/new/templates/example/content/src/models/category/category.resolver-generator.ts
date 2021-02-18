@@ -6,10 +6,9 @@ import { Category } from "./category.model";
     "ALL"
 ])
 export class CategoryResolverGenerator extends Category {
-    @MerlinGQLField()
-    @Field(_ => ID)
+    @MerlinGQLField((_) => ID)
     id!: any;
 
-    @MerlinGQLField(_ => String, { nullable: true })
+    @MerlinGQLField((_) => String, { nullable: true })
     name!: any;
 }

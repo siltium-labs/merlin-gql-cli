@@ -8,7 +8,7 @@ import { Person } from "./person.model";
     { type: "LIST", secure: true }
     , "CREATE", "UPDATE", "DELETE"
 ])
-export class PersonOT extends Person {
+export class PersonResolverGenerator extends Person {
     @MerlinGQLField((type) => ID)
     id!: number;
 

@@ -5,7 +5,7 @@ import { Category } from "./category.model";
 @MerlinGQLResolver([
     "ALL"
 ])
-export class CategoryOT extends Category {
+export class CategoryResolverGenerator extends Category {
     @MerlinGQLField()
     @Field(_ => ID)
     id!: any;

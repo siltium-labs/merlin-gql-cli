@@ -4,7 +4,7 @@ import { Person } from "../person/person.model";
 import { RolesEnum, User } from "./user.model";
 
 @MerlinGQLResolver(["FIND", "LIST", "CREATE", "UPDATE", "DELETE"])
-export class UserOT extends User {
+export class UserResolverGenerator extends User {
     @MerlinGQLField((type) => ID)
     id!: number;
 

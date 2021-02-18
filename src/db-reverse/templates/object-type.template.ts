@@ -95,7 +95,7 @@ export const ObjectTypeTemplate = (
         ${entity.fileImports.map(fileImport => ImportsTemplate(fileImport, generationOptions)).join("\n")}
 
         @MerlinGQLResolver(["FIND", "LIST", "CREATE", "UPDATE", "DELETE"])
-        export ${defaultExport(generationOptions)} class ${entityName}OT extends ${entityName} {
+        export ${defaultExport(generationOptions)} class ${entityName}ResolverGenerator extends ${entityName} {
 
           ${entity.columns.map(c => ColumnTemplate(entity, c, generationOptions)).join("\n")}
 

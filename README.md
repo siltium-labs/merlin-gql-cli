@@ -143,7 +143,7 @@ All you need to do to start seing your GraphQL API in action is running the comm
 
 ### TypeORM Entity Models
 
-_TypeORM Entity Models_ files is the fist of two files required to start using **Merlin GQL**
+A _TypeORM Entity Models_ file is the fist of two files required to start using **Merlin GQL**
 Those live on the `src/models` folder and we suggest creating a folder for each model.
 The reason for that will be evident once we review the second required file, which is the _Merlin GQL Resolver_ files.
 

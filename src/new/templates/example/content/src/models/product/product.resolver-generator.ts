@@ -1,6 +1,6 @@
 import { MerlinGQLField, MerlinGQLResolver, NoSort } from "@merlin-gql/core";
 import { Float, ID, Int } from "type-graphql";
-import { Product } from "../../models/product/product.model";
+import { Product } from "./product.model";
 import { Category } from "../category/category.model";
 
 @MerlinGQLResolver([

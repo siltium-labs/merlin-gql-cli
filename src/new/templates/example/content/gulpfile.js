@@ -61,7 +61,15 @@ gulp.task("nodemon", (cb) => {
 
 gulp.task("default", (cb) => {
     gulp.watch(
-        ["src/**/*.ts", "src/**/*.json", "src/**/*.graphql", "src/**/*.ejs"],
+        [
+            "src/**/*.ts",
+            "src/**/*.json",
+            "src/**/*.graphql",
+            "config.json",
+            "config.development.json",
+            "ormconfig.json",
+            "merlin-gql-config.json"
+        ],
         { ignoreInitial: false },
         gulp.series("compile", "nodemon")
     );

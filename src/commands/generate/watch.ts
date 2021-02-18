@@ -1,5 +1,5 @@
 
-import { findFileNamesFromGlob, loadOtFiles } from "@merlin-gql/core";
+import { findFileNamesFromGlob, getMerlinGqlConfigResolversPath, loadOtFiles } from "@merlin-gql/core";
 import LocalCommand from "../core/local-command";
 import fs from "fs";
 import { Connection } from "typeorm";
@@ -8,12 +8,12 @@ import { exec } from "child_process";
 import ora from "ora";
 import path from "path";
 
-const watchFileChanges = (filePattern: string, cb: (err?: Error) => void) => {
+const watchFileChanges = (filePatterns: string[], cb: (err?: Error) => void) => {
   const pathsDictionary: { [path: string]: number } = {};
 
   setInterval(() => {
     let somethingChanged = false;
-    let filePaths = findFileNamesFromGlob(filePattern);
+    let filePaths = filePatterns.reduce((acc:string[], current) => ([...acc, ...findFileNamesFromGlob(current)]), []);
     filePaths.map((filePath) => {
       const { size } = fs.statSync(filePath);
       const didChange = !pathsDictionary[filePath] || pathsDictionary[filePath] !== size;
@@ -46,11 +46,11 @@ export default class Watch extends LocalCommand {
       const { args, flags } = this.parse(Watch);
       //loadMetadata
       await loadOtFiles();
-
-      const watchedFiles = (path.join(process.cwd(), "dist") + "/models/**/*.ot.{ts,js}").replace("\\", "/");
+      const merlinGqlResolverGeneratorsPath = await getMerlinGqlConfigResolversPath()
+      const watchedFilesGlobExpression: string[] = merlinGqlResolverGeneratorsPath.map(p => (path.join(process.cwd(), "dist") + "/" + p).replace("\\", "/"));
       const spinner = ora("Awaiting changes...")
       spinner.start();
-      const changesTracker = watchFileChanges(watchedFiles, async () => {
+      const changesTracker = watchFileChanges(watchedFilesGlobExpression, async () => {
         spinner.text = "Changes detected, generating files...";
         exec("npx @merlin-gql/cli generate:all", () => {
           spinner.text = "Awaiting changes..."

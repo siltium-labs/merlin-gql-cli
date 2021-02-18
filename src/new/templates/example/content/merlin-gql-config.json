@@ -1,5 +1,5 @@
 {
   "ots": [
-    "models/**/*.ot.{ts,js}"
+    "models/**/*.resolver-generator.{ts,js}"
   ]
 }

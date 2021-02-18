@@ -196,6 +196,7 @@ export class PersonResolverGenerator extends Person {
   securitySocialNumber!: number | null;
 }
 ```
+> Although it's not __STRICTLY__ required, we recommend to use the _{kebab-case-name-of-your-model}.resolver-generator.ts_ naming strategy for your entity resolver generator files. eg: person.resolver-generator.ts and put that file right next to the typeorm entity model file. Unlike the typeorm entity model file, if you decide to not use this suggestion, you need to do a change in the _merlin-gql-config.json_ file. You can find more information about that in the __Configuration__ section.
 
 At this point, it's up to your judgment what fields do you want to expose to your _GraphQL Schema_, you could pick a few or expose all your fields.
 

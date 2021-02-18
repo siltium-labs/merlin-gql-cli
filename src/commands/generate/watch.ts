@@ -52,7 +52,7 @@ export default class Watch extends LocalCommand {
       spinner.start();
       const changesTracker = watchFileChanges(watchedFiles, async () => {
         spinner.text = "Changes detected, generating files...";
-        exec("npx merlin-gql generate:all", () => {
+        exec("npx @merlin-gql/cli generate:all", () => {
           spinner.text = "Awaiting changes..."
         })
       });

@@ -4,30 +4,30 @@ import { Product } from "../../models/product/product.model";
 
 @InputType()
 export class ProductCreateInput extends BaseInputFields implements Partial<Product> {
-    @Field((type) => Float)
+    @Field((_) => Float)
     id: number = 0;
 
-    @Field((type) => String, { nullable: true })
+    @Field((_) => String, { nullable: true })
     name?: string;
 
-    @Field((type) => Float)
+    @Field((_) => Float)
     price: number = 0;
 
-    @Field((type) => Float, { nullable: true })
+    @Field((_) => Float, { nullable: true })
     categoryId?: number;
 }
 
 @InputType()
 export class ProductUpdateInput extends BaseInputFields implements Partial<Product> {
-    @Field((type) => Float, { nullable: true })
+    @Field((_) => Float, { nullable: true })
     id?: number;
 
-    @Field((type) => String, { nullable: true })
+    @Field((_) => String, { nullable: true })
     name?: string;
 
-    @Field((type) => Float, { nullable: true })
+    @Field((_) => Float, { nullable: true })
     price?: number;
 
-    @Field((type) => Float, { nullable: true })
+    @Field((_) => Float, { nullable: true })
     categoryId?: number;
 }

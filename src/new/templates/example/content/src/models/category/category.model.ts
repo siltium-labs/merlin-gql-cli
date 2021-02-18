@@ -11,6 +11,6 @@ export class Category extends BaseModel {
     @Column("varchar", { nullable: true })
     name: string | null = null;
 
-    @OneToMany(_ => Product, "category")
+    @OneToMany((_) => Product, "category")
     products?: Promise<Product[]>;
 }

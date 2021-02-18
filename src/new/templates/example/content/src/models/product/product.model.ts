@@ -13,7 +13,7 @@ export class Product extends BaseModel {
     @Column("float")
     price: number = 0;
 
-    @ManyToOne(_ => Category, "products")
+    @ManyToOne((_) => Category, "products")
     @JoinColumn({ name: "category_id" })
     category?: Promise<Category>;
 

@@ -13,14 +13,14 @@ export class Todo {
 
 @Resolver()
 export class TodoResolver {
-  @Query((type) => [Todo])
+  @Query((_) => [Todo])
   async todosFromApi() {
     const response = await fetch("https://jsonplaceholder.typicode.com/todos");
     const todos: Todo[] = await response.json();
     return todos;
   }
 
-  @Query((type) => [Todo])
+  @Query((_) => [Todo])
   async todosFromFile() {
     const todosFilecontent = fs.readFileSync(`${__dirname}/../../todos.json`);
     const todos: Todo[] = JSON.parse(todosFilecontent.toString());

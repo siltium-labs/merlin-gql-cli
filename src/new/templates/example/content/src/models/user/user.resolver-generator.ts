@@ -5,24 +5,24 @@ import { RolesEnum, User } from "./user.model";
 
 @MerlinGQLResolver(["FIND", "LIST", "CREATE", "UPDATE", "DELETE"])
 export class UserResolverGenerator extends User {
-    @MerlinGQLField((type) => ID)
+    @MerlinGQLField((_) => ID)
     id!: number;
 
-    @MerlinGQLField((type) => String)
+    @MerlinGQLField((_) => String)
     username!: string;
 
-    @MerlinGQLField((type) => String)
+    @MerlinGQLField((_) => String)
     password!: string;
 
-    @MerlinGQLField((type) => String)
+    @MerlinGQLField((_) => String)
     email!: string;
 
-    @MerlinGQLField((type) => Date, { nullable: true })
+    @MerlinGQLField((_) => Date, { nullable: true })
     deletedDate!: Date;
 
-    @MerlinGQLField((type) => RolesEnum)
+    @MerlinGQLField((_) => RolesEnum)
     role!: string;
 
-    @MerlinGQLField((type) => Person, { nullable: true })
+    @MerlinGQLField((_) => Person, { nullable: true })
     person?: Promise<Person>;
 }

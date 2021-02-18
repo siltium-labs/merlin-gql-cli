@@ -5,12 +5,12 @@ import { ProductFilters } from "../product/product.filter";
 
 @InputType()
 export class CategoryFilters extends BaseFilterFields {
-    @Field((type) => [CategoryFilters], { nullable: true })
+    @Field((_) => [CategoryFilters], { nullable: true })
     or?: CategoryFilters[];
 
-    @Field((type) => [CategoryFilters], { nullable: true })
+    @Field((_) => [CategoryFilters], { nullable: true })
     and?: CategoryFilters[];
 
-    @Field((type) => FilteredString, { nullable: true })
+    @Field((_) => FilteredString, { nullable: true })
     name?: string;
 }

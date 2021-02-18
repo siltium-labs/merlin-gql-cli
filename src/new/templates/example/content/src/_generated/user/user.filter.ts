@@ -5,39 +5,39 @@ import { PersonFilters } from "../person/person.filter";
 
 @InputType()
 export class UserFilters extends BaseFilterFields {
-    @Field((type) => [UserFilters], { nullable: true })
+    @Field((_) => [UserFilters], { nullable: true })
     or?: UserFilters[];
 
-    @Field((type) => [UserFilters], { nullable: true })
+    @Field((_) => [UserFilters], { nullable: true })
     and?: UserFilters[];
 
-    @Field((type) => FilteredFloat, { nullable: true })
+    @Field((_) => FilteredFloat, { nullable: true })
     id?: number;
 
-    @Field((type) => FilteredDate, { nullable: true })
+    @Field((_) => FilteredDate, { nullable: true })
     created?: Date;
 
-    @Field((type) => FilteredDate, { nullable: true })
+    @Field((_) => FilteredDate, { nullable: true })
     updated?: Date;
 
-    @Field((type) => FilteredBoolean, { nullable: true })
+    @Field((_) => FilteredBoolean, { nullable: true })
     deleted?: boolean;
 
-    @Field((type) => FilteredString, { nullable: true })
+    @Field((_) => FilteredString, { nullable: true })
     username?: string;
 
-    @Field((type) => FilteredString, { nullable: true })
+    @Field((_) => FilteredString, { nullable: true })
     password?: string;
 
-    @Field((type) => FilteredString, { nullable: true })
+    @Field((_) => FilteredString, { nullable: true })
     email?: string;
 
-    @Field((type) => FilteredString, { nullable: true })
+    @Field((_) => FilteredString, { nullable: true })
     role?: string;
 
-    @Field((type) => FilteredDate, { nullable: true })
+    @Field((_) => FilteredDate, { nullable: true })
     deletedDate?: Date;
 
-    @Field((type) => PersonFilters, { nullable: true })
+    @Field((_) => PersonFilters, { nullable: true })
     person?: PersonFilters;
 }

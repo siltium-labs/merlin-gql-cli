@@ -34,7 +34,7 @@ const ColumnTemplate = (
   const propertyName = toPropertyName(column.tscName, generationOptions);
 
   return `
-    @Field((type) => SortField, { nullable: true })
+    @Field((_) => SortField, { nullable: true })
     ${propertyName}?:SortField;
   `;
 };
@@ -48,7 +48,7 @@ const RelationTemplate = (
   const relatedTableSortName = toSortsName(relation.relatedTable, generationOptions);
   const propertyName = `${toPropertyName(relation.fieldName, generationOptions)}?:${toGraphQLSortRelationType(relatedTableSortName, relation.relationType)};`
   return `
-    @Field((type) => ${toGraphQLSortRelation(relatedTableEntityName, relation.relationType)}, { nullable: true })
+    @Field((_) => ${toGraphQLSortRelation(relatedTableEntityName, relation.relationType)}, { nullable: true })
     ${propertyName}
     `;
 };

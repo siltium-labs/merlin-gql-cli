@@ -5,33 +5,33 @@ import { UserFilters } from "../user/user.filter";
 
 @InputType()
 export class PersonFilters extends BaseFilterFields {
-    @Field((type) => [PersonFilters], { nullable: true })
+    @Field((_) => [PersonFilters], { nullable: true })
     or?: PersonFilters[];
 
-    @Field((type) => [PersonFilters], { nullable: true })
+    @Field((_) => [PersonFilters], { nullable: true })
     and?: PersonFilters[];
 
-    @Field((type) => FilteredFloat, { nullable: true })
+    @Field((_) => FilteredFloat, { nullable: true })
     id?: number;
 
-    @Field((type) => FilteredDate, { nullable: true })
+    @Field((_) => FilteredDate, { nullable: true })
     created?: Date;
 
-    @Field((type) => FilteredDate, { nullable: true })
+    @Field((_) => FilteredDate, { nullable: true })
     updated?: Date;
 
-    @Field((type) => FilteredBoolean, { nullable: true })
+    @Field((_) => FilteredBoolean, { nullable: true })
     deleted?: boolean;
 
-    @Field((type) => FilteredString, { nullable: true })
+    @Field((_) => FilteredString, { nullable: true })
     name?: string;
 
-    @Field((type) => FilteredFloat, { nullable: true })
+    @Field((_) => FilteredFloat, { nullable: true })
     age?: number;
 
-    @Field((type) => FilteredDate, { nullable: true })
+    @Field((_) => FilteredDate, { nullable: true })
     deletedDate?: Date;
 
-    @Field((type) => UserFilters, { nullable: true })
+    @Field((_) => UserFilters, { nullable: true })
     user?: UserFilters;
 }

@@ -6,9 +6,9 @@
 
 # Merlin GQL
 
-**Merlin GQL** is a framework to create Graphql APIs using **_Typescript_**, **_TypeORM_** and **_TypeGraphQL_** with the objective of making the development of database oriented GraphQL APIs as simple and straightforward as possible without making compromises on customization or extensibility.
+**Merlin GQL** is a framework for developing Graphql APIs using **_Typescript_**, **_TypeORM_** and **_TypeGraphQL_** created to make the development of database oriented GraphQL APIs as simple and straightforward as possible without making compromises on customization or extensibility.
 
-We provide solutions to common use cases with **out of the box features** to simplify and speed up the development of GraphQL APIs.
+It provides solutions to common use cases with **out of the box features** to simplify and speed up the development of GraphQL APIs.
 
 ## Features
 
@@ -61,8 +61,6 @@ npm i -g @merlin-gql/cli
 
 If you want to use _npx_ instead, you don't need to install Merlin GQL globally.
 
-> From now on and through the rest of the guide, we will assume that you have the CLI installed globally, if you decided to use _npx_ then all you need to do is to prefix all the commands with `npx `.
-
 ### Starting a new project
 
 With the CLI you can create a new project using the _new_ command
@@ -71,7 +69,7 @@ With the CLI you can create a new project using the _new_ command
 npx @merlin-gql/cli new
 ```
 
-Once you run the command, the CLI will guide ask you to choose a template for your project, if you are familiar with Merlin GQL you can select the **Bascic** template, which is a template with only the bare minimum files required to create your API without any example files and without boilerplate code.
+Once you run the command, the CLI will ask you to choose a template for your project, if you are familiar with Merlin GQL you can select the **Bascic** template, which is a template with only the bare minimum files required to create your API without any example files and without boilerplate code.
 
 As previously recommended, if this is your first time using Merlin GQL or you want to explore it's features, we recommend to select the **Example** template.
 
@@ -183,6 +181,7 @@ To create your first _Resolver Generator_ file you need to create a file within 
 ```typescript
 import { MerlinGQLResolver, MerlinGQLField } from "@merlin-gql/core";
 import { ID, Int } from "type-graphql";
+import { Product } from "./product.model";
 
 @MerlinGQLResolver(["FIND", "LIST", "CREATE", "UPDATE", "DELETE"])
 export class ProductResolverGenerator extends Product {
@@ -203,9 +202,9 @@ At this point, it's up to your judgment what fields do you want to expose to you
 
 Lets analyze each piece of this code individually.
 The `@MerlinGQLResolver()` decorator, tells the framework that you want this _TypeORM Entity_ exposed to the _GraphQL Schema_. It takes an _array of operations_ as argument.
-Those operations belong to the **FIND** _one by id_, **LIST** _by user defined criteria_, **CREATE** _a new entity_, **UPDATE** _an existing one_ and **DELETE** _one by id_.
+Those operations are: **FIND** _one by id_, **LIST** _by user defined criteria_, **CREATE** _a new entity_, **UPDATE** _an existing one_ and **DELETE** _one by id_.
 
-> You can configure the security individually for each operation if you want. Please refer to the **Security** section of the docs to see that in action.
+> You can configure __Authentication and Authorization__ individually for each operation if you want. Please refer to the **Security** section of the docs to see that in action.
 
 Then, in the class we define a subset of the _TypeORM Entity properties_ and decorate them with the `@MerlinGQLField()` decorator, this decorator will tell the _GraphQL Schema_ which type of field we are using.
 
@@ -221,7 +220,7 @@ This will generate a bunch of files inside the `src/_generated` folder. And if w
 
 Inside the `src/_generated` folder, there will be a bunch of files organized in a folder for each `MerlinGQLResolverGenerator` class.
 
-For example for the `Product` class you will find the following inside the `_generated/product` folder.
+For example, for the `Product` class you will find the following inside the `_generated/product` folder.
 
 ```
 .
@@ -266,7 +265,7 @@ export class ProductDeleteResolver extends BaseDeleteResolver<Product> {}
 ```
 
 There you can see the 5 _CRUD_ operations _(List, Find, Create, Update, Delete)_ defined.
-You can select which operations you want a specific _MerlinGQLResolverGenerator_ class by modifying the list of operations. For example, lets say we only want the _List_ operation generated, then we can modify the `Product` _MerlinGQLResolverGenerator_ class with the following.
+You can select which operations you want in the _MerlinGQLResolverGenerator_ class by modifying the list of operations. For example, lets say we only want the __LIST__ operation generated, then we can modify the `Product` _MerlinGQLResolverGenerator_ class with the following.
 
 ```typescript
 ...
@@ -293,9 +292,9 @@ Let's analyze the pieces of the generated _List_ resolver.
 
 First, we have a definition of a `BaseListResolverClass`. This class is part of the _MerlinGQL Core_ module and creates for us the logic to handle a _List GraphQL Query_ for our _Product TypeORM Entity_.
 
-It allow us to define _filtering, sorting and pagination_ when executing our _GraphQL Query_.
+It allows us to define _filtering, sorting and pagination_ when executing our _GraphQL Query_.
 
-And all that is available out of the box without writing a single line of code.
+And all that is available out of the box without writing a single line of code!
 
 > We can also extend each individual resolver to have custom behaviour, at the end of the day the resolvers are Typescript Classes so all the rules that apply to classes apply to our generated resolvers like _inheritance_. We will discuss that topic further ahead.
 
@@ -322,7 +321,7 @@ query {
 }
 ```
 
-We would get the list of the first 2 `Product` entities whose name contains `z` ordered by name.
+We would get a list of the first 2 `Product` entities whose name contains `z` ordered by name.
 
 > You can also use entity relations when filtering and sorting, we will see examples of that further ahead.
 
@@ -553,7 +552,7 @@ subscription {
 
 One of the most interesting features of _Merlin GQL_ is how it handles relationships between entities in your _Database Schema_ and maps that to the _GraphQL Schema_.
 
-Let's say your bussiness rules require to categorize your products, then you need to add a _Category_ entity and make your products fit into categories.
+Let's say your bussiness rules require to categorize your products, then you need to add a _Category_ entity and make your products split into categories.
 
 To do that, let's add a `category` folder inside `src/models` and let's create a `category.model.ts`file in that folder.
 
@@ -624,7 +623,7 @@ export class CategoryResolverGenerator extends Category {
 }
 ```
 
-and now in the `src/models/product/product.resolver-generator.ts` file:
+and now we add the _category_ and _categoryId_ fields to the `src/models/product/product.resolver-generator.ts` file:
 
 ```typescript
 import { MerlinGQLField, MerlinGQLResolver, NoSort } from "@merlin-gql/core";

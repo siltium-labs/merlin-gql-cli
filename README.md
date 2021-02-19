@@ -143,7 +143,7 @@ All you need to do to start seing your GraphQL API in action is running the comm
 
 ### TypeORM Entity Models
 
-A _TypeORM Entity Models_ file is the fist of two files required to start using **Merlin GQL**. 
+A _TypeORM Entity Models_ file is the fist of two files required to start using **Merlin GQL**.
 Those live on the `src/models` folder and we suggest creating a folder for each model.
 The reason for that will be evident once we review the second required file, which is the _Merlin GQL Resolver_ files.
 
@@ -196,7 +196,8 @@ export class PersonResolverGenerator extends Person {
   securitySocialNumber!: number | null;
 }
 ```
-> Although it's not __STRICTLY__ required, we recommend to use the _{kebab-case-name-of-your-model}.resolver-generator.ts_ naming strategy for your entity resolver generator files. eg: person.resolver-generator.ts and put that file right next to the typeorm entity model file. Unlike the typeorm entity model file, if you decide to not use this suggestion, you need to do a change in the _merlin-gql-config.json_ file. You can find more information about that in the __Configuration__ section.
+
+> Although it's not **STRICTLY** required, we recommend to use the _{kebab-case-name-of-your-model}.resolver-generator.ts_ naming strategy for your entity resolver generator files. eg: person.resolver-generator.ts and put that file right next to the typeorm entity model file. Unlike the typeorm entity model file, if you decide to not use this suggestion, you need to do a change in the _merlin-gql-config.json_ file. You can find more information about that in the **Configuration** section.
 
 At this point, it's up to your judgment what fields do you want to expose to your _GraphQL Schema_, you could pick a few or expose all your fields.
 
@@ -215,3 +216,267 @@ Once we have our _TypeORM Entity_ and _MerlinGQL Resolver Generator_ we can run 
 > Please make sure that your API is running while using this command, if not then on a separate shell, run `npm start`.
 
 This will generate a bunch of files inside the `src/_generated` folder. And if we go to the _GraphQL Playground_ in `http://localhost:4000/graphql` we will have a fully functional _GraphQL API_ with the _CRUD Functionalities_ that were defined for our first _Person_ entity.
+
+## Generated Files
+
+Inside the `src/_generated` folder, there will be a bunch of files organized in a folder for each `MerlinGQLResolverGenerator` class.
+
+For example for the `Person` class you will find the following inside the `_generated/person` folder.
+
+```
+.
+├── person.filter.ts
+├── person.input.ts
+├── person.resolver.ts
+└── person.sort.ts
+```
+
+### The resolver file
+
+The `person.resolver.ts` file has the _CRUD GraphQL Resolver and Schema definitions_ for the operations that you **configured** in your `Person MerlinGQLResolverGenerator` class.
+
+```typescript
+import { CreateResolver, DeleteResolver, FindResolver, ListResolver, UpdateResolver } from "@merlin-gql/core";
+import { Resolver } from "type-graphql";
+import { Person } from "../../models/person/person.model";
+import { PersonFilters } from "./person.filter";
+import { PersonCreateInput, PersonUpdateInput } from "./person.input";
+import { PersonSorts } from "./person.sort";
+
+const BaseListResolver = ListResolver(Person, PersonFilters, PersonSorts);
+@Resolver()
+export class PersonListResolver extends BaseListResolver<Person, PersonFilters, PersonSorts> {}
+
+const BaseFindResolver = FindResolver(Person);
+@Resolver()
+export class PersonFindResolver extends BaseFindResolver<Person> {}
+
+const BaseUpdateResolver = UpdateResolver(Person, PersonUpdateInput);
+@Resolver()
+export class PersonUpdateResolver extends BaseUpdateResolver<Person> {}
+
+const BaseCreateResolver = CreateResolver(Person, PersonCreateInput);
+@Resolver()
+export class PersonCreateResolver extends BaseCreateResolver<Person> {}
+
+const BaseDeleteResolver = DeleteResolver(Person);
+@Resolver()
+export class PersonDeleteResolver extends BaseDeleteResolver<Person> {}
+
+```
+
+There you can see the 5 _CRUD_ operations _(List, Find, Create, Update, Delete)_ defined.
+You can select which operations you want a specific _MerlinGQLResolverGenerator_ class by modifying the list of operations. For example, lets say we only want the _List_ operation generated, then we can modify the `Person` _MerlinGQLResolverGenerator_ class with the following.
+
+```typescript
+...
+@MerlinGQLResolver(["LIST"])
+export class PersonResolverGenerator extends Person {
+...
+}
+```
+
+By only adding the **LIST** operation to the array, we are telling the generator to only generate a single _List Resolver_. So your generated resolver file will look like this:
+
+```typescript
+...
+
+const BaseListResolver = ListResolver(Person, PersonFilters, PersonSorts);
+@Resolver()
+export class PersonListResolver extends BaseListResolver<Person, PersonFilters, PersonSorts> {}
+
+```
+
+### List Resolver
+
+Let's analyze the pieces of the generated _List_ resolver.
+
+First, we have a definition of a `BaseListResolverClass`. This class is part of the _MerlinGQL Core_ module and creates for us the logic to handle a _List GraphQL Query_ for our _Person TypeORM Entity_.
+
+It allow us to define _filtering, sorting and pagination_ when executing our _GraphQL Query_.
+
+And all that is available out of the box without writing a single line of code.
+
+> We can also extend each individual resolver to have custom behaviour, at the end of the day the resolvers are Typescript Classes so all the rules that apply to classes apply to our generated resolvers like _inheritance_. We will discuss that topic further ahead.
+
+If we go to the _GraphQL Playground_ of our API and execute the following query
+
+```graphql
+query {
+  personList(
+    criteria: {
+      filter: { name: { type: LIKE, value: "z" } }
+      sort: { name: { direction: ASC } }
+      max: 2
+    }
+  ) {
+    result {
+      id
+      name
+      age
+      user {
+        username
+      }
+    }
+  }
+}
+
+```
+
+We would get the list of the first 2 `Person` entities whose name contains `z` ordered by name.
+
+> You can also use entity relations when filtering and sorting, we will see examples of that further ahead.
+
+### Find Resolver
+
+Lets add **FIND** to the list of operations to generate for our `Person` entity.
+
+```typescript
+...
+@MerlinGQLResolver(["LIST", "FIND"])
+export class PersonResolverGenerator extends Person {
+...
+}
+```
+
+This will generate the following resolver.
+
+```typescript
+import { FindResolver, ListResolver } from "@merlin-gql/core";
+import { Resolver } from "type-graphql";
+import { Person } from "../../models/person/person.model";
+import { PersonFilters } from "./person.filter";
+import { PersonSorts } from "./person.sort";
+
+const BaseListResolver = ListResolver(Person, PersonFilters, PersonSorts);
+@Resolver()
+export class PersonListResolver extends BaseListResolver<Person, PersonFilters, PersonSorts> {}
+
+const BaseFindResolver = FindResolver(Person);
+@Resolver()
+export class PersonFindResolver extends BaseFindResolver<Person> {}
+```
+
+As you can see, the _Find Resolver_ was added.
+
+Now we can find a `Person`by ID on the _GraphQL API_
+
+```graphql
+query {
+  personById(id: 1) {
+    id
+    name
+  }
+}
+```
+
+### Create and Update Resolver
+
+Lets add **CREATE** and **UPDATE** to the list of operations to generate for our `Person` entity.
+
+```typescript
+...
+@MerlinGQLResolver(["LIST", "FIND", "CREATE", "UPDATE"])
+export class PersonResolverGenerator extends Person {
+...
+}
+```
+
+This will generate the following resolver.
+
+```typescript
+import { CreateResolver, FindResolver, ListResolver, UpdateResolver } from "@merlin-gql/core";
+import { Resolver } from "type-graphql";
+import { Person } from "../../models/person/person.model";
+import { PersonFilters } from "./person.filter";
+import { PersonCreateInput, PersonUpdateInput } from "./person.input";
+import { PersonSorts } from "./person.sort";
+
+...
+
+const BaseUpdateResolver = UpdateResolver(Person, PersonUpdateInput);
+@Resolver()
+export class PersonUpdateResolver extends BaseUpdateResolver<Person> {}
+
+const BaseCreateResolver = CreateResolver(Person, PersonCreateInput);
+@Resolver()
+export class PersonCreateResolver extends BaseCreateResolver<Person> {}
+
+```
+
+As you can see, the _Create_ and _Update_ resolvers were added.
+
+Now we can create a new `Person` and update an existing one by ID on the _GraphQL API_
+
+```graphql
+mutation {
+  personCreate(data: { name: "John Doe" }) {
+    id
+    name
+  }
+}
+```
+
+```graphql
+mutation {
+  personUpdate(id: 1, data: { name: "John Doe" }) {
+    id
+    name
+  }
+}
+```
+
+### Delete Resolver
+
+Lets add **DELETE** to the list of operations to generate for our `Person` entity.
+
+```typescript
+...
+@MerlinGQLResolver(["LIST", "FIND", "CREATE", "UPDATE", "DELETED"])
+export class PersonResolverGenerator extends Person {
+...
+}
+```
+
+At this point, since we added **ALL** the operations to our resolver generator class, we can simplify our definition changing it like the following
+
+```typescript
+...
+@MerlinGQLResolver(["ALL"])
+export class PersonResolverGenerator extends Person {
+...
+}
+```
+
+This will generate the following resolver.
+
+```typescript
+import { CreateResolver, DeleteResolver, FindResolver, ListResolver, UpdateResolver } from "@merlin-gql/core";
+import { Resolver } from "type-graphql";
+import { Person } from "../../models/person/person.model";
+import { PersonFilters } from "./person.filter";
+import { PersonCreateInput, PersonUpdateInput } from "./person.input";
+import { PersonSorts } from "./person.sort";
+
+...
+
+const BaseDeleteResolver = DeleteResolver(Person);
+@Resolver()
+export class PersonDeleteResolver extends BaseDeleteResolver<Person> {}
+
+```
+
+As you can see, the _Delete Resolver_ was added.
+
+Now we can delete a `Person`by ID on the _GraphQL API_
+
+```graphql
+mutation {
+  personDelete(id: 1) {
+    id
+    name
+  }
+}
+```
+
+> If your TypeORM Entity has logical delete configured, it will use that, if not, then it will delete the record on the database.

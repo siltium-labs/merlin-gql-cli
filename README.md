@@ -149,14 +149,14 @@ The reason for that will be evident once we review the second required file, whi
 
 To define a _TypeORM Entity Model_ all you need to do is create a Class that extends our _BaseModel_ and decorate it with _TypeORM Decorators_
 
-> Although it's not required, we recommend to use the _{kebab-case-name-of-your-model}.model.ts_ naming strategy for your entity model files. eg: person.model.ts
+> Although it's not required, we recommend to use the _{kebab-case-name-of-your-model}.model.ts_ naming strategy for your entity model files. eg: product.model.ts
 
 ```typescript
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 import { BaseModel } from "@merlin-gql/core";
 
 @Entity()
-export class Person extends BaseModel {
+export class Product extends BaseModel {
   @PrimaryGeneratedColumn()
   id: number = 0;
 
@@ -185,19 +185,19 @@ import { MerlinGQLResolver, MerlinGQLField } from "@merlin-gql/core";
 import { ID, Int } from "type-graphql";
 
 @MerlinGQLResolver(["FIND", "LIST", "CREATE", "UPDATE", "DELETE"])
-export class PersonResolverGenerator extends Person {
+export class ProductResolverGenerator extends Product {
   @MerlinGQLField((_) => ID)
-  id!: number;
+  id!: any;
 
   @MerlinGQLField((_) => String)
-  name!: string;
+  name!: any;
 
   @MerlinGQLField((_) => Int, { nullable: true })
-  securitySocialNumber!: number | null;
+  price!: any;
 }
 ```
 
-> Although it's not **STRICTLY** required, we recommend to use the _{kebab-case-name-of-your-model}.resolver-generator.ts_ naming strategy for your entity resolver generator files. eg: person.resolver-generator.ts and put that file right next to the typeorm entity model file. Unlike the typeorm entity model file, if you decide to not use this suggestion, you need to do a change in the _merlin-gql-config.json_ file. You can find more information about that in the **Configuration** section.
+> Although it's not **STRICTLY** required, we recommend to use the _{kebab-case-name-of-your-model}.resolver-generator.ts_ naming strategy for your entity resolver generator files. eg: product.resolver-generator.ts and put that file right next to the typeorm entity model file. Unlike the typeorm entity model file, if you decide to not use this suggestion, you need to do a change in the _merlin-gql-config.json_ file. You can find more information about that in the **Configuration** section.
 
 At this point, it's up to your judgment what fields do you want to expose to your _GraphQL Schema_, you could pick a few or expose all your fields.
 
@@ -215,63 +215,63 @@ Once we have our _TypeORM Entity_ and _MerlinGQL Resolver Generator_ we can run 
 
 > Please make sure that your API is running while using this command, if not then on a separate shell, run `npm start`.
 
-This will generate a bunch of files inside the `src/_generated` folder. And if we go to the _GraphQL Playground_ in `http://localhost:4000/graphql` we will have a fully functional _GraphQL API_ with the _CRUD Functionalities_ that were defined for our first _Person_ entity.
+This will generate a bunch of files inside the `src/_generated` folder. And if we go to the _GraphQL Playground_ in `http://localhost:4000/graphql` we will have a fully functional _GraphQL API_ with the _CRUD Functionalities_ that were defined for our first _Product_ entity.
 
 ## Generated Files
 
 Inside the `src/_generated` folder, there will be a bunch of files organized in a folder for each `MerlinGQLResolverGenerator` class.
 
-For example for the `Person` class you will find the following inside the `_generated/person` folder.
+For example for the `Product` class you will find the following inside the `_generated/product` folder.
 
 ```
 .
-├── person.filter.ts
-├── person.input.ts
-├── person.resolver.ts
-└── person.sort.ts
+├── product.filter.ts
+├── product.input.ts
+├── product.resolver.ts
+└── product.sort.ts
 ```
 
 ### The resolver file
 
-The `person.resolver.ts` file has the _CRUD GraphQL Resolver and Schema definitions_ for the operations that you **configured** in your `Person MerlinGQLResolverGenerator` class.
+The `product.resolver.ts` file has the _CRUD GraphQL Resolver and Schema definitions_ for the operations that you **configured** in your `Product MerlinGQLResolverGenerator` class.
 
 ```typescript
 import { CreateResolver, DeleteResolver, FindResolver, ListResolver, UpdateResolver } from "@merlin-gql/core";
 import { Resolver } from "type-graphql";
-import { Person } from "../../models/person/person.model";
-import { PersonFilters } from "./person.filter";
-import { PersonCreateInput, PersonUpdateInput } from "./person.input";
-import { PersonSorts } from "./person.sort";
+import { Product } from "../../models/product/product.model";
+import { ProductFilters } from "./product.filter";
+import { ProductCreateInput, ProductUpdateInput } from "./product.input";
+import { ProductSorts } from "./product.sort";
 
-const BaseListResolver = ListResolver(Person, PersonFilters, PersonSorts);
+const BaseListResolver = ListResolver(Product, ProductFilters, ProductSorts);
 @Resolver()
-export class PersonListResolver extends BaseListResolver<Person, PersonFilters, PersonSorts> {}
+export class ProductListResolver extends BaseListResolver<Product, ProductFilters, ProductSorts> {}
 
-const BaseFindResolver = FindResolver(Person);
+const BaseFindResolver = FindResolver(Product);
 @Resolver()
-export class PersonFindResolver extends BaseFindResolver<Person> {}
+export class ProductFindResolver extends BaseFindResolver<Product> {}
 
-const BaseUpdateResolver = UpdateResolver(Person, PersonUpdateInput);
+const BaseUpdateResolver = UpdateResolver(Product, ProductUpdateInput);
 @Resolver()
-export class PersonUpdateResolver extends BaseUpdateResolver<Person> {}
+export class ProductUpdateResolver extends BaseUpdateResolver<Product> {}
 
-const BaseCreateResolver = CreateResolver(Person, PersonCreateInput);
+const BaseCreateResolver = CreateResolver(Product, ProductCreateInput);
 @Resolver()
-export class PersonCreateResolver extends BaseCreateResolver<Person> {}
+export class ProductCreateResolver extends BaseCreateResolver<Product> {}
 
-const BaseDeleteResolver = DeleteResolver(Person);
+const BaseDeleteResolver = DeleteResolver(Product);
 @Resolver()
-export class PersonDeleteResolver extends BaseDeleteResolver<Person> {}
+export class ProductDeleteResolver extends BaseDeleteResolver<Product> {}
 
 ```
 
 There you can see the 5 _CRUD_ operations _(List, Find, Create, Update, Delete)_ defined.
-You can select which operations you want a specific _MerlinGQLResolverGenerator_ class by modifying the list of operations. For example, lets say we only want the _List_ operation generated, then we can modify the `Person` _MerlinGQLResolverGenerator_ class with the following.
+You can select which operations you want a specific _MerlinGQLResolverGenerator_ class by modifying the list of operations. For example, lets say we only want the _List_ operation generated, then we can modify the `Product` _MerlinGQLResolverGenerator_ class with the following.
 
 ```typescript
 ...
 @MerlinGQLResolver(["LIST"])
-export class PersonResolverGenerator extends Person {
+export class ProductResolverGenerator extends Product {
 ...
 }
 ```
@@ -281,9 +281,9 @@ By only adding the **LIST** operation to the array, we are telling the generator
 ```typescript
 ...
 
-const BaseListResolver = ListResolver(Person, PersonFilters, PersonSorts);
+const BaseListResolver = ListResolver(Product, ProductFilters, ProductSorts);
 @Resolver()
-export class PersonListResolver extends BaseListResolver<Person, PersonFilters, PersonSorts> {}
+export class ProductListResolver extends BaseListResolver<Product, ProductFilters, ProductSorts> {}
 
 ```
 
@@ -291,7 +291,7 @@ export class PersonListResolver extends BaseListResolver<Person, PersonFilters, 
 
 Let's analyze the pieces of the generated _List_ resolver.
 
-First, we have a definition of a `BaseListResolverClass`. This class is part of the _MerlinGQL Core_ module and creates for us the logic to handle a _List GraphQL Query_ for our _Person TypeORM Entity_.
+First, we have a definition of a `BaseListResolverClass`. This class is part of the _MerlinGQL Core_ module and creates for us the logic to handle a _List GraphQL Query_ for our _Product TypeORM Entity_.
 
 It allow us to define _filtering, sorting and pagination_ when executing our _GraphQL Query_.
 
@@ -303,7 +303,7 @@ If we go to the _GraphQL Playground_ of our API and execute the following query
 
 ```graphql
 query {
-  personList(
+  productList(
     criteria: {
       filter: { name: { type: LIKE, value: "z" } }
       sort: { name: { direction: ASC } }
@@ -320,21 +320,58 @@ query {
     }
   }
 }
-
 ```
 
-We would get the list of the first 2 `Person` entities whose name contains `z` ordered by name.
+We would get the list of the first 2 `Product` entities whose name contains `z` ordered by name.
 
 > You can also use entity relations when filtering and sorting, we will see examples of that further ahead.
 
+#### Filtering and Sorting
+
+Filtering and Sorting is one of the most flexible and powerfull features of `MerlinGQL` and is deeply integrated with your _TypeORM Schema_ definition. All the properties that you can filter by are typed in the _GraphQL Schema_ so you don't need to worry about making mistakes when defining your filter criteria.
+
+You can also use and/or expressions when filtering your _Entities_ creating very flexible queries.
+
+
+```graphql
+query {
+  productList(
+    criteria: {
+      filter: {
+        or: [
+          { name: { type: LIKE, value: "Coca" } }
+          {
+            and: [
+              { name: { type: LIKE, value: "P" } }
+              { category: { name: { type: EQUALS, value: "Snacks" } } }
+            ]
+          }
+        ]
+      }
+    }
+  ) {
+    result {
+      id
+      name
+      category {
+        name
+      }
+    }
+  }
+}
+
+```
+
+> If you noticed the _category_ property being used for filtering, don't worry. We are going to see how to split products into _categories_ using _TypeORM Entity relations_ in a moment.
+
 ### Find Resolver
 
-Lets add **FIND** to the list of operations to generate for our `Person` entity.
+Lets add **FIND** to the list of operations to generate for our `Product` entity.
 
 ```typescript
 ...
 @MerlinGQLResolver(["LIST", "FIND"])
-export class PersonResolverGenerator extends Person {
+export class ProductResolverGenerator extends Product {
 ...
 }
 ```
@@ -344,26 +381,26 @@ This will generate the following resolver.
 ```typescript
 import { FindResolver, ListResolver } from "@merlin-gql/core";
 import { Resolver } from "type-graphql";
-import { Person } from "../../models/person/person.model";
-import { PersonFilters } from "./person.filter";
-import { PersonSorts } from "./person.sort";
+import { Product } from "../../models/product/product.model";
+import { ProductFilters } from "./product.filter";
+import { ProductSorts } from "./product.sort";
 
-const BaseListResolver = ListResolver(Person, PersonFilters, PersonSorts);
+const BaseListResolver = ListResolver(Product, ProductFilters, ProductSorts);
 @Resolver()
-export class PersonListResolver extends BaseListResolver<Person, PersonFilters, PersonSorts> {}
+export class ProductListResolver extends BaseListResolver<Product, ProductFilters, ProductSorts> {}
 
-const BaseFindResolver = FindResolver(Person);
+const BaseFindResolver = FindResolver(Product);
 @Resolver()
-export class PersonFindResolver extends BaseFindResolver<Person> {}
+export class ProductFindResolver extends BaseFindResolver<Product> {}
 ```
 
 As you can see, the _Find Resolver_ was added.
 
-Now we can find a `Person`by ID on the _GraphQL API_
+Now we can find a `Product`by ID on the _GraphQL API_
 
 ```graphql
 query {
-  personById(id: 1) {
+  productById(id: 1) {
     id
     name
   }
@@ -372,12 +409,12 @@ query {
 
 ### Create and Update Resolver
 
-Lets add **CREATE** and **UPDATE** to the list of operations to generate for our `Person` entity.
+Lets add **CREATE** and **UPDATE** to the list of operations to generate for our `Product` entity.
 
 ```typescript
 ...
 @MerlinGQLResolver(["LIST", "FIND", "CREATE", "UPDATE"])
-export class PersonResolverGenerator extends Person {
+export class ProductResolverGenerator extends Product {
 ...
 }
 ```
@@ -387,30 +424,30 @@ This will generate the following resolver.
 ```typescript
 import { CreateResolver, FindResolver, ListResolver, UpdateResolver } from "@merlin-gql/core";
 import { Resolver } from "type-graphql";
-import { Person } from "../../models/person/person.model";
-import { PersonFilters } from "./person.filter";
-import { PersonCreateInput, PersonUpdateInput } from "./person.input";
-import { PersonSorts } from "./person.sort";
+import { Product } from "../../models/product/product.model";
+import { ProductFilters } from "./product.filter";
+import { ProductCreateInput, ProductUpdateInput } from "./product.input";
+import { ProductSorts } from "./product.sort";
 
 ...
 
-const BaseUpdateResolver = UpdateResolver(Person, PersonUpdateInput);
+const BaseUpdateResolver = UpdateResolver(Product, ProductUpdateInput);
 @Resolver()
-export class PersonUpdateResolver extends BaseUpdateResolver<Person> {}
+export class ProductUpdateResolver extends BaseUpdateResolver<Product> {}
 
-const BaseCreateResolver = CreateResolver(Person, PersonCreateInput);
+const BaseCreateResolver = CreateResolver(Product, ProductCreateInput);
 @Resolver()
-export class PersonCreateResolver extends BaseCreateResolver<Person> {}
+export class ProductCreateResolver extends BaseCreateResolver<Product> {}
 
 ```
 
 As you can see, the _Create_ and _Update_ resolvers were added.
 
-Now we can create a new `Person` and update an existing one by ID on the _GraphQL API_
+Now we can create a new `Product` and update an existing one by ID on the _GraphQL API_
 
 ```graphql
 mutation {
-  personCreate(data: { name: "John Doe" }) {
+  productCreate(data: { name: "John Doe" }) {
     id
     name
   }
@@ -419,7 +456,7 @@ mutation {
 
 ```graphql
 mutation {
-  personUpdate(id: 1, data: { name: "John Doe" }) {
+  productUpdate(id: 1, data: { name: "John Doe" }) {
     id
     name
   }
@@ -428,12 +465,12 @@ mutation {
 
 ### Delete Resolver
 
-Lets add **DELETE** to the list of operations to generate for our `Person` entity.
+Lets add **DELETE** to the list of operations to generate for our `Product` entity.
 
 ```typescript
 ...
 @MerlinGQLResolver(["LIST", "FIND", "CREATE", "UPDATE", "DELETED"])
-export class PersonResolverGenerator extends Person {
+export class ProductResolverGenerator extends Product {
 ...
 }
 ```
@@ -443,7 +480,7 @@ At this point, since we added **ALL** the operations to our resolver generator c
 ```typescript
 ...
 @MerlinGQLResolver(["ALL"])
-export class PersonResolverGenerator extends Person {
+export class ProductResolverGenerator extends Product {
 ...
 }
 ```
@@ -453,26 +490,26 @@ This will generate the following resolver.
 ```typescript
 import { CreateResolver, DeleteResolver, FindResolver, ListResolver, UpdateResolver } from "@merlin-gql/core";
 import { Resolver } from "type-graphql";
-import { Person } from "../../models/person/person.model";
-import { PersonFilters } from "./person.filter";
-import { PersonCreateInput, PersonUpdateInput } from "./person.input";
-import { PersonSorts } from "./person.sort";
+import { Product } from "../../models/product/product.model";
+import { ProductFilters } from "./product.filter";
+import { ProductCreateInput, ProductUpdateInput } from "./product.input";
+import { ProductSorts } from "./product.sort";
 
 ...
 
-const BaseDeleteResolver = DeleteResolver(Person);
+const BaseDeleteResolver = DeleteResolver(Product);
 @Resolver()
-export class PersonDeleteResolver extends BaseDeleteResolver<Person> {}
+export class ProductDeleteResolver extends BaseDeleteResolver<Product> {}
 
 ```
 
 As you can see, the _Delete Resolver_ was added.
 
-Now we can delete a `Person`by ID on the _GraphQL API_
+Now we can delete a `Product`by ID on the _GraphQL API_
 
 ```graphql
 mutation {
-  personDelete(id: 1) {
+  productDelete(id: 1) {
     id
     name
   }
@@ -480,3 +517,171 @@ mutation {
 ```
 
 > If your TypeORM Entity has logical delete configured, it will use that, if not, then it will delete the record on the database.
+
+## GraphQL Subscriptions
+
+Each _MerlinGQL Resolver_ comes with subscriptions that you can use to get notified of _CREATE, UPDATE and DELETE_ events for your entities.
+
+```graphql
+subscription {
+  productCreate {
+    id
+    name
+  }
+}
+```
+
+```graphql
+subscription {
+  productUpdate {
+    id
+    name
+  }
+}
+```
+
+```graphql
+subscription {
+  productDelete {
+    id
+    name
+  }
+}
+```
+
+### TypeORM Entity Relations
+
+One of the most interesting features of _Merlin GQL_ is how it handles relationships between entities in your _Database Schema_ and maps that to the _GraphQL Schema_.
+
+Let's say your bussiness rules require to categorize your products, then you need to add a _Category_ entity and make your products fit into categories.
+
+To do that, let's add a `category` folder inside `src/models` and let's create a `category.model.ts`file in that folder.
+
+```typescript
+import { BaseModel } from "@merlin-gql/core";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Product } from "../product/product.model";
+
+
+@Entity()
+export class Category extends BaseModel {
+    @PrimaryGeneratedColumn()
+    id: number = 0;
+
+    @Column("varchar", { nullable: true })
+    name: string | null = null;
+
+    @OneToMany(_ => Product, "category")
+    products?: Promise<Product[]>;
+}
+```
+
+and now let's add the `@ManyToOne()` relation inside our existing `product.model.ts` file.
+
+```typescript
+import { BaseModel } from "@merlin-gql/core";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Category } from "../category/category.model";
+
+@Entity()
+export class Product extends BaseModel {
+    @PrimaryGeneratedColumn()
+    id: number = 0;
+
+    @Column("varchar", { nullable: true })
+    name: string | null = null;
+
+    @Column("float")
+    price: number = 0;
+
+    @ManyToOne(_ => Category, "products")
+    @JoinColumn({ name: "category_id" })
+    category?: Promise<Category>;
+
+    @Column("integer", { nullable: true })
+    categoryId: number | null = null;
+}
+```
+
+> Notice that we added an extra categoryId `@Column()` property. This isn't required altough recommended, because it will allow you to use this _id_ field on mutations to create or change the _category_ of the _product_.
+
+Now we need to expose the newly created _Category TypeORM Entity_ and the _category_ and _categoryId_ properties of the existing _Product TypeORM Entity_ to the _GraphQL Schema_. To do that we first create a _MerlinGQL Resolver Generator_ file inside the `src/models/category` folder named `category.resolver-generator.ts`.
+
+```typescript
+import { Field, MerlinGQLField, MerlinGQLResolver } from "@merlin-gql/core";
+import { ID } from "type-graphql";
+import { Category } from "./category.model";
+
+@MerlinGQLResolver([
+   "ALL"
+])
+export class CategoryResolverGenerator extends Category {
+   @MerlinGQLField(_ => ID)
+   id!: any;
+
+   @MerlinGQLField(_ => String, { nullable: true })
+   name!: any;
+}
+```
+
+and now in the `src/models/product/product.resolver-generator.ts` file:
+
+```typescript
+import { MerlinGQLField, MerlinGQLResolver, NoSort } from "@merlin-gql/core";
+import { Float, ID, Int } from "type-graphql";
+import { Product } from "./product.model";
+import { Category } from "../category/category.model";
+
+@MerlinGQLResolver([
+    "ALL"
+])
+export class ProductResolverGenerator extends Product {
+
+   ...
+
+   @MerlinGQLField(_ => Category)
+   category!:any;
+
+   @MerlinGQLField(_ => Int)
+   categoryId!:any;
+}
+```
+
+Now that _Category_ is added and the relationship between _Category_ and _Product_ is configured, we can use it everywhere on our _Queries, Mutations and Subscriptions_.
+
+For example we could __LIST__ all the _Products_ that belong to the _Categories_ `Beverages` and `Snacks` and sort them by `name` of the _Category_.
+
+```graphql
+query {
+  productList(
+    criteria: {
+      filter: {
+        category: { name: { type: IN, value: ["Beverages", "Snacks"] } }
+      }
+      sort: { category: { name: { direction: ASC } } }
+    }
+  ) {
+    result {
+      id
+      name
+      category {
+        name
+      }
+    }
+  }
+}
+```
+Or we could retrieve some fields of the _Category_ when creating a Product
+
+```graphql
+mutation {
+  productCreate(data: { name: "3D", categoryId: 2 }) {
+    id
+    name
+    category {
+      id
+      name
+    }
+  }
+}
+```

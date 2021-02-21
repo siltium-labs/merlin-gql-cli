@@ -90,13 +90,13 @@ export const InputsTemplate = (
 
       ${create ? `@InputType()
       export class ${inputsCreateName} extends BaseInputFields implements Partial<${entityName}> {
-        ${columns.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.tscName, tscName) && !propertyIsCreateInputIgnored(c.tscName, tscName))).filter(c => !c.generated && !c.generated).map(c => ColumnTemplate(c, generationOptions)).join("\n")}
+        ${columns.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.tscName, tscName) && !propertyIsCreateInputIgnored(c.tscName, tscName))).filter(c => !c.generated).map(c => ColumnTemplate(c, generationOptions)).join("\n")}
       }` : ''}
 
       ${update ? `
       @InputType()
       export class ${inputUpdateName} extends BaseInputFields implements Partial<${entityName}> {
-        ${columns.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.tscName, tscName) && !propertyIsUpdateInputIgnored(c.tscName, tscName))).filter(c => !c.generated && !c.primary).map(c => ColumnUpdateTemplate(c, generationOptions)).join("\n")}
+        ${columns.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.tscName, tscName) && !propertyIsUpdateInputIgnored(c.tscName, tscName))).filter(c => !c.primary).map(c => ColumnUpdateTemplate(c, generationOptions)).join("\n")}
       }` : ''}
       `
 }

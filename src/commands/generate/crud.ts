@@ -204,7 +204,6 @@ const generateModelEntities = (entityMetadata: EntityMetadata[]) => {
       indices: [],
       columns: [],
     };
-
     const columns = generateColumns(metadata.columns);
     const relations = generateRelations(metadata.relations);
 
@@ -218,12 +217,13 @@ const generateModelEntities = (entityMetadata: EntityMetadata[]) => {
 
 const generateColumns = (cols: ColumnMetadata[]) => {
   const columns: Column[] = [];
+
   cols.forEach((columnMetadata) => {
-    if (!columnMetadata.relationMetadata) {
+    if (!columnMetadata.relationMetadata || (!!columnMetadata.relationMetadata && !!columnMetadata.referencedColumn)) {
       const column: Column = {
         tscName: columnMetadata.propertyName,
         tscType: getColumnTscType(columnMetadata.type),
-        type: columnMetadata.type,
+        type: !!columnMetadata.referencedColumn ? "id" : columnMetadata.type,
         primary: columnMetadata.isPrimary,
         generated: columnMetadata.generationStrategy && ["increment", "uuid"].includes(columnMetadata.generationStrategy) ? columnMetadata.generationStrategy as "increment" | "uuid" : columnMetadata.generationStrategy ? true : undefined,
         options: {

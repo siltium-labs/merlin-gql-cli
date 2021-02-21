@@ -168,6 +168,8 @@ export class Product extends BaseModel {
 
 > You **MUST** extend _BaseModel_ for your code to work properly, please don't forget to do that when defining your _Entities_ otherwise you are going to get some errors.
 
+> You **MUST** provide a default value for your entity properties, this is due to how limited Reflection is in Typescript, and it's a good practice anyways. To prevent users from forgetting about this point, the `tsconfig.json` file has __scrict mode__ activated.
+
 For more information about _TypeORM Entities_ definition check the [official documentation](https://typeorm.io/#/entities)
 
 ### MerlinGQL Resolver Generators
@@ -230,7 +232,7 @@ For example, for the `Product` class you will find the following inside the `_ge
 └── product.sort.ts
 ```
 
-### The resolver file
+### The Resolver File
 
 The `product.resolver.ts` file has the _CRUD GraphQL Resolver and Schema definitions_ for the operations that you **configured** in your `Product MerlinGQLResolverGenerator` class.
 
@@ -579,7 +581,7 @@ and now let's add the `@ManyToOne()` relation inside our existing `product.model
 
 ```typescript
 import { BaseModel } from "@merlin-gql/core";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Category } from "../category/category.model";
 
 @Entity()
@@ -594,7 +596,6 @@ export class Product extends BaseModel {
     price: number = 0;
 
     @ManyToOne(_ => Category, "products")
-    @JoinColumn({ name: "category_id" })
     category?: Promise<Category>;
 
     @Column("integer", { nullable: true })
@@ -641,7 +642,7 @@ export class ProductResolverGenerator extends Product {
    @MerlinGQLField(_ => Category)
    category!:any;
 
-   @MerlinGQLField(_ => Int)
+   @MerlinGQLField(_ => ID)
    categoryId!:any;
 }
 ```
@@ -684,3 +685,249 @@ mutation {
   }
 }
 ```
+
+## Filter and Sort Files
+
+As seen in previous examples the __LIST__ resolver allows to _filter_ and _sort_ the results of the operation based on user defined criteria.
+
+The fields that you can _filter_ and _sort_ by are defined in `src/_generated/{entity name}.filter.ts` and `src/_generated/{entity name}.sort.ts` respectively.
+
+Lets take a look at the generated sort and filter files for our _Product_ TypeORM Entity
+
+`product.filter.ts`
+```typescript
+import { BaseFilterFields, FilteredFloat, FilteredID, FilteredInt, FilteredString } from "@merlin-gql/core";
+import { Field, InputType } from "type-graphql";
+import { CategoryFilters } from "../category/category.filter";
+
+@InputType()
+export class ProductFilters extends BaseFilterFields {
+    @Field((_) => [ProductFilters], { nullable: true })
+    or?: ProductFilters[];
+
+    @Field((_) => [ProductFilters], { nullable: true })
+    and?: ProductFilters[];
+
+    @Field((_) => FilteredID, { nullable: true })
+    id?: number;
+
+    @Field((_) => FilteredString, { nullable: true })
+    name?: string;
+
+    @Field((_) => FilteredFloat, { nullable: true })
+    price?: number;
+
+    @Field((_) => FilteredInt, { nullable: true })
+    categoryId?: number;
+
+    @Field((_) => CategoryFilters, { nullable: true })
+    category?: CategoryFilters;
+}
+
+```
+
+`product.sort.ts`
+```typescript
+import { BaseSortFields, SortField } from "@merlin-gql/core";
+import { Field, InputType } from "type-graphql";
+import { CategorySorts } from "../category/category.sort";
+
+@InputType()
+export class ProductSorts extends BaseSortFields {
+    @Field((_) => SortField, { nullable: true })
+    id?: SortField;
+
+    @Field((_) => SortField, { nullable: true })
+    name?: SortField;
+
+    @Field((_) => SortField, { nullable: true })
+    price?: SortField;
+
+    @Field((_) => SortField, { nullable: true })
+    categoryId?: SortField;
+
+    @Field((_) => CategorySorts, { nullable: true })
+    category?: CategorySorts;
+}
+```
+
+#### Filter and Sort Criteria Definition
+
+By looking the filter file we can recognize the fields that we defined in our resolver generator along with the `and` and `or` fields that allow us to generate complex and flexible criteria to filter.
+
+What if we wanted to prevent some field to be used as a filter? Well, in that case we can use another _Merlin GQL Decorator_ in our resolver generator to remove this field.
+
+Let's say we don't want our users to be able to filter products by `categoryId`. All we need to do is decorate the `categoryId` property in the _Resolver Generator Class_ with the `@NoFilter()` decorator.
+
+```typescript
+import { MerlinGQLField, MerlinGQLResolver, NoFilter } from "@merlin-gql/core";
+...
+
+@MerlinGQLResolver([
+    "ALL"
+])
+export class ProductResolverGenerator extends Product {
+
+    ...
+
+    @NoFilter()
+    @MerlinGQLField((_) => ID)
+    categoryId!: any;
+}
+
+```
+And after a couple of seconds, _Merlin GQL_ will detect the change and regenerate the `product.filter.ts` file.
+
+```typescript
+import { BaseFilterFields, FilteredFloat, FilteredID, FilteredString } from "@merlin-gql/core";
+import { Field, InputType } from "type-graphql";
+import { CategoryFilters } from "../category/category.filter";
+
+@InputType()
+export class ProductFilters extends BaseFilterFields {
+    
+    ...
+
+    @Field((_) => FilteredFloat, { nullable: true })
+    price?: number;
+
+    //This is where the categoryId filter used to be, its no longer there
+
+    @Field((_) => CategoryFilters, { nullable: true })
+    category?: CategoryFilters;
+}
+
+```
+
+> _Why do we need a decorator at all? Can't we simply delete the field from the typescript code?_
+Well, technically you can, but it will be __regenerated__ by the framework when it detects a change on a _Resolver Generator_. Manually changing the contents of the `_generated` folder is not a good idea since it regenerates automatically.
+
+You can do the same with the criteria for sorting your Entities, in case you want some field to be _non sortable_ you can decorate it with the `@NoSort()` decorator and it will be removed from the sort file.
+
+```typescript
+import { MerlinGQLField, MerlinGQLResolver, NoFilter, NoSort } from "@merlin-gql/core";
+...
+
+@MerlinGQLResolver([
+    "ALL"
+])
+export class ProductResolverGenerator extends Product {
+
+    ...
+    @NoSort()
+    @NoFilter()
+    @MerlinGQLField((_) => ID)
+    categoryId!: any;
+}
+
+```
+
+```typescript
+...
+
+@InputType()
+export class ProductSorts extends BaseSortFields {
+    
+    ...
+
+    @Field((_) => SortField, { nullable: true })
+    price?: SortField;
+
+    //This is where the categoryId sort field used to be, its no longer there
+
+    @Field((_) => CategorySorts, { nullable: true })
+    category?: CategorySorts;
+}
+```
+
+## Input File
+
+The input file, defines the fields required to _create_ and _update_ instances of our entities and store them on the database, along with defining which fields are required according to your _TypeORM Entity_ definition.
+
+```typescript
+import { BaseInputFields } from "@merlin-gql/core";
+import { Field, Float, InputType, Int } from "type-graphql";
+import { Product } from "../../models/product/product.model";
+
+@InputType()
+export class ProductCreateInput extends BaseInputFields implements Partial<Product> {
+    @Field((_) => String, { nullable: true })
+    name?: string;
+
+    @Field((_) => Float)
+    price: number = 0;
+
+    @Field((_) => Int, { nullable: true })
+    categoryId?: number;
+}
+
+@InputType()
+export class ProductUpdateInput extends BaseInputFields implements Partial<Product> {
+    @Field((_) => String, { nullable: true })
+    name?: string;
+
+    @Field((_) => Float, { nullable: true })
+    price?: number;
+
+    @Field((_) => Int, { nullable: true })
+    categoryId?: number;
+}
+```
+> The Input Class definition is smart enough to configure itself appropiately according to the type of __primary key__ used, if your PK is auto generated, the `id` property will not be required, but it will be required in case you define an user defined `id` value for your _TypeORM Entity_
+
+#### Input Definition
+
+Just like with sort, and filter criteria, there might be instances where we want to use the default values and blocking user from defining values for a set of properties in our entities.
+
+Let's say we don't want our API users to be able to specify a product's `price` on creation.
+
+We can decorate the `price` property in the _Resolver Generator_ class with the `@NoCreateInput()` decorator.
+
+```typescript
+import { MerlinGQLField, MerlinGQLResolver, NoCreateInput, NoFilter, NoSort } from "@merlin-gql/core";
+...
+
+@MerlinGQLResolver([
+    "ALL"
+])
+export class ProductResolverGenerator extends Product {
+
+    ...
+
+    @NoCreateInput()
+    @MerlinGQLField((_) => Float)
+    price!: any;
+
+    ...
+}
+
+```
+And after a moment, the `product.input.ts` file will change
+
+```typescript
+...
+
+@InputType()
+export class ProductCreateInput extends BaseInputFields implements Partial<Product> {
+    @Field((_) => String, { nullable: true })
+    name?: string;
+
+    @Field((_) => Int, { nullable: true })
+    categoryId?: number;
+}
+
+@InputType()
+export class ProductUpdateInput extends BaseInputFields implements Partial<Product> {
+    @Field((_) => String, { nullable: true })
+    name?: string;
+
+    @Field((_) => Float, { nullable: true })
+    price?: number;
+
+    @Field((_) => Int, { nullable: true })
+    categoryId?: number;
+}
+
+```
+
+If for some reason we don't want the user to be able to update the price value, we could also use the `@NoUpdateInput()` decorator, or as in this case we don't want the user to be able to define `price` on __creation nor update__ we can use the `NoInput()` decorator to remove both from the generated file _Create_ and _Update_ classes.

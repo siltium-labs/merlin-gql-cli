@@ -450,7 +450,7 @@ Now we can create a new `Product` and update an existing one by ID on the _Graph
 
 ```graphql
 mutation {
-  productCreate(data: { name: "John Doe" }) {
+  productCreate(data: { name: "Coca Cola" }) {
     id
     name
   }
@@ -459,7 +459,7 @@ mutation {
 
 ```graphql
 mutation {
-  productUpdate(id: 1, data: { name: "John Doe" }) {
+  productUpdate(id: 1, data: { name: "Pepsi" }) {
     id
     name
   }

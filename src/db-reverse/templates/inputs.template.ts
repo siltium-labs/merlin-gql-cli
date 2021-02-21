@@ -1,4 +1,5 @@
 import { propertyIsCreateInputIgnored, propertyIsDecoratedWithField, propertyIsUpdateInputIgnored } from "@merlin-gql/core";
+import { ColumnType } from "typeorm";
 import { Column } from "../models/column";
 import IGenerationOptions from "../options/generation-options.interface";
 import {
@@ -10,9 +11,13 @@ import {
   toPropertyName,
 } from "./../generation/model-generation";
 
-const defaultFilterType = (tscType: string) => {
-  if (tscType === "string") {
+const defaultFilterType = (tscType: string, type: ColumnType | string, primary: boolean = false) => {
+  if (primary) {
+    return "ID";
+  } else if (tscType === "string") {
     return "String";
+  } else if (tscType === "number" && typeof type === "string" && type.includes("int")) {
+    return "Int";
   } else if (tscType === "number") {
     return "Float";
   } else if (tscType === "Date") {
@@ -43,7 +48,7 @@ const ColumnTemplate = (
   const fieldNullable = column.options.nullable ? `,{ nullable: true }` : "";
   const propertyName = toPropertyName(column.tscName, generationOptions);
   const questionMarkIfNullable = column.options.nullable ? "?" : "";
-  const defaultType = defaultFilterType(column.tscType);
+  const defaultType = defaultFilterType(column.tscType, column.type, column.primary);
   const defaultValue = defaultValueIfNeeded(
     !!column.options.nullable,
     column.tscType
@@ -58,7 +63,7 @@ const ColumnUpdateTemplate = (
   column: Column,
   generationOptions: IGenerationOptions
 ) => {
-  const defaultType = defaultFilterType(column.tscType);
+  const defaultType = defaultFilterType(column.tscType, column.type, column.primary);
   const fieldNullable = `,{ nullable: true }`;
   const propertyName = toPropertyName(column.tscName, generationOptions);
   const questionMarkNullable = "?";
@@ -84,7 +89,7 @@ export const InputsTemplate = (
 
   return `
 
-      import {InputType, Field, Float, ID} from "type-graphql";
+      import {InputType, Field, Float, ID, Int} from "type-graphql";
       import { BaseInputFields } from "@merlin-gql/core";
       import { ${entityName} } from "../../models/${toFileName(tscName, generationOptions)}/${entityFileName}";
 

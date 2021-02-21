@@ -106,8 +106,7 @@ export default class GenerateCrud extends LocalCommand {
 
         if (!flags.input && !flags.filter && !flags.sort && !flags.resolver) {
           this.log(
-            `${chalk.cyan.bold("No files types selected")} ${
-              emoji.airplane_departure
+            `${chalk.cyan.bold("No files types selected")} ${emoji.airplane_departure
             } . Finished`
           );
           return;
@@ -132,8 +131,7 @@ export default class GenerateCrud extends LocalCommand {
             );
           } else {
             this.log(
-              `${chalk.cyan.bold("No models selected")} ${
-                emoji.airplane_departure
+              `${chalk.cyan.bold("No models selected")} ${emoji.airplane_departure
               } . Finished`
             );
             return;
@@ -227,6 +225,7 @@ const generateColumns = (cols: ColumnMetadata[]) => {
         tscType: getColumnTscType(columnMetadata.type),
         type: columnMetadata.type,
         primary: columnMetadata.isPrimary,
+        generated: columnMetadata.generationStrategy && ["increment", "uuid"].includes(columnMetadata.generationStrategy) ? columnMetadata.generationStrategy as "increment" | "uuid" : columnMetadata.generationStrategy ? true : undefined,
         options: {
           name: columnMetadata.databaseName,
           nullable: columnMetadata.isNullable,
@@ -259,10 +258,10 @@ const getRelationType = (relation: RelationMetadata) => {
   return relation.isManyToMany
     ? "ManyToMany"
     : relation.isManyToOne
-    ? "ManyToOne"
-    : relation.isOneToMany
-    ? "OneToMany"
-    : "OneToOne";
+      ? "ManyToOne"
+      : relation.isOneToMany
+        ? "OneToMany"
+        : "OneToOne";
 };
 
 const getColumnTscType = (columnType: ColumnType) => {

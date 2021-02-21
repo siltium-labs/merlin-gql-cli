@@ -2,6 +2,7 @@ import {
   propertyIsDecoratedWithField,
   propertyIsFilterIgnored,
 } from "@merlin-gql/core";
+import { ColumnType } from "typeorm";
 import { Column } from "../models/column";
 import { Relation } from "../models/relation";
 import IGenerationOptions from "../options/generation-options.interface";
@@ -18,9 +19,14 @@ import {
 } from "./../generation/model-generation";
 import { Entity } from "./../models/entity";
 
-const defaultFilterType = (tscType: string) => {
-  if (tscType === "string") {
+
+const defaultFilterType = (tscType: string, type: ColumnType | string, primary: boolean = false) => {
+  if (primary || typeof type === "string" && type === "id") {
+    return "FilteredID";
+  } else if (tscType === "string") {
     return "FilteredString";
+  } else if (tscType === "number" && typeof type === "string" && type.includes("int")) {
+    return "FilteredInt";
   } else if (tscType === "number") {
     return "FilteredFloat";
   } else if (tscType === "Date") {
@@ -43,7 +49,7 @@ const ColumnTemplate = (
   generationOptions: IGenerationOptions
 ) => {
   const propertyName = toPropertyName(column.tscName, generationOptions);
-  const defaultValue = defaultFilterType(column.tscType);
+  const defaultValue = defaultFilterType(column.tscType, column.type, column.primary);
   const graphqlDecorator = column.generated ?
     `@Field((_) => FilteredID, {nullable: true})` :
     `@Field((_) => ${defaultValue}, { nullable: true })`;
@@ -75,10 +81,12 @@ export const FilterTemplate = (
 
   const filterName: string = toFiltersName(entity.tscName, generationOptions);
   const ignoreMetadata = generationOptions.graphqlFiles ?? false;
+  const relations = entity.relations.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.fieldName, entity.tscName) && !propertyIsFilterIgnored(c.fieldName, entity.tscName)))
+  const columns = entity.columns.filter(c => ignoreMetadata || (c.tscName && propertyIsDecoratedWithField(c.tscName, entity.tscName) && !propertyIsFilterIgnored(c.tscName, entity.tscName) && !relations.map(r => r.fieldName).includes(c.tscName)))
   return `
         import {InputType,Field} from "type-graphql";
         import { BaseFilterFields, FilteredID, FilteredInt, FilteredFloat, FilteredBoolean, FilteredDate, FilteredString } from "@merlin-gql/core";
-        ${entity.fileImports.map(fileImport => ImportsTemplate(fileImport,generationOptions)).join("\n")}
+        ${entity.fileImports.map(fileImport => ImportsTemplate(fileImport, generationOptions)).join("\n")}
 
         @InputType()
         export ${defaultExport(generationOptions)} class ${filterName} extends BaseFilterFields {
@@ -89,9 +97,9 @@ export const FilterTemplate = (
           @Field((_) => [${filterName}], { nullable: true })
           and?: ${filterName}[];
 
-          ${entity.columns.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.tscName, entity.tscName) && !propertyIsFilterIgnored(c.tscName, entity.tscName))).map(c => ColumnTemplate(c, generationOptions)).join("\n")}
+          ${columns.map(c => ColumnTemplate(c, generationOptions)).join("\n")}
 
-          ${entity.relations.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.fieldName, entity.tscName) && !propertyIsFilterIgnored(c.fieldName, entity.tscName))).map(r => RelationTemplate(r, generationOptions)).join("\n")}
+          ${relations.map(r => RelationTemplate(r, generationOptions)).join("\n")}
         }
       `
 }

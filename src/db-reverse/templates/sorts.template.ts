@@ -60,18 +60,19 @@ export const SortTemplate = (
 ): string => {
   const sortsName: string = toSortsName(entity.tscName, generationOptions);
   const ignoreMetadata = generationOptions.graphqlFiles ?? false;
-
+  const relations = entity.relations.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.fieldName, entity.tscName) && !propertyIsSortIgnored(c.fieldName, entity.tscName)))
+  const columns = entity.columns.filter(c => ignoreMetadata || (c.tscName && propertyIsDecoratedWithField(c.tscName, entity.tscName) && !propertyIsSortIgnored(c.tscName, entity.tscName) && !relations.map(r => r.fieldName).includes(c.tscName)))
   return `
         import {InputType, Field} from "type-graphql";
         import { BaseSortFields, SortField } from "@merlin-gql/core";
-        ${entity.fileImports.map(fileImport => ImportsTemplate(fileImport,generationOptions)).join("\n")}
+        ${entity.fileImports.map(fileImport => ImportsTemplate(fileImport, generationOptions)).join("\n")}
 
         @InputType()
         export ${defaultExport(generationOptions)} class ${sortsName} extends BaseSortFields {
 
-          ${entity.columns.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.tscName, entity.tscName) && !propertyIsSortIgnored(c.tscName, entity.tscName))).map(c => ColumnTemplate(c, generationOptions)).join("\n")}
+          ${columns.map(c => ColumnTemplate(c, generationOptions)).join("\n")}
 
-          ${entity.relations.filter(c => ignoreMetadata || (propertyIsDecoratedWithField(c.fieldName, entity.tscName) && !propertyIsSortIgnored(c.fieldName, entity.tscName))).map(r => RelationTemplate(r, generationOptions)).join("\n")}
+          ${relations.map(r => RelationTemplate(r, generationOptions)).join("\n")}
         }
       `
 }

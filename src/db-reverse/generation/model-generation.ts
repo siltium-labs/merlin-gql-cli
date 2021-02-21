@@ -219,6 +219,7 @@ const generateInput = (
   const filePath = path.resolve(filesPath, `${baseFileName}.input.ts`);
 
   const rendered = InputsTemplate(
+    element,
     element.tscName,
     element.columns,
     generationOptions,

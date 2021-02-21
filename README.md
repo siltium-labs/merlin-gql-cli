@@ -686,9 +686,9 @@ mutation {
 }
 ```
 
-### Filter and Sort Files
+## Filter and Sort Files
 
-As seen in previous examples the __LIST__ resolver allows to _filter_ and _sort_ the results based on user defined criteria.
+As seen in previous examples the __LIST__ resolver allows to _filter_ and _sort_ the results of the operation based on user defined criteria.
 
 The fields that you can _filter_ and _sort_ by are defined in `src/_generated/{entity name}.filter.ts` and `src/_generated/{entity name}.sort.ts` respectively.
 
@@ -840,9 +840,9 @@ export class ProductSorts extends BaseSortFields {
 }
 ```
 
-### Input File
+## Input File
 
-The input file, defines the fields required to _create_ and _update_ instances of our entities and store them on the database, along with defininf which fields are required according to your _TypeORM Entity_ definition.
+The input file, defines the fields required to _create_ and _update_ instances of our entities and store them on the database, along with defining which fields are required according to your _TypeORM Entity_ definition.
 
 ```typescript
 import { BaseInputFields } from "@merlin-gql/core";
@@ -873,13 +873,13 @@ export class ProductUpdateInput extends BaseInputFields implements Partial<Produ
     categoryId?: number;
 }
 ```
-> The Input Class definition is smart enough to configure itself appropiately according to the type of __primary key__ used, if your PK is auto generated, the `id` property will not be required, but it will in case you define an user created `id` value for your _TypeORM Entity_
+> The Input Class definition is smart enough to configure itself appropiately according to the type of __primary key__ used, if your PK is auto generated, the `id` property will not be required, but it will be required in case you define an user defined `id` value for your _TypeORM Entity_
 
 #### Input Definition
 
-Just like with sort, and filter criteria, there might be instances where we want to use the default values and not allowing the user to define values for a set of properties in our entities.
+Just like with sort, and filter criteria, there might be instances where we want to use the default values and blocking user from defining values for a set of properties in our entities.
 
-Let's say we don't want our users to be able to specify a product's `price` on creation.
+Let's say we don't want our API users to be able to specify a product's `price` on creation.
 
 We can decorate the `price` property in the _Resolver Generator_ class with the `@NoCreateInput()` decorator.
 
@@ -930,4 +930,4 @@ export class ProductUpdateInput extends BaseInputFields implements Partial<Produ
 
 ```
 
-If for some reason we don't want the user to be able to update the price value, we could also use the `@NoUpdateInput()` decorator, or as in this case we don't want the user to be able to define `price` on __creation nor update__ we can use the `NoInput()` decorator to block both.
+If for some reason we don't want the user to be able to update the price value, we could also use the `@NoUpdateInput()` decorator, or as in this case we don't want the user to be able to define `price` on __creation nor update__ we can use the `NoInput()` decorator to remove both from the generated file _Create_ and _Update_ classes.

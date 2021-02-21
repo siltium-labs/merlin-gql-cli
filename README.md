@@ -365,6 +365,8 @@ query {
 
 > If you noticed the _category_ property being used for filtering, don't worry. We are going to see how to split products into _categories_ using _TypeORM Entity relations_ in a moment.
 
+> The __LIST__ resolver is very efficient since it performs the __minimal required SQL Query__ to satisfy the fields that you requested, so you don't need to worry about doing queries that traverse across your entire schema since it will perform the _SQL Joins_ needed and query the exact __Database Model fields_ that are required by your Query
+
 ### Find Resolver
 
 Lets add **FIND** to the list of operations to generate for our `Product` entity.
@@ -931,3 +933,42 @@ export class ProductUpdateInput extends BaseInputFields implements Partial<Produ
 ```
 
 If for some reason we don't want the user to be able to update the price value, we could also use the `@NoUpdateInput()` decorator, or as in this case we don't want the user to be able to define `price` on __creation nor update__ we can use the `NoInput()` decorator to remove both from the generated file _Create_ and _Update_ classes.
+
+## Extending Resolvers - Resolver Custom Behaviour
+
+There may be some cases in which we might need to extend or change the default __CRUD Resolvers__ behaviour.
+
+Let's say in our API Business logic, we need to hit some external API endpoint when __deleting__ one of our _Products_.
+
+Since the __Merlin GQL Resolvers__ are classes, we can extend them to alter their behaviour or extend it's functionalities.
+
+We could for exampel create a `src/resolvers/product-extended.resolver.ts` file.
+
+```typescript
+import { GraphQLInfo, IGqlContext } from "@merlin-gql/core";
+import { Arg, Ctx, ID, Info, Mutation, PubSub, PubSubEngine, Resolver } from "type-graphql";
+import { Product } from "../models/product/product.model";
+import { ProductDeleteResolver } from "../_generated/product/product.resolver";
+
+@Resolver()
+export class ProductExtendedResolver extends ProductDeleteResolver {
+    @Mutation((returns) => Product, {
+        name: `ProductDelete`,
+    })
+    async delete(
+        @Arg("id", (type) => ID) id: number,
+        @PubSub() pubSub: PubSubEngine,
+        @Info() info: GraphQLInfo,
+        @Ctx() context: IGqlContext
+    ): Promise<Product> {
+        console.log("I'm going to delete a Product")
+        //Add your own custom logic here
+        const result = await super.delete(id, pubSub, info, context)
+        //Or here after the delete was done on the Database
+        console.log("I deleted a Product")
+        return result;
+    }
+}
+```
+
+It's very easy to customize any of the __CRUD__ operations doing complex transactions by extending the generated classes and providing custom behaviour.

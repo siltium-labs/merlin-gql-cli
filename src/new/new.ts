@@ -14,6 +14,8 @@ import {
 } from "./new.config";
 import { ncp } from "ncp";
 import * as Prettier from "prettier";
+import { TypeormDatabaseTypes } from "../commands/new";
+import { CategoryModelTemplate, PersonModelTemplate, ProductModelTemplate, UserModelTemplate } from "./templates/example/templates/models";
 
 export const kebabCase = (str: string) =>
   str
@@ -113,6 +115,10 @@ export const createNew = async (config: NewProjectConfig) => {
       task: async (context: TasksContext, task) => {
         try {
           task.title = `Creating project files...`;
+          await generateTypeORMModels(
+            config.templateArgs.database,
+            context.projectPath
+          )
           await copyTemplateToProjectFolder(
             config.template,
             context.projectPath
@@ -287,6 +293,54 @@ const generateReadmeFile = async (
   });
 };
 
+const generateTypeORMModels = async (
+  databaseType: TypeormDatabaseTypes,
+  appPath: string
+): Promise<void> => {
+  return new Promise<void>((resolve, reject) => {
+    try {
+      //Generate Users Model
+      const usersRendered = UserModelTemplate(databaseType);
+      const usersModelFolder = path.join(appPath, "src", "models", "user");
+      if (!fs.existsSync(usersModelFolder)) {
+        fs.mkdirSync(usersModelFolder, { recursive: true })
+      }
+      const usersModelDestinationPath = path.join(usersModelFolder, "user.model.ts");
+      writeFile(usersRendered, usersModelDestinationPath);
+
+      //Generate Person Model
+      const personsRendered = PersonModelTemplate(databaseType);
+      const personsModelFolder = path.join(appPath, "src", "models", "person");
+      if (!fs.existsSync(personsModelFolder)) {
+        fs.mkdirSync(personsModelFolder, { recursive: true })
+      }
+      const personModelDestinationPath = path.join(personsModelFolder, "person.model.ts");
+      writeFile(personsRendered, personModelDestinationPath);
+
+      //Generate Category Model
+      const categoriesRendered = CategoryModelTemplate(databaseType);
+      const categoriesModelFolder = path.join(appPath, "src", "models", "category");
+      if (!fs.existsSync(categoriesModelFolder)) {
+        fs.mkdirSync(categoriesModelFolder, { recursive: true })
+      }
+      const categoriesDestinationPath = path.join(categoriesModelFolder, "category.model.ts");
+      writeFile(categoriesRendered, categoriesDestinationPath);
+
+      //Generate Product Model
+      const productsRendered = ProductModelTemplate(databaseType);
+      const productsModelFolder = path.join(appPath, "src", "models", "product");
+      if (!fs.existsSync(productsModelFolder)) {
+        fs.mkdirSync(productsModelFolder, { recursive: true })
+      }
+      const productsDestinationPath = path.join(productsModelFolder, "product.model.ts");
+      writeFile(productsRendered, productsDestinationPath);
+      return resolve();
+    } catch (e) {
+      return reject(e);
+    }
+  });
+};
+
 const generateOrmConfigFile = async (
   appPath: string,
   configParams: OrmConfigTemplateParams
@@ -338,6 +392,7 @@ const writeFile = (rendered: any, filePath: string, prettierOptions?: Partial<Pr
     console.error(error);
     formatted = rendered;
   }
+
   fs.writeFileSync(filePath, formatted, {
     encoding: "utf-8",
     flag: "w",

@@ -18,14 +18,15 @@ export const generateDependencies = (
   const argDependantDependencies: string[] = [];
   if (["mysql", "mariadb"].includes(templateArgs["database"]))
     argDependantDependencies.push("mysql2");
-  if (templateArgs["database"] === "postgres")
+  if (templateArgs.database === "postgres")
     argDependantDependencies.push("pg");
-  if (templateArgs["database"] === "mssql")
+  if (templateArgs.database === "mssql")
     argDependantDependencies.push("mssql");
-  if (templateArgs["database"] === "oracle")
+  if (templateArgs.database === "oracle")
     argDependantDependencies.push("oracledb");
-  if (templateArgs["database"] === "mongodb")
-    argDependantDependencies.push("mongodb");
+  // TODO: Add mongodb support
+  /* if (templateArgs["database"] === "mongodb")
+    argDependantDependencies.push("mongodb"); */
   if (template === NewProjectTemplatesEnum.Example) {
 
     return [

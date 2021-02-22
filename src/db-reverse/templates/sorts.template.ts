@@ -18,6 +18,7 @@ import {
   toSortsName,
 } from "./../generation/model-generation";
 import { Entity } from "./../models/entity";
+import { TemplateUtils } from "./utils/template.utils";
 
 // prettier-ignore
 const ImportsTemplate = (fileImport: string, generationOptions: IGenerationOptions) => {
@@ -65,7 +66,7 @@ export const SortTemplate = (
   return `
         import {InputType, Field} from "type-graphql";
         import { BaseSortFields, SortField } from "@merlin-gql/core";
-        ${entity.fileImports.map(fileImport => ImportsTemplate(fileImport, generationOptions)).join("\n")}
+        ${TemplateUtils.removeDuplicated(entity.fileImports).map(fileImport => ImportsTemplate(fileImport, generationOptions)).join("\n")}
 
         @InputType()
         export ${defaultExport(generationOptions)} class ${sortsName} extends BaseSortFields {

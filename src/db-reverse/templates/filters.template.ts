@@ -18,6 +18,7 @@ import {
   toPropertyName,
 } from "./../generation/model-generation";
 import { Entity } from "./../models/entity";
+import { TemplateUtils } from "./utils/template.utils";
 
 
 const defaultFilterType = (tscType: string, type: ColumnType | string, primary: boolean = false) => {
@@ -86,7 +87,7 @@ export const FilterTemplate = (
   return `
         import {InputType,Field} from "type-graphql";
         import { BaseFilterFields, FilteredID, FilteredInt, FilteredFloat, FilteredBoolean, FilteredDate, FilteredString } from "@merlin-gql/core";
-        ${entity.fileImports.map(fileImport => ImportsTemplate(fileImport, generationOptions)).join("\n")}
+        ${TemplateUtils.removeDuplicated(entity.fileImports).map(fileImport => ImportsTemplate(fileImport, generationOptions)).join("\n")}
 
         @InputType()
         export ${defaultExport(generationOptions)} class ${filterName} extends BaseFilterFields {

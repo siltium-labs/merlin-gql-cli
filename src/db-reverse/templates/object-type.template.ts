@@ -3,12 +3,13 @@ import {
   toEntityDirectoryName,
   toEntityFileName,
   toEntityName,
-  toFiltersName, toInputsCreateName,
+  toFiltersName,
+  toInputsCreateName,
   toInputsUpdateName,
   toLocalImport,
   toPropertyName,
   toRelation,
-  toSortsName
+  toSortsName,
 } from "../generation/model-generation";
 import { Column } from "../models/column";
 import { Entity } from "../models/entity";
@@ -16,7 +17,7 @@ import { Relation } from "../models/relation";
 import IGenerationOptions from "../options/generation-options.interface";
 import {
   toFileName,
-  toGraphQLModelRelation
+  toGraphQLModelRelation,
 } from "./../generation/model-generation";
 
 const defaultFieldType = (tscType: string) => {
@@ -86,7 +87,12 @@ export const ObjectTypeTemplate = (
 
         ${entity.fileImports.map(fileImport => ImportsTemplate(fileImport, generationOptions)).join("\n")}
 
-        @MerlinGQLResolver(["FIND", "LIST", "CREATE", "UPDATE", "DELETE"])
+        @MerlinGQLResolver([
+          { type: "LIST", secure: ${generationOptions.secureResolvers ?? false} },
+          { type: "CREATE", secure: ${generationOptions.secureResolvers ?? false} },
+          { type: "UPDATE", secure: ${generationOptions.secureResolvers ?? false} },
+          { type: "DELETE", secure: ${generationOptions.secureResolvers ?? false} },
+        ])
         export ${defaultExport(generationOptions)} class ${entityName}ResolverGenerator extends ${entityName} {
 
           ${entity.columns.map(c => ColumnTemplate(entity, c, generationOptions)).join("\n")}

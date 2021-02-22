@@ -1,31 +1,23 @@
 import {
-  toEntityOTFileName,
-  toFileName,
-  toGraphQLModelRelation,
-  toInputsName,
-  toLocalOTImport,
-} from "./../generation/model-generation";
-import { Column } from "../models/column";
-import { Relation } from "../models/relation";
-import IGenerationOptions from "../options/generation-options.interface";
-import {
   defaultExport,
-  printPropertyVisibility,
-  strictMode,
   toEntityDirectoryName,
   toEntityFileName,
   toEntityName,
-  toInputsCreateName,
+  toFiltersName, toInputsCreateName,
   toInputsUpdateName,
-  toJson,
   toLocalImport,
   toPropertyName,
   toRelation,
-  toFiltersName,
-  toSortsName,
-  toGraphQLFilterRelation,
+  toSortsName
 } from "../generation/model-generation";
+import { Column } from "../models/column";
 import { Entity } from "../models/entity";
+import { Relation } from "../models/relation";
+import IGenerationOptions from "../options/generation-options.interface";
+import {
+  toFileName,
+  toGraphQLModelRelation
+} from "./../generation/model-generation";
 
 const defaultFieldType = (tscType: string) => {
   if (tscType === "string") {

@@ -210,13 +210,7 @@ Those operations are: **FIND** _one by id_, **LIST** _by user defined criteria_,
 
 Then, in the class we define a subset of the _TypeORM Entity properties_ and decorate them with the `@MerlinGQLField()` decorator, this decorator will tell the _GraphQL Schema_ which type of field we are using.
 
-Once we have our _TypeORM Entity_ and _MerlinGQL Resolver Generator_ we can run the following command.
-
-`npm run watch`
-
-> Please make sure that your API is running while using this command, if not then on a separate shell, run `npm start`.
-
-This will generate a bunch of files inside the `src/_generated` folder. And if we go to the _GraphQL Playground_ in `http://localhost:4000/graphql` we will have a fully functional _GraphQL API_ with the _CRUD Functionalities_ that were defined for our first _Product_ entity.
+After a couple of seconds, `MerlinGQL` will generate a bunch of files inside the `src/_generated` folder. And if we go to the _GraphQL Playground_ in `http://localhost:4000/graphql` we will have a fully functional _GraphQL API_ with the _CRUD Functionalities_ that were defined for our first _Product_ entity.
 
 ## Generated Files
 

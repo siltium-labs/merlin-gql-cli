@@ -177,8 +177,7 @@ const createPackageJson = (
         version: "0.1.0",
         scripts: {
           test: 'echo "Error: no test specified" && exit 1',
-          start: `env PORT=4000 gulp`,
-          watch: `npx @merlin-gql/cli generate:watch`
+          start: `env PORT=4000 gulp`
         },
       };
       if (templateArs["ngrok"]) {

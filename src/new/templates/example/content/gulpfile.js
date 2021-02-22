@@ -6,6 +6,7 @@ const sourcemaps = require("gulp-sourcemaps");
 const relativeSourcemapsSource = require("gulp-relative-sourcemaps-source");
 const cache = require("gulp-cached");
 const open = require('open');
+const { exec } = require("child_process");
 
 gulp.task("assets", () => {
     const isProduction = process.env.NODE_ENV === "prod";
@@ -59,19 +60,23 @@ gulp.task("nodemon", (cb) => {
         });
 });
 
-gulp.task("default", (cb) => {
-    gulp.watch(
-        [
-            "src/**/*.ts",
-            "src/**/*.json",
-            "src/**/*.graphql",
-            "config.json",
-            "config.development.json",
-            "ormconfig.json",
-            "merlin-gql-config.json"
-        ],
-        { ignoreInitial: false },
-        gulp.series("compile", "nodemon")
-    );
-    cb();
-});
+gulp.task("watch", () => gulp.watch(
+    [
+        "src/**/*.ts",
+        "src/**/*.json",
+        "src/**/*.graphql",
+        "config.json",
+        "config.development.json",
+        "ormconfig.json",
+        "merlin-gql-config.json"
+    ],
+    { ignoreInitial: false },
+    gulp.series("compile", "nodemon")
+))
+
+gulp.task("merlin", (cb) => exec("npx @merlin-gql/cli generate:watch", cb))
+
+gulp.task("default", gulp.parallel("watch", "merlin"));
+
+
+

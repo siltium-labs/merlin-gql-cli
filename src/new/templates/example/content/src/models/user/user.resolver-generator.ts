@@ -6,23 +6,23 @@ import { RolesEnum, User } from "./user.model";
 @MerlinGQLResolver(["FIND", "LIST", "CREATE", "UPDATE", "DELETE"])
 export class UserResolverGenerator extends User {
     @MerlinGQLField((_) => ID)
-    id!: number;
+    id!: any;
 
     @MerlinGQLField((_) => String)
-    username!: string;
+    username!: any;
 
     @MerlinGQLField((_) => String)
-    password!: string;
+    password!: any;
 
     @MerlinGQLField((_) => String)
-    email!: string;
+    email!: any;
 
     @MerlinGQLField((_) => Date, { nullable: true })
-    deletedDate!: Date;
+    deletedDate!: any;
 
     @MerlinGQLField((_) => RolesEnum)
-    role!: string;
+    role!: any;
 
     @MerlinGQLField((_) => Person, { nullable: true })
-    person?: Promise<Person>;
+    person?: any;
 }

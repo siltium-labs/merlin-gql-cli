@@ -1,3 +1,4 @@
+import { TypeormDatabaseTypes } from "../commands/new";
 import { OrmConfigTemplateParams } from "./new";
 
 export enum NewProjectTemplatesEnum {
@@ -5,7 +6,10 @@ export enum NewProjectTemplatesEnum {
   Example = "example",
 }
 
-export type TemplateArgsDictionary = { [key: string]: any };
+export type TemplateArgsDictionary = {
+  database: TypeormDatabaseTypes,
+  [key: string]: any
+};
 
 export type NewProjectConfig = {
   name: string;

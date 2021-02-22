@@ -10,18 +10,18 @@ import { Person } from "./person.model";
 ])
 export class PersonResolverGenerator extends Person {
     @MerlinGQLField((_) => ID)
-    id!: number;
+    id!: any;
 
     @MerlinGQLField((_) => String)
-    name!: string;
+    name!: any;
 
     @MerlinGQLField((_) => Float)
-    age!: number;
+    age!: any;
 
     @MerlinGQLField((_) => Date, { nullable: true })
     @NoSort()
-    deletedDate!: Date;
+    deletedDate!: any;
 
     @MerlinGQLField((_) => User, { nullable: true })
-    user?: Promise<User>;
+    user!: any;
 }

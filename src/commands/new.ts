@@ -17,7 +17,8 @@ export type TypeormDatabaseTypes =
   | "mariadb"
   | "oracle"
   | "mssql"
-  | "mongodb";
+// TODO: Add mongodb support
+//  | "mongodb";
 
 const toTitleCase = (str: string) =>
   str
@@ -41,7 +42,8 @@ enum DatabaseTypesEnum {
   Mariadb = "mariadb",
   Oracle = "oracle",
   Mssql = "mssql",
-  MongoDB = "mongodb"
+  // TODO: Add mongodb support
+  //  MongoDB = "mongodb"
 }
 
 interface IDatabaseDefaultValues {
@@ -70,10 +72,11 @@ export const DatabaseDefaultValuesEnum: { [key: string]: IDatabaseDefaultValues 
     port: 1521,
     username: 'oracle'
   },
-  [DatabaseTypesEnum.MongoDB]: {
+  // TODO: Add mongodb support
+  /*[DatabaseTypesEnum.MongoDB]: {
     port: 27017,
     username: 'admin'
-  }
+  }*/
 }
 
 export default class New extends Command {
@@ -209,7 +212,8 @@ export default class New extends Command {
           choices: [
             DatabaseTypesEnum.Mysql,
             DatabaseTypesEnum.Postgres,
-            DatabaseTypesEnum.MongoDB,
+            // TODO: Add mongodb support
+            //DatabaseTypesEnum.MongoDB,
             DatabaseTypesEnum.Mssql,
             DatabaseTypesEnum.Mariadb,
             DatabaseTypesEnum.Oracle
@@ -312,8 +316,7 @@ export default class New extends Command {
         port: flags.databasePort,
       },
     };
-    const templateArgs: TemplateArgsDictionary = {};
-    templateArgs["database"] = flags.databaseType as TypeormDatabaseTypes;
+    const templateArgs: TemplateArgsDictionary = { database: flags.databaseType as TypeormDatabaseTypes };
     if (flags.template === NewProjectTemplatesEnum.Example) {
       templateArgs["ngrok"] = flags.ngrok;
     }

@@ -6,7 +6,7 @@
     "@merlin-gql/cli": "./bin/run"
   },
   "dependencies": {
-    "@merlin-gql/core": "^0.0.6",
+    "@merlin-gql/core": "^0.0.7",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "@oclif/plugin-help": "^3.2.1",

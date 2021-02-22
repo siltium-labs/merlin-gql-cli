@@ -1,20 +1,23 @@
-import { EntityTemplate } from "./../templates/entity.template";
-import { loadOtFiles } from "@merlin-gql/core";
-import { InputsTemplate } from "./../templates/inputs.template";
-import { ResolverTemplate } from "./../templates/resolver.template";
-import * as Prettier from "prettier";
+import {
+  loadOtFiles,
+  resetMetadataStorage,
+  resolverIncludesOperation,
+} from "@merlin-gql/core";
 import * as changeCase from "change-case";
 import * as fs from "fs";
 import * as path from "path";
-import IGenerationOptions from "../options/generation-options.interface";
+import { singular } from "pluralize";
+import * as Prettier from "prettier";
+import { ModelGenerationOptions } from "../../commands/generate/crud";
 import { Entity } from "../models/entity";
 import { Relation } from "../models/relation";
-import { singular } from "pluralize";
-import { ModelGenerationOptions } from "../../commands/generate/crud";
-import { resetMetadataStorage, resolverIncludesOperation } from "@merlin-gql/core";
+import IGenerationOptions from "../options/generation-options.interface";
 import { FilterTemplate } from "../templates/filters.template";
-import { SortTemplate } from "../templates/sorts.template";
 import { ObjectTypeTemplate } from "../templates/object-type.template";
+import { SortTemplate } from "../templates/sorts.template";
+import { EntityTemplate } from "./../templates/entity.template";
+import { InputsTemplate } from "./../templates/inputs.template";
+import { ResolverTemplate } from "./../templates/resolver.template";
 
 const GENERATED_DIRECTORY_NAME = "_generated";
 
@@ -119,8 +122,15 @@ const generateGraphQLFiles = (
         element
       );
     }
-    const shouldGenerateFilterAndSortAccordingToMetadata = resolverIncludesOperation(element.tscName, "LIST")
-    if (!flags || flags.filter || (!flags?.filter &&  shouldGenerateFilterAndSortAccordingToMetadata)) {
+    const shouldGenerateFilterAndSortAccordingToMetadata = resolverIncludesOperation(
+      element.tscName,
+      "LIST"
+    );
+    if (
+      !flags ||
+      flags.filter ||
+      (!flags?.filter && shouldGenerateFilterAndSortAccordingToMetadata)
+    ) {
       generateFilters(
         generationOptions,
         baseFileName,
@@ -129,7 +139,11 @@ const generateGraphQLFiles = (
       );
     }
 
-    if (!flags || flags.sort || (!flags?.filter &&  shouldGenerateFilterAndSortAccordingToMetadata)) {
+    if (
+      !flags ||
+      flags.sort ||
+      (!flags?.filter && shouldGenerateFilterAndSortAccordingToMetadata)
+    ) {
       generateSort(
         generationOptions,
         baseFileName,
@@ -137,11 +151,22 @@ const generateGraphQLFiles = (
         element
       );
     }
-    const shouldGenerateCreateInputAccordingToMetadata = resolverIncludesOperation(element.tscName, "CREATE")
-    const shouldGenerateUpdateInputAccordingToMetadata = resolverIncludesOperation(element.tscName, "UPDATE")
+    const shouldGenerateCreateInputAccordingToMetadata = resolverIncludesOperation(
+      element.tscName,
+      "CREATE"
+    );
+    const shouldGenerateUpdateInputAccordingToMetadata = resolverIncludesOperation(
+      element.tscName,
+      "UPDATE"
+    );
 
-
-    if (!flags || flags.input || (!flags?.input && (shouldGenerateCreateInputAccordingToMetadata || shouldGenerateUpdateInputAccordingToMetadata))) {
+    if (
+      !flags ||
+      flags.input ||
+      (!flags?.input &&
+        (shouldGenerateCreateInputAccordingToMetadata ||
+          shouldGenerateUpdateInputAccordingToMetadata))
+    ) {
       generateInput(
         generationOptions,
         baseFileName,
@@ -180,7 +205,10 @@ const generateObjectType = (
   //entityCompliedTemplate: HandlebarsTemplateDelegate<any>,
   element: Entity
 ) => {
-  const filePath = path.resolve(filesPath, `${baseFileName}.ot.ts`);
+  const filePath = path.resolve(
+    filesPath,
+    `${baseFileName}.resolver-generator.ts`
+  );
   const rendered = ObjectTypeTemplate(element, generationOptions);
   writeFile(rendered, generationOptions, element, filePath);
 };
@@ -213,8 +241,8 @@ const generateInput = (
   baseFileName: string,
   filesPath: string,
   element: Entity,
-  create:boolean = true,
-  update:boolean = true
+  create: boolean = true,
+  update: boolean = true
 ) => {
   const filePath = path.resolve(filesPath, `${baseFileName}.input.ts`);
 

@@ -1,16 +1,16 @@
-import * as TomgUtils from "../misc/utils";
+import { ModelGenerationOptions } from "../../commands/generate/crud";
 import AbstractDriver from "../drivers/abstract.driver";
-import MssqlDriver from "../drivers/mssql.driver";
 import MariaDbDriver from "../drivers/maria-db.driver";
-import IConnectionOptions from "../options/connection-options.interface";
-import IGenerationOptions from "../options/generation-options.interface";
-import PostgresDriver from "../drivers/postgres.driver";
+import MssqlDriver from "../drivers/mssql.driver";
 import MysqlDriver from "../drivers/mysql.driver";
 import OracleDriver from "../drivers/oracle.driver";
+import PostgresDriver from "../drivers/postgres.driver";
+import * as TomgUtils from "../misc/utils";
+import { Entity } from "../models/entity";
+import IConnectionOptions from "../options/connection-options.interface";
+import IGenerationOptions from "../options/generation-options.interface";
 import modelCustomizationPhase from "./model-customization";
 import generator from "./model-generation";
-import { Entity } from "../models/entity";
-import { ModelGenerationOptions } from "../../commands/generate/crud";
 
 export function createDriver(driverName: string): AbstractDriver {
   switch (driverName) {
@@ -56,10 +56,10 @@ export async function createModelFromDatabase(
   let flags: ModelGenerationOptions = {
     model: true,
     objectType: generationOptions.graphqlFiles,
-    input: false,
-    filter: false,
-    sort: false,
-    resolver: false,
+    input: generationOptions.graphqlFiles,
+    filter: generationOptions.graphqlFiles,
+    sort: generationOptions.graphqlFiles,
+    resolver: generationOptions.graphqlFiles,
   };
 
   generator(generationOptions, dbModel, flags);

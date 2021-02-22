@@ -1,6 +1,6 @@
 import { JoinColumnOptions } from "typeorm";
-import { Index } from "../models/Index";
 import { Column } from "../models/column";
+import { Index } from "../models/Index";
 import { Relation } from "../models/relation";
 import IGenerationOptions from "../options/generation-options.interface";
 import {
@@ -49,8 +49,8 @@ const ColumnTemplate = (
   generationOptions: IGenerationOptions
 ) => {
   const propertyName = toPropertyName(column.tscName, generationOptions);
-  const defaultValue = defaultValueIfNeeded(
-    !!column.options.nullable,
+  const defaultValue = defaultValueIfNeeded(    
+    (!!column.options.nullable || !!column.generated),
     column.tscType
   );
   const primary = column.primary ? `primary: ${column.primary}, `: "";
@@ -63,7 +63,7 @@ const ColumnTemplate = (
 
   return `
     ${ propertyName !== generationOptions.softDeleteColumn ? generated : deletedAt}
-    ${printPropertyVisibility(generationOptions)} ${propertyName} ${strictMode(generationOptions)}:${column.tscType}${column.options.nullable ? " | null" : ""} ${defaultValue}
+    ${printPropertyVisibility(generationOptions)} ${propertyName} ${strictMode(generationOptions)}:${column.tscType}${column.options.nullable ||  column.generated ? " | null" : ""} ${defaultValue}
   `;
 };
 

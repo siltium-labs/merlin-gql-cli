@@ -1,4 +1,9 @@
-import { isOperationSecure, resolverIncludesOperation, securityRolesAllowedForOperation } from "@merlin-gql/core";
+import {
+  isOperationSecure,
+  resolverIncludesOperation,
+  securityRolesAllowedForOperation,
+} from "@merlin-gql/core";
+import IGenerationOptions from "../options/generation-options.interface";
 import {
   toEntityFileName,
   toEntityName,
@@ -9,7 +14,6 @@ import {
   toLocalImport,
   toSortsName,
 } from "./../generation/model-generation";
-import IGenerationOptions from "../options/generation-options.interface";
 
 // prettier-ignore
 export const ResolverTemplate = (
@@ -27,7 +31,7 @@ export const ResolverTemplate = (
 
 
   const resolverImports: string[] = []
-  const isListSecure = isOperationSecure(entityName, "LIST");
+  const isListSecure = isOperationSecure(entityName, "LIST") || generationOptions.secureResolvers;
   const listSecuredRoles = securityRolesAllowedForOperation(entityName, "LIST");
   //list resolver based on metadata
   const shouldGenerateListResolver = ignoreMetadata || resolverIncludesOperation(entityName, "LIST")
@@ -42,7 +46,7 @@ export const ResolverTemplate = (
   }
 
   //find resolver based on metadata
-  const isFindSecure = isOperationSecure(entityName, "FIND");
+  const isFindSecure = isOperationSecure(entityName, "FIND") || generationOptions.secureResolvers;
   const findSecuredRoles = securityRolesAllowedForOperation(entityName, "FIND");
   const shouldGenerateFindResolver = ignoreMetadata || resolverIncludesOperation(entityName, "FIND");
   const findResolver: string = shouldGenerateFindResolver ? `
@@ -57,7 +61,7 @@ export const ResolverTemplate = (
   }
 
   //update resolver based on metadata
-  const isUpdateSecure = isOperationSecure(entityName, "UPDATE");
+  const isUpdateSecure = isOperationSecure(entityName, "UPDATE") || generationOptions.secureResolvers;
   const updateSecuredRoles = securityRolesAllowedForOperation(entityName, "UPDATE");
   const shouldGenerateUpdateResolver = ignoreMetadata || resolverIncludesOperation(entityName, "UPDATE")
   const updateResolver: string = shouldGenerateUpdateResolver ? `
@@ -72,7 +76,7 @@ export const ResolverTemplate = (
   }
 
   //create resolver based on metadata
-  const isCreateSecure = isOperationSecure(entityName, "CREATE");
+  const isCreateSecure = isOperationSecure(entityName, "CREATE") || generationOptions.secureResolvers;
   const createSecuredRoles = securityRolesAllowedForOperation(entityName, "CREATE");
   const shouldGenerateCreateResolver = ignoreMetadata || resolverIncludesOperation(entityName, "CREATE")
   const createResolver: string = shouldGenerateCreateResolver ? `
@@ -87,7 +91,7 @@ export const ResolverTemplate = (
   }
 
   //delete resolver based on metadata
-  const isDeleteSecure = isOperationSecure(entityName, "DELETE");
+  const isDeleteSecure = isOperationSecure(entityName, "DELETE") || generationOptions.secureResolvers;
   const deleteSecuredRoles = securityRolesAllowedForOperation(entityName, "DELETE");
   const shouldGenerateDeleteResolver = ignoreMetadata || resolverIncludesOperation(entityName, "DELETE")
   const deleteResolver: string = shouldGenerateDeleteResolver ? `

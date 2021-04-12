@@ -350,6 +350,7 @@ const getColumnTscType = (columnType: ColumnType) => {
     }
     case "boolean":
     case "bool":
+    case "bit":
     case Boolean: {
       return "boolean";
     }
